@@ -1,6 +1,6 @@
 package app;
 
-import data_access.DBUserDataAccessObject;
+import data_access.FileUserDataAccessObject;
 import entities.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.ChangePasswordController;
@@ -28,6 +28,7 @@ import view.ViewManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
@@ -38,7 +39,7 @@ public class AppBuilder {
 
     // set which data access implementation to use, can be any
     // of the classes from the data_access package
-    final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory);
+    final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("../../../users.csv", userFactory);
 
     private SignupView signupView;
     private SignupViewModel signupViewModel;
@@ -47,7 +48,7 @@ public class AppBuilder {
     private LoggedInView loggedInView;
     private LoginView loginView;
 
-    public AppBuilder() {
+    public AppBuilder() throws IOException {
         cardPanel.setLayout(cardLayout);
     }
 
