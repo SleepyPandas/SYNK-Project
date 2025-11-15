@@ -5,10 +5,10 @@ import use_case.modify_task.ModifyTaskInputData;
 
 import java.time.LocalDateTime;
 
-public class ModifiedTaskController {
+public class ModifyTaskController {
     private final ModifyTaskInputBoundary modifyTaskUseCaseInteractor;
 
-    public ModifiedTaskController(ModifyTaskInputBoundary modifyTaskInteractor) {
+    public ModifyTaskController(ModifyTaskInputBoundary modifyTaskInteractor) {
         this.modifyTaskUseCaseInteractor = modifyTaskInteractor;
     }
 

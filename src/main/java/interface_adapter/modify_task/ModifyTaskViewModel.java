@@ -2,10 +2,10 @@ package interface_adapter.modify_task;
 
 import interface_adapter.ViewModel;
 
-public class ModifiedTaskViewModel extends ViewModel<ModifiedTaskState> {
+public class ModifyTaskViewModel extends ViewModel<ModifyTaskState> {
 
-    public ModifiedTaskViewModel() {
+    public ModifyTaskViewModel() {
         super("modify task");
-        setState(new ModifiedTaskState());
+        setState(new ModifyTaskState());
     }
 }

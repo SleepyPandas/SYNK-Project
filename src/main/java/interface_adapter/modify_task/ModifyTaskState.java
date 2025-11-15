@@ -3,7 +3,7 @@ package interface_adapter.modify_task;
 import java.time.LocalDateTime;
 
 
-public class ModifiedTaskState {
+public class ModifyTaskState {
     private String newTaskName = "";
     private int priority = 0;
     private LocalDateTime deadline = LocalDateTime.now();
