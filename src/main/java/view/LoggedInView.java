@@ -3,6 +3,7 @@ package view;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.LoggedInState;
 import interface_adapter.logged_in.LoggedInViewModel;
+import interface_adapter.signup.SignupController;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -23,12 +24,16 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
     private final JLabel passwordErrorField = new JLabel();
     private ChangePasswordController changePasswordController = null;
 
+
     private final JLabel username;
 
     private final JButton logOut;
 
     private final JTextField passwordInputField = new JTextField(15);
     private final JButton changePassword;
+    private final JButton viewTasks;
+    private final JButton viewHabits;
+    private final JButton viewLeaderboard;
 
     public LoggedInView(LoggedInViewModel loggedInViewModel) {
         this.loggedInViewModel = loggedInViewModel;
@@ -45,9 +50,19 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
 
         final JPanel buttons = new JPanel();
         logOut = new JButton("Log Out");
-        buttons.add(logOut);
 
         changePassword = new JButton("Change Password");
+
+        viewTasks = new JButton("View tasks");
+
+        viewHabits = new JButton("View habits");
+
+        viewLeaderboard = new JButton("View leaderboard");
+
+        buttons.add(viewTasks);
+        buttons.add(viewHabits);
+        buttons.add(viewLeaderboard);
+        buttons.add(logOut);
         buttons.add(changePassword);
 
         logOut.addActionListener(this);
@@ -91,6 +106,14 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
                     }
                 }
         );
+
+//        viewTasks.addActionListener(
+//                evt -> {
+//                    if (evt.getSource().equals(logOut)){
+//                        this.viewTaskController.execute(user);
+//                    }
+//                }
+//        );
 
         this.add(title);
         this.add(usernameInfo);
