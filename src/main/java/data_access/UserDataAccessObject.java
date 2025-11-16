@@ -1,5 +1,7 @@
 package data_access;
 
+import use_case.gateways.UserGateway;
+
 /**
  * UserDataAccessObject (LOCALLY)
  *
@@ -21,6 +23,6 @@ package data_access;
  *  *** IMPORTANT*** 
  *  - This assumes that we have seperate logins for Google Calendar and User accounts.
  */
-public class UserDataAccessObject {
+public class UserDataAccessObject implements UserGateway {
     
 }
