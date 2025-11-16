@@ -9,6 +9,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -77,22 +79,23 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
                     10), Period.of(0, 0, 1), "Important", 1, 1});
 
         taskModel.addTableModelListener(e -> {
+                if (e.getType() == TableModelEvent.UPDATE) {
 
-            int row = e.getFirstRow();
-            int col = e.getColumn();
+                    int row = e.getFirstRow();
+                    int col = e.getColumn();
 
-            Object newValue = taskModel.getValueAt(row, col);
-
+                    Object newValue = taskModel.getValueAt(row, col);
+                }
         });
 
         habitModel.addTableModelListener(e -> {
+            if (e.getType() == TableModelEvent.UPDATE) {
+                    int row = e.getFirstRow();
+                    int col = e.getColumn();
 
-            int row = e.getFirstRow();
-            int col = e.getColumn();
-
-            Object newValue = habitModel.getValueAt(row, col);
-
-        });
+                    Object newValue = habitModel.getValueAt(row, col);
+                }
+            });
 
             private void documentListenerHelper() {
                 final LoggedInState currentState = loggedInViewModel.getState();
