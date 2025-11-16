@@ -1,5 +1,6 @@
 package data_access;
 
+import use_case.gateways.CalendarGateway;
 
 /*
  * GoogleCalendarDataAccessObject (API CALL)
