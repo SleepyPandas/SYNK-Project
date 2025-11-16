@@ -10,12 +10,22 @@
 # .idea
 /.idea_modules/
 .idea/
-.idea
+*.iml
 
+########################
+# Env 
+########################
 
-src/main/java/SECRET
-.SECRET
-
+# Other local configs (so we don't leak the API keys :sob:
+*.local.*
+*.env
+.env
+.env.*
+src/main/resources/credentials.json
+tokens/StoredCredential
+gradle/wrapper/gradle-wrapper.jar
+gradle/wrapper/gradle-wrapper.properties
+.idea/misc.xml
 # Gradle build output
 /.gradle/
 /build/
