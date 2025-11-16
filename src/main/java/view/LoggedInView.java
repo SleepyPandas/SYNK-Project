@@ -7,11 +7,17 @@ import interface_adapter.logged_in.LoggedInViewModel;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.Period;
 
 /**
  * The View for when the user is logged into the program.
@@ -55,6 +61,38 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         passwordInputField.getDocument().addDocumentListener(new DocumentListener() {
+
+        final String[] taskCols = {"Task", "Deadline", "Task Group", "Status", "Priority"};
+        final String[] habitCols = {"Habit", "Start Date", "Start Time", "Frequency", "Habit Group", "Streak Count", "Priority"};
+
+        final DefaultTableModel taskModel =  new DefaultTableModel(taskCols, 0);
+        final DefaultTableModel habitModel =  new DefaultTableModel(habitCols, 0);
+
+        JTable taskTable = new JTable(taskModel);
+        JTable habitTable = new JTable(habitModel);
+
+        taskModel.addRow(new Object[] {"Work", LocalDateTime.of(2025, 10, 10, 10,
+                0), "Important", "Not Finished", 1});
+        habitModel.addRow(new Object[] {"Gym", LocalDate.of(2025, 10, 10), LocalTime.of(10,
+                    10), Period.of(0, 0, 1), "Important", 1, 1});
+
+        taskModel.addTableModelListener(e -> {
+
+            int row = e.getFirstRow();
+            int col = e.getColumn();
+
+            Object newValue = taskModel.getValueAt(row, col);
+
+        });
+
+        habitModel.addTableModelListener(e -> {
+
+            int row = e.getFirstRow();
+            int col = e.getColumn();
+
+            Object newValue = habitModel.getValueAt(row, col);
+
+        });
 
             private void documentListenerHelper() {
                 final LoggedInState currentState = loggedInViewModel.getState();

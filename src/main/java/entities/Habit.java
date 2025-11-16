@@ -2,11 +2,13 @@ package entities;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.time.Period;
 
 public class Habit implements Completable {
     private String habitName;
     private LocalDateTime startDateTime;
-    private LocalDateTime frequency;
+    private Period frequency;
+    private LocalDateTime lastDateTimeCompleted;
     private String habitGroup;
     private int streakCount;
     private int priority;
@@ -14,7 +16,8 @@ public class Habit implements Completable {
 
     Habit(String habitName,
           LocalDateTime startDateTime,
-          LocalDateTime frequency,
+          Period frequency,
+          LocalDateTime lastDateTimeCompleted,
           String habitGroup,
           int streakCount,
           int priority,
@@ -22,6 +25,7 @@ public class Habit implements Completable {
         this.habitName = habitName;
         this.startDateTime = startDateTime;
         this.frequency = frequency;
+        this.lastDateTimeCompleted = lastDateTimeCompleted;
         this.habitGroup = habitGroup;
         this.streakCount = streakCount;
         this.priority = priority;
@@ -42,8 +46,12 @@ public class Habit implements Completable {
     public LocalDateTime getStartDateTime() { return this.startDateTime; }
     public void setStartDateTime(LocalDateTime startDateTime) { this.startDateTime = startDateTime; }
 
-    public LocalDateTime getFrequency() { return this.frequency; }
-    public void setFrequency(LocalDateTime frequency) { this.frequency = frequency; }
+    public Period getFrequency() { return this.frequency; }
+    public void setFrequency(Period frequency) { this.frequency = frequency; }
+
+    public LocalDateTime getlastDateTimeCompleted() { return this.lastDateTimeCompleted; }
+    public void setLastDateTimeCompleted(LocalDateTime LastDateTimeCompleted) { this.lastDateTimeCompleted =
+            lastDateTimeCompleted; }
 
     public String getHabitGroup() { return this.habitGroup; }
     public void setHabitGroup(String habitGroup) { this.habitGroup = habitGroup; }
@@ -73,6 +81,7 @@ public class Habit implements Completable {
                 "habitName='" + habitName + '\'' +
                 ", startDateTime=" + startDateTime +
                 ", frequency=" + frequency +
+                ", lastDateTimeCompleted=" + lastDateTimeCompleted +
                 ", habitGroup='" + habitGroup + '\'' +
                 ", streakCount=" + streakCount +
                 ", priority=" + priority +
