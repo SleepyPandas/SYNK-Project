@@ -102,6 +102,13 @@ public class AppBuilder {
         return this;
     }
 
+    public AppBuilder addUpdateProfileView() {
+        updateProfileViewModel = new  UpdateProfileViewModel();
+        updateProfileView = new  UpdateProfileView(updateProfileViewModel);
+        cardPanel.add(updateProfileView, updateProfileView.getViewName());
+        return this;
+    }
+
     public AppBuilder addSignupUseCase() {
         final SignupOutputBoundary signupOutputBoundary = new SignupPresenter(viewManagerModel,
                 signupViewModel, loginViewModel);
@@ -147,15 +154,14 @@ public class AppBuilder {
     }
 
     public AppBuilder addUpdateProfileUseCase() {
-        final UpdateProfileOutputBoundary updateProfileutputBoundary =
+        final UpdateProfileOutputBoundary updateProfileOutputBoundary =
                 new UpdateProfilePresenter(viewManagerModel, updateProfileViewModel);
 
         final UpdateProfileBoundary updateProfileInteractor =
-                new UpdateProfileInteractor(userDataAccessObject, updateProfileutputBoundary);
+                new UpdateProfileInteractor(userDataAccessObject, updateProfileOutputBoundary);
 
         UpdateProfileController updateProfileController = new UpdateProfileController(updateProfileInteractor);
         updateProfileView.setUpdateProfileController(updateProfileController);
-
         return this;
     }
 
