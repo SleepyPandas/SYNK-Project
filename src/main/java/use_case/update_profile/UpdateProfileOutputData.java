@@ -1,5 +1,8 @@
 package use_case.update_profile;
 
+/**
+ * Output Data for the UpdateProfile Use Case.
+ */
 public class UpdateProfileOutputData {
     private final String uid;
     private final String username;

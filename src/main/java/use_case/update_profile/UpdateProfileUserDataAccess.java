@@ -1,7 +1,11 @@
 package use_case.update_profile;
 
-import entity.User;
+import entities.User;
 
+
+/**
+ * DAO for the UpdateProfile Use Case.
+ */
 public interface UpdateProfileUserDataAccess {
 
     boolean existsByUid(String uid);

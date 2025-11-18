@@ -1,7 +1,10 @@
 package use_case.update_profile;
 
-import entity.User;
+import entities.User;
 
+/**
+ * The UpdateProfile Interactor.
+ */
 public class UpdateProfileInteractor implements UpdateProfileBoundary {
 
     private final UpdateProfileUserDataAccess userDataAccess;
