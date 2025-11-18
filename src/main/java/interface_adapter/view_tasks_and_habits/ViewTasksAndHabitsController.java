@@ -1,28 +1,26 @@
 package interface_adapter.view_tasks_and_habits;
 
-import use_case.login.LoginInputBoundary;
-import use_case.login.LoginInputData;
+import use_case.view_tasks_and_habits.ViewTasksAndHabitsInputBoundary;
+import use_case.view_tasks_and_habits.ViewTasksAndHabitsInputData;
 
 /**
  * The controller for the Login Use Case.
  */
 public class ViewTasksAndHabitsController {
 
-    private final LoginInputBoundary loginUseCaseInteractor;
+    private final ViewTasksAndHabitsInputBoundary ViewTasksAndHabitsUseCaseInteractor;
 
-    public ViewTasksAndHabitsController(LoginInputBoundary loginUseCaseInteractor) {
-        this.loginUseCaseInteractor = loginUseCaseInteractor;
+    public ViewTasksAndHabitsController(ViewTasksAndHabitsInputBoundary viewTasksAndHabitsUseCaseInteractor) {
+        this.ViewTasksAndHabitsUseCaseInteractor = viewTasksAndHabitsUseCaseInteractor;
     }
 
     /**
-     * Executes the Login Use Case.
-     * @param username the username of the user logging in
-     * @param password the password of the user logging in
+     * Executes the View Tasks And Habits Use Case.
      */
-    public void execute(String username, String password) {
-        final LoginInputData loginInputData = new LoginInputData(
-                username, password);
+    public static void execute(String designation, int col, String completeableName) {
+        final ViewTasksAndHabitsInputData viewTasksAndHabitsInputData = new ViewTasksAndHabitsInputData(
+                designation, col, completeableName);
 
-        loginUseCaseInteractor.execute(loginInputData);
+        ViewTasksAndHabitsUseCaseInteractor.execute(viewTasksAndHabitsInputData);
     }
 }

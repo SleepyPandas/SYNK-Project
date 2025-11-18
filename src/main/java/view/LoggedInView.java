@@ -77,41 +77,6 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
 
         passwordInputField.getDocument().addDocumentListener(new DocumentListener() {
 
-        final String[] taskCols = {"Task", "Deadline", "Task Group", "Status", "Priority"};
-        final String[] habitCols = {"Habit", "Start Date", "Start Time", "Frequency", "Habit Group", "Streak Count", "Priority"};
-
-        final DefaultTableModel taskModel =  new DefaultTableModel(taskCols, 0);
-        final DefaultTableModel habitModel =  new DefaultTableModel(habitCols, 0);
-
-        JTable taskTable = new JTable(taskModel);
-        JTable habitTable = new JTable(habitModel);
-
-        taskModel.addRow(new Object[] {"Work", LocalDateTime.of(2025, 10, 10, 10,
-                0), "Important", "Not Finished", 1});
-        habitModel.addRow(new Object[] {"Gym", LocalDate.of(2025, 10, 10), LocalTime.of(10,
-                    10), Period.of(0, 0, 1), "Important", 1, 1});
-
-        taskModel.addTableModelListener(e -> {
-                if (e.getType() == TableModelEvent.UPDATE) {
-
-                    int row = e.getFirstRow();
-                    int col = e.getColumn();
-
-                    String taskName = taskModel.getValueAt(row, 0).toString();
-
-                }
-        });
-
-        habitModel.addTableModelListener(e -> {
-            if (e.getType() == TableModelEvent.UPDATE) {
-                    int row = e.getFirstRow();
-                    int col = e.getColumn();
-
-                    String habitName = habitModel.getValueAt(row, 0).toString();
-
-                }
-        });
-
             private void documentListenerHelper() {
                 final LoggedInState currentState = loggedInViewModel.getState();
                 currentState.setPassword(passwordInputField.getText());

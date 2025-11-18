@@ -1,5 +1,5 @@
 package use_case.view_tasks_and_habits;
 
-public class VIewTasksAndHabitsOutputData {
+public class ViewTasksAndHabitsOutputData {
 
 }

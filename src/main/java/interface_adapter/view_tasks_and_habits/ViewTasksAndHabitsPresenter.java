@@ -5,41 +5,32 @@ import interface_adapter.logged_in.LoggedInState;
 import interface_adapter.logged_in.LoggedInViewModel;
 import use_case.login.LoginOutputBoundary;
 import use_case.login.LoginOutputData;
+import use_case.view_tasks_and_habits.ViewTasksAndHabitsOutputBoundary;
+import use_case.view_tasks_and_habits.ViewTasksAndHabitsOutputData;
 
 /**
  * The Presenter for the Login Use Case.
  */
-public class ViewTasksAndHabitsPresenter implements LoginOutputBoundary {
+public class ViewTasksAndHabitsPresenter implements ViewTasksAndHabitsOutputBoundary {
 
-    private final ViewTasksAndHabitsViewModel loginViewModel;
-    private final LoggedInViewModel loggedInViewModel;
+    private final ViewTasksAndHabitsViewModel viewTasksAndHabitsViewModel;
     private final ViewManagerModel viewManagerModel;
 
     public ViewTasksAndHabitsPresenter(ViewManagerModel viewManagerModel,
-                                       LoggedInViewModel loggedInViewModel,
-                                       ViewTasksAndHabitsViewModel loginViewModel) {
+                                       ViewTasksAndHabitsViewModel viewTasksAndHabitsViewModel) {
         this.viewManagerModel = viewManagerModel;
-        this.loggedInViewModel = loggedInViewModel;
-        this.loginViewModel = loginViewModel;
+        this.viewTasksAndHabitsViewModel = viewTasksAndHabitsViewModel;
+
     }
 
     @Override
-    public void prepareSuccessView(LoginOutputData response) {
+    public void prepareSuccessView(ViewTasksAndHabitsOutputData response) {
         // On success, switch to the logged in view.
 
-        final LoggedInState loggedInState = loggedInViewModel.getState();
-        loggedInState.setUsername(response.getUsername());
-        this.loggedInViewModel.setState(loggedInState);
-        this.loggedInViewModel.firePropertyChanged();
-
-        this.viewManagerModel.setState(loggedInViewModel.getViewName());
-        this.viewManagerModel.firePropertyChanged();
     }
 
     @Override
     public void prepareFailView(String error) {
-        final ViewTasksAndHabitsState loginState = loginViewModel.getState();
-        loginState.setLoginError(error);
-        loginViewModel.firePropertyChanged();
+
     }
 }
