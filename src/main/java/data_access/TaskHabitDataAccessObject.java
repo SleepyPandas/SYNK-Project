@@ -7,6 +7,7 @@ import use_case.view_leaderboard.ViewLeaderboardUserDataAccessInterface;
 
 import java.io.*;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.*;
 
 /**
@@ -93,7 +94,7 @@ public class TaskHabitDataAccessObject implements TaskGateway, ViewLeaderboardUs
                             ? Boolean.parseBoolean(col[headers.get("status")].trim()) : false;
 
                     LocalDateTime startDateTime = LocalDateTime.parse(startDateTimeStr);
-                    LocalDateTime frequency = frequencyStr != null ? LocalDateTime.parse(frequencyStr) : null;
+                    Period frequency = frequencyStr != null ? Period.parse(frequencyStr) : null;
 
                     Habit habit = new HabitBuilder()
                             .setHabitName(habitName)

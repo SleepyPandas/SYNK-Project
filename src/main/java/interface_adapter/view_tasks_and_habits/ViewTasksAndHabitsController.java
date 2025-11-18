@@ -8,19 +8,19 @@ import use_case.view_tasks_and_habits.ViewTasksAndHabitsInputData;
  */
 public class ViewTasksAndHabitsController {
 
-    private final ViewTasksAndHabitsInputBoundary ViewTasksAndHabitsUseCaseInteractor;
+    private final ViewTasksAndHabitsInputBoundary viewTasksAndHabitsUseCaseInteractor;
 
     public ViewTasksAndHabitsController(ViewTasksAndHabitsInputBoundary viewTasksAndHabitsUseCaseInteractor) {
-        this.ViewTasksAndHabitsUseCaseInteractor = viewTasksAndHabitsUseCaseInteractor;
+        this.viewTasksAndHabitsUseCaseInteractor = viewTasksAndHabitsUseCaseInteractor;
     }
 
     /**
      * Executes the View Tasks And Habits Use Case.
      */
-    public static void execute(String designation, int col, String completeableName) {
+    public void execute(String designation, int col, String completeableName) {
         final ViewTasksAndHabitsInputData viewTasksAndHabitsInputData = new ViewTasksAndHabitsInputData(
                 designation, col, completeableName);
 
-        ViewTasksAndHabitsUseCaseInteractor.execute(viewTasksAndHabitsInputData);
+        viewTasksAndHabitsUseCaseInteractor.execute(viewTasksAndHabitsInputData);
     }
 }

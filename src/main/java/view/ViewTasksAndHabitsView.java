@@ -15,9 +15,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
 
-public class ViewTasksAndHabitsView extends JPanel{
+public class ViewTasksAndHabitsView extends JPanel {
 
     private final ViewTasksAndHabitsViewModel viewTasksAndHabitsViewModel;
+    private final String viewName = "view tasks and habits";
     private ViewTasksAndHabitsController viewTasksAndHabitsController = null;
 
 
@@ -56,7 +57,7 @@ public class ViewTasksAndHabitsView extends JPanel{
 
                 String taskName = taskModel.getValueAt(row, 0).toString();
 
-                ViewTasksAndHabitsController.execute("task", col, taskName);
+                viewTasksAndHabitsController.execute("task", col, taskName);
 
             }
         });
@@ -68,7 +69,7 @@ public class ViewTasksAndHabitsView extends JPanel{
 
                 String habitName = habitModel.getValueAt(row, 0).toString();
 
-                ViewTasksAndHabitsController.execute("habit", col, habitName);
+                viewTasksAndHabitsController.execute("habit", col, habitName);
 
             }
         });
@@ -78,4 +79,5 @@ public class ViewTasksAndHabitsView extends JPanel{
         this.viewTasksAndHabitsController = viewTasksAndHabitsController;
     }
 
+    public String getViewName() { return viewName; }
 }

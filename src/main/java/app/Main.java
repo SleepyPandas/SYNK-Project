@@ -15,6 +15,7 @@ public class Main {
                 .addLoginUseCase()
                 .addChangePasswordUseCase()
                 .addViewLeaderboardUseCase()
+                .addViewTasksAndHabitsView()
                 .addViewTasksAndHabitsUseCase()
                 .build();
 

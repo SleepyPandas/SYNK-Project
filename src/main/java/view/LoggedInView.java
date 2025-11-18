@@ -37,6 +37,7 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
 
     private final JButton logOut;
     private final JButton viewLeaderboard;
+    private final JButton viewTasksAndHabits;
 
     private final JTextField passwordInputField = new JTextField(15);
     private final JButton changePassword;
@@ -64,11 +65,21 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
         viewLeaderboard = new JButton("View Leaderboard");
         buttons.add(viewLeaderboard);
 
+        viewTasksAndHabits = new JButton("View Tasks And Habits");
+        buttons.add(viewTasksAndHabits);
+
         logOut.addActionListener(this);
         
         viewLeaderboard.addActionListener(evt -> {
             if (evt.getSource().equals(viewLeaderboard) && viewManagerModel != null) {
                 viewManagerModel.setState("leaderboard");
+                viewManagerModel.firePropertyChanged();
+            }
+        });
+
+        viewTasksAndHabits.addActionListener(evt -> {
+            if (evt.getSource().equals(viewTasksAndHabits) && viewManagerModel != null) {
+                viewManagerModel.setState("view tasks and habits");
                 viewManagerModel.firePropertyChanged();
             }
         });
