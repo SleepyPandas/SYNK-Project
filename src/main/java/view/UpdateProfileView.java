@@ -1,5 +1,6 @@
 package view;
 
+import interface_adapter.leaderboard.ViewLeaderboardViewModel;
 import interface_adapter.update_profile.UpdateProfileController;
 import interface_adapter.update_profile.UpdateProfileState;
 import interface_adapter.update_profile.UpdateProfileViewModel;
@@ -24,6 +25,8 @@ public class UpdateProfileView extends JPanel implements ActionListener, Propert
 
     private String currentUid;
 
+//    private final JLabel usernamelabel = new JLabel(ViewLeaderboardViewModel.TITLE_LABEL);
+
     private final JTextField usernameInputField = new JTextField(15);
     private final JLabel usernameErrorField = new JLabel();
     private final JLabel successMessageField = new JLabel();
@@ -35,16 +38,16 @@ public class UpdateProfileView extends JPanel implements ActionListener, Propert
         this.updateProfileViewModel = updateProfileViewModel;
         this.updateProfileViewModel.addPropertyChangeListener(this);
 
-        final JLabel title = new JLabel("Update Profile");
+        final JLabel title = new JLabel(UpdateProfileViewModel.TITLE_LABEL);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         final LabelTextPanel usernameInfo = new LabelTextPanel(
-                new JLabel("New Username"), usernameInputField);
+                new JLabel(UpdateProfileViewModel.USERNAME_LABEL), usernameInputField);
 
         final JPanel buttons = new JPanel();
-        saveButton = new JButton("Save");
+        saveButton = new JButton(UpdateProfileViewModel.SAVE_BUTTON_LABEL);
         buttons.add(saveButton);
-        cancelButton = new JButton("Cancel");
+        cancelButton = new JButton(UpdateProfileViewModel.CANCEL_BUTTON_LABEL);
         buttons.add(cancelButton);
 
         saveButton.addActionListener(new ActionListener() {

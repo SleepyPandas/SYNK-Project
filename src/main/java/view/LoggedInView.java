@@ -29,7 +29,6 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
 
     private final JButton logOut;
     private final JButton viewLeaderboard;
-
     private final JButton updateProfile;
 
     private final JTextField passwordInputField = new JTextField(15);
