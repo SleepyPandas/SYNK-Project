@@ -1,4 +1,4 @@
-package data_access;
+//package data_access;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -17,7 +17,7 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.services.calendar.model.Events;
 
-import entities.Task;
+import entities.Completable;
 import use_case.gateways.CalendarGateway;
 
 import java.io.File;
@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class GoogleCalendarDataAccessObject implements CalendarGateway {
+public static class GoogleCalendarDataAccessObject implements CalendarGateway {
 
     private static final String APPLICATION_NAME = "CSC-207-SYNK";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
@@ -90,7 +90,7 @@ public class GoogleCalendarDataAccessObject implements CalendarGateway {
         }
         return credential;
     }
-
+    // Standardize the USER ID STRING to access later
     private String normalizeUserId(String userId) {
         if (userId == null) {
             return DEFAULT_USER_ID;
@@ -117,6 +117,7 @@ public class GoogleCalendarDataAccessObject implements CalendarGateway {
      * Public helper that ensures a credential exists for the provided user identifier,
      * prompting for Google consent if necessary.
      */
+
     public Credential authenticateUser(String userId) throws IOException {
         return ensureCredential(normalizeUserId(userId));
     }
@@ -132,6 +133,7 @@ public class GoogleCalendarDataAccessObject implements CalendarGateway {
        INTERFACE IMPLEMENTATION (CRUD)
        ----------------------------------------------------------------------- */
 
+
     /**
      * Create an Event on Google Calendar based on a Task entity.
      * @param userId The Calendar ID (usually "primary" or the user's email).
@@ -139,11 +141,11 @@ public class GoogleCalendarDataAccessObject implements CalendarGateway {
      * @return The Google Event ID.
      */
     @Override
-    public String createEvent(String userId, Task task) {
+    public String createEvent(String userId, Completable task) {
         try {
             Event event = new Event()
                     .setSummary(task.getName()) // Assuming Task has getName()
-                    //.setDescription(task.getDescription())
+                    .setDescription(task.getDescription())
                     ;
 
             // START TIME (Assuming Task has a startDate, otherwise defaulting to NOW for prototype)
@@ -172,11 +174,12 @@ public class GoogleCalendarDataAccessObject implements CalendarGateway {
         }
     }
 
+
     /**
      * Update an existing Google Calendar Event.
      */
     @Override
-    public boolean updateEvent(String userId, String eventID, Task updatedTask) {
+    public boolean updateEvent(String userId, String eventID, Completable updatedTask) {
         try {
             String calendarId = resolveCalendarId(userId);
 
@@ -223,6 +226,7 @@ public class GoogleCalendarDataAccessObject implements CalendarGateway {
      * Note: Your Interface had `getCalendarById` returning String, but you asked for "Get Events".
      * I have implemented a list retrieval here. You may need to update your Interface to return List<String> or List<Task>.
      */
+    @Override
     public List<Event> getEvents(String userId) {
         try {
             String calendarId = resolveCalendarId(userId);
@@ -242,15 +246,19 @@ public class GoogleCalendarDataAccessObject implements CalendarGateway {
         }
     }
 
-    /* -----------------------------------------------------------------------
-       TEMPORARY MANUAL TEST ENTRY POINT
+}
+
+
+/* -----------------------------------------------------------------------
+       TEMPORARY MANUAL TEST ENTRY POINT (USE THIS TO TEST THE CODE OR JUST RUN A SIM)
        ----------------------------------------------------------------------- */
     public static void main(String[] args) {
+        String providedUserId = "user1";
+
         try {
-            String providedUserId;
             // providedUserId = promptForUserId();
-            GoogleCalendarDataAccessObject dao = new GoogleCalendarDataAccessObject(null);
-            List<Event> events = dao.getEvents(null);
+            GoogleCalendarDataAccessObject dao = new GoogleCalendarDataAccessObject(providedUserId);
+            List<Event> events = dao.getEvents(providedUserId);
 
             if (events.isEmpty()) {
                 System.out.println("No upcoming events were found.");
@@ -269,38 +277,4 @@ public class GoogleCalendarDataAccessObject implements CalendarGateway {
             e.printStackTrace();
         }
     }
-
-//    private static String promptForUserId() {
-//        System.out.print("Enter the Google account email to authenticate (leave blank for primary): ");
-//        Scanner scanner = new Scanner(System.in);
-//        String input = scanner.nextLine();
-//        if (input == null) {
-//            return null;
-//        }
-//        String trimmed = input.trim();
-//        if (trimmed.isEmpty()) {
-//            return null;
-//        }
-//        return trimmed;
-//    }
-
-    @Override
-    public String getCalendarById(String userID) {
-        // This might just return the calendar ID (email) or fetch metadata
-        return userID;
-    }
-
-    @Override
-    public String getCalendarByUsername(String username) {
-        return null; // Implementation depends on how you map usernames to Google emails
-    }
-
-    @Override
-    public String getCalendarByEmail(String email) {
-        return email;
-    }
-
-
-
-}
 
