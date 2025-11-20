@@ -18,12 +18,12 @@ public class User {
     }
 
     public User(String username, String password) {
-        this("0", "Bob", "NA", "");
+        this("00000", "John Doe", "NA", "");
         this.username = username;
         this.password = password;
     }
 
-    public String getUid() {return uid; };
+    public String getUid() {return uid; }
 
     public String getUsername() {
         return username;

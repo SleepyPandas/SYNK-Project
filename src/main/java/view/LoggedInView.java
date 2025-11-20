@@ -71,6 +71,7 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
         });
 
         updateProfile.addActionListener(evt -> {
+            System.out.println("Change Profile");
             if (evt.getSource().equals(updateProfile) && viewManagerModel != null) {
                 viewManagerModel.setState("updateprofile");
                 viewManagerModel.firePropertyChanged();

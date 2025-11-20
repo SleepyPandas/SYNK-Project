@@ -66,7 +66,6 @@ public class AppBuilder {
     private UpdateProfileViewModel updateProfileViewModel;
     private UpdateProfileView updateProfileView;
 
-    //private UpdateProfileView updateProfileView;
 
     public AppBuilder() throws IOException {
         cardPanel.setLayout(cardLayout);

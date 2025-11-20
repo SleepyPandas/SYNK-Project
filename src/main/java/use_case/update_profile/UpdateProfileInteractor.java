@@ -3,7 +3,8 @@ package use_case.update_profile;
 import entities.User;
 
 /**
- * The UpdateProfile Interactor.
+ * The Interactor for the Update Profile Use Case.
+ *
  */
 public class UpdateProfileInteractor implements UpdateProfileBoundary {
 
