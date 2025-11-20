@@ -21,8 +21,10 @@ public class ModifyTaskView extends JPanel implements ActionListener, PropertyCh
     private final ButtonGroup newTaskStatus = new ButtonGroup();
     private final NumberFormat numberFormat = NumberFormat.getNumberInstance();
     private final JFormattedTextField newTaskPriority = new JFormattedTextField(numberFormat);
+    private ModifyTaskController modifyTaskController = null;
 
     private final JButton save = new JButton("save");
+    private final JButton cancel = new JButton("cancel");
 
     public ModifyTaskView(ModifyTaskViewModel modifyTaskViewModel) {
         this.modifyTaskViewModel = modifyTaskViewModel;
@@ -59,12 +61,26 @@ public class ModifyTaskView extends JPanel implements ActionListener, PropertyCh
         taskPriority.setLayout(new BoxLayout(taskPriority, BoxLayout.X_AXIS));
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        JPanel buttons = new JPanel();
+        buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
+        buttons.add(save);
+        buttons.add(cancel);
 
         this.add(taskName);
         this.add(taskDeadline);
         this.add(taskStatus);
         this.add(taskPriority);
-        this.add(save);
+        this.add(buttons);
+
+        cancel.addActionListener(evt -> {
+            if (evt.getSource().equals(cancel)){
+                modifyTaskController.switchToTaskListView();
+            }
+        });
+
+        save.addActionListener(evt -> {
+
+        });
     }
 
     @Override
@@ -76,4 +92,16 @@ public class ModifyTaskView extends JPanel implements ActionListener, PropertyCh
     public void propertyChange(PropertyChangeEvent evt) {
 
     }
+
+    public String getViewName() {
+        return viewName;
+    }
+
+
+    public void setModifyTaskController(ModifyTaskController modifyTaskController) {
+        this.modifyTaskController = modifyTaskController;
+    }
+
+
+
 }

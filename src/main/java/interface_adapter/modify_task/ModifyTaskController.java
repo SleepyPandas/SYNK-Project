@@ -18,12 +18,17 @@ public class ModifyTaskController {
      * @param newPriority
      * @param newDeadline
      * @param newStatus
+     * @param userID
      */
-    public void execute(String newTaskName, int newPriority, LocalDateTime newDeadline, boolean newStatus){
-        ModifyTaskInputData modifyTaskInputData = new ModifyTaskInputData(newTaskName, newPriority, newDeadline, newStatus);
+    public void execute(String newTaskName, int newPriority, LocalDateTime newDeadline, boolean newStatus, String userID){
+        ModifyTaskInputData modifyTaskInputData = new ModifyTaskInputData(newTaskName, newPriority, newDeadline, newStatus, userID);
 
         this.modifyTaskUseCaseInteractor.execute(modifyTaskInputData);
 
+    }
+
+    public void switchToTaskListView(){
+        this.modifyTaskUseCaseInteractor.switchToTaskListView();
     }
 
 }

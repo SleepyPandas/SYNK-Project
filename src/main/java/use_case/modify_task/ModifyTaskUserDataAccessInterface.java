@@ -1,11 +1,15 @@
 package use_case.modify_task;
 
 import entities.Task;
+import entities.User;
 
 public interface ModifyTaskUserDataAccessInterface {
     /***
-     * Updates the system to modify this user's task
-     * @param newTask
+     * Saves the modified task to the system under the given user
+     * @param userID
+     * @param modifiedTask
      */
-    void modifyTask(Task newTask);
+    public void saveTask(String userID, Task modifiedTask);
+
+
 }

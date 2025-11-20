@@ -20,17 +20,23 @@ public class ModifyTaskInteractor implements ModifyTaskInputBoundary {
         int newTaskPriority = modifyInputData.getNewPriority();
         boolean newTaskStatus = modifyInputData.getNewTaskStatus();
         LocalDateTime newDeadline = modifyInputData.getNewDeadline();
+        String userID = modifyInputData.getUserID();
 
         final Task modifiedTask = new TaskBuilder()
                 .setTaskName(newTaskName)
                 .setDeadline(newDeadline)
                 .setPriority(newTaskPriority)
                 .setStatus(newTaskStatus).build();
-        userDataAccessObject.modifyTask(modifiedTask);
+        userDataAccessObject.saveTask(userID, modifiedTask);
         final ModifyTaskOutputData outputData = new ModifyTaskOutputData(newTaskName, newDeadline, newTaskStatus,
                 newTaskPriority, newTaskStatus);
         modifyPresenter.prepareSuccessView(outputData);
 
+    }
+
+    @Override
+    public void switchToTaskListView() {
+        modifyPresenter.switchToTaskListView();
     }
 }
 

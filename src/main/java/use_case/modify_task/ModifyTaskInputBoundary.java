@@ -7,4 +7,6 @@ public interface ModifyTaskInputBoundary {
      * @param modifyTaskInputData the input data
      */
     void execute(ModifyTaskInputData modifyTaskInputData);
+
+    void switchToTaskListView();
 }

@@ -4,6 +4,7 @@ import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.LoggedInState;
 import interface_adapter.logged_in.LoggedInViewModel;
+import interface_adapter.modify_task.ModifyTaskController;
 import interface_adapter.signup.SignupController;
 
 import javax.swing.*;
@@ -14,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.time.LocalDateTime;
 
 /**
  * The View for when the user is logged into the program.
@@ -36,7 +38,7 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
     private final JButton changePassword;
     private final JButton viewTasks;
     private final JButton viewHabits;
-    private final JButton viewLeaderboard;
+    private final JButton modifyTask;
 
     public LoggedInView(LoggedInViewModel loggedInViewModel) {
         this.loggedInViewModel = loggedInViewModel;
@@ -62,13 +64,15 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
 
         viewLeaderboard = new JButton("View leaderboard");
 
+        modifyTask = new JButton("modify task");
+
         buttons.add(viewTasks);
         buttons.add(viewHabits);
         buttons.add(viewLeaderboard);
         buttons.add(logOut);
         buttons.add(changePassword);
+        buttons.add(modifyTask);
 
-        viewLeaderboard = new JButton("View Leaderboard");
         buttons.add(viewLeaderboard);
 
         logOut.addActionListener(this);
@@ -120,13 +124,12 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
                 }
         );
 
-//        viewTasks.addActionListener(
-//                evt -> {
-//                    if (evt.getSource().equals(logOut)){
-//                        this.viewTaskController.execute(user);
-//                    }
-//                }
-//        );
+        modifyTask.addActionListener(evt -> {
+            if (evt.getSource().equals(modifyTask)){
+                this.viewManagerModel.setState("modify task");
+                this.viewManagerModel.firePropertyChanged();
+            }
+        });
 
         this.add(title);
         this.add(usernameInfo);
