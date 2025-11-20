@@ -65,6 +65,11 @@ public class Task implements Completable{
                 '}';
     }
 
+    // ========= GETTERS ======== if Private
+
+    public String getName() {
+        return taskName;
+    }
 
 
 
