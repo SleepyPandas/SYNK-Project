@@ -1,32 +1,5 @@
 package data_access;
 
-import com.google.api.client.json.Json;
-import entities.User;
-import use_case.gateways.CalendarGateway;
-
-/*
- * GoogleCalendarDataAccessObject (API CALL)
-
- * Short description:
- * - Acts as the data-access layer responsible for syncing application events
- *   (Tasks/Habits and/or Say Events?) with Google Calendar.
-
- * Responsibilities / contract:
- * - Inputs: Task or Habit entities (or their IDs) that should be represented
- *   as calendar events.
- * - Outputs: results from Google Calendar API calls (success/created event
- *   metadata) or domain-level objects that represent synced events.
- * - Error modes: network/auth failures, API rate limits, or invalid input.
- *   Consumers should expect checked/unchecked exceptions and handle retries
- *   or fallback persistence as appropriate.
-
- * Notes:
- * - This class should encapsulate Google-specific API details and expose
- *   simple CRUD-like (basically create, read, update, delete) methods such as createEvent, updateEvent, deleteEvent,
- *   and fetchEventsForDateRange. Mapping onto HTTP requests and responses we get POST, GET, PUT, DELETE.
- */
-
-
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -41,8 +14,13 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.services.calendar.model.Events;
 
+import entities.Task;
+import use_case.gateways.CalendarGateway;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,93 +29,278 @@ import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
 
-/* class to demonstrate use of Calendar events list API THIS IS A QUICK START */
-public class GoogleCalendarDataAccessObject {
 
-}
+public class GoogleCalendarDataAccessObject implements CalendarGateway {
 
-class getUserCalendar {
-    /**
-     * Application name.
-     */
-    private static final String APPLICATION_NAME = "Google Calendar API Java Quickstart";
-    /**
-     * Global instance of the JSON factory.
-     */
+    private static final String APPLICATION_NAME = "CSC-207-SYNK";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-    /**
-     * Directory to store authorization tokens for this application.
-     */
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
-
-    /**
-     * Global instance of the scopes required by this quickstart.
-     * If modifying these scopes, delete your previously saved tokens/ folder.
-     */
-    private static final List<String> SCOPES =
-            Collections.singletonList(CalendarScopes.CALENDAR_READONLY);
+    private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR); // Changed to Write access
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+    private static final String DEFAULT_USER_ID = "user";
+
+    private final Calendar service;
+    private final GoogleAuthorizationCodeFlow authorizationFlow;
+    private final String credentialUserId;
 
     /**
-     * Creates an authorized Credential object.
-     *
-     * @param HTTP_TRANSPORT The network HTTP Transport.
-     * @return An authorized Credential object.
-     * @throws IOException If the credentials.json file cannot be found.
+     * Constructor: Initializes the Google Calendar Service with a default user identifier.
      */
-    private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT)
-            throws IOException {
-        // Load client secrets.
-        InputStream in = GoogleCalendarDataAccessObject.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
-        if (in == null) {
+    public GoogleCalendarDataAccessObject() throws IOException, GeneralSecurityException {
+        this(DEFAULT_USER_ID);
+    }
+
+    /**
+     * Constructor: Initializes the Google Calendar Service for a specific user.
+     */
+    public GoogleCalendarDataAccessObject(String userId) throws IOException, GeneralSecurityException {
+        NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+        this.authorizationFlow = buildAuthorizationFlow(httpTransport);
+        this.credentialUserId = normalizeUserId(userId);
+        Credential credential = ensureCredential(this.credentialUserId);
+        this.service = new Calendar.Builder(httpTransport, JSON_FACTORY, credential)
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+    }
+
+    /* -----------------------------------------------------------------------
+       AUTHENTICATION HELPERS
+       ----------------------------------------------------------------------- */
+    private GoogleAuthorizationCodeFlow buildAuthorizationFlow(NetHttpTransport httpTransport) throws IOException {
+        InputStream credentialsStream = GoogleCalendarDataAccessObject.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+        if (credentialsStream == null) {
             throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
         }
-        GoogleClientSecrets clientSecrets =
-                GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-
-        // Build flow and trigger user authorization request.
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-                .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
-                .setAccessType("offline")
-                .build();
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-        Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
-        //returns an authorized Credential object.
-        return credential;
-}
-
-
-
-
-public static void main(String... args) throws IOException, GeneralSecurityException {
-    // Build a new authorized API client service.
-    final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-    Calendar service =
-        new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-            .setApplicationName(APPLICATION_NAME)
-            .build();
-
-    // List the next 10 events from the primary calendar.
-    DateTime now = new DateTime(System.currentTimeMillis());
-    Events events = service.events().list("primary")
-        .setMaxResults(10)
-        .setTimeMin(now)
-        .setOrderBy("startTime")
-        .setSingleEvents(true)
-        .execute();
-    List<Event> items = events.getItems();
-    if (items.isEmpty()) {
-      System.out.println("No upcoming events found.");
-    } else {
-      System.out.println("Upcoming events");
-      for (Event event : items) {
-        DateTime start = event.getStart().getDateTime();
-        if (start == null) {
-          start = event.getStart().getDate();
+        try (InputStreamReader reader = new InputStreamReader(credentialsStream)) {
+            GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, reader);
+            return new GoogleAuthorizationCodeFlow.Builder(
+                    httpTransport, JSON_FACTORY, clientSecrets, SCOPES)
+                    .setDataStoreFactory(new FileDataStoreFactory(new File(TOKENS_DIRECTORY_PATH)))
+                    .setAccessType("offline")
+                    .build();
         }
-        System.out.printf("%s (%s)\n", event.getSummary(), start);
-      }
     }
-  }
+
+    private Credential ensureCredential(String normalizedUserId) throws IOException {
+        Credential credential = authorizationFlow.loadCredential(normalizedUserId);
+        if (credential == null) {
+            LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+            AuthorizationCodeInstalledApp installer = new AuthorizationCodeInstalledApp(authorizationFlow, receiver);
+            credential = installer.authorize(normalizedUserId);
+        }
+        return credential;
+    }
+
+    private String normalizeUserId(String userId) {
+        if (userId == null) {
+            return DEFAULT_USER_ID;
+        }
+        String trimmed = userId.trim();
+        if (trimmed.isEmpty()) {
+            return DEFAULT_USER_ID;
+        }
+        return trimmed;
+    }
+
+    private String resolveCalendarId(String userId) {
+        if (userId == null) {
+            return "primary";
+        }
+        String trimmed = userId.trim();
+        if (trimmed.isEmpty()) {
+            return "primary";
+        }
+        return trimmed;
+    }
+
+    /**
+     * Public helper that ensures a credential exists for the provided user identifier,
+     * prompting for Google consent if necessary.
+     */
+    public Credential authenticateUser(String userId) throws IOException {
+        return ensureCredential(normalizeUserId(userId));
+    }
+
+    /**
+     * Public helper that attempts to load a previously stored credential without prompting.
+     */
+    public Credential getStoredCredential(String userId) throws IOException {
+        return authorizationFlow.loadCredential(normalizeUserId(userId));
+    }
+
+    /* -----------------------------------------------------------------------
+       INTERFACE IMPLEMENTATION (CRUD)
+       ----------------------------------------------------------------------- */
+
+    /**
+     * Create an Event on Google Calendar based on a Task entity.
+     * @param userId The Calendar ID (usually "primary" or the user's email).
+     * @param task The internal Task entity.
+     * @return The Google Event ID.
+     */
+    @Override
+    public String createEvent(String userId, Task task) {
+        try {
+            Event event = new Event()
+                    .setSummary(task.getName()) // Assuming Task has getName()
+                    //.setDescription(task.getDescription())
+                    ;
+
+            // START TIME (Assuming Task has a startDate, otherwise defaulting to NOW for prototype)
+            DateTime startDateTime = new DateTime(System.currentTimeMillis());
+            EventDateTime start = new EventDateTime()
+                    .setDateTime(startDateTime)
+                    .setTimeZone("America/Toronto"); // Hardcoded for now, ideally passed in
+            event.setStart(start);
+
+            // END TIME (Defaulting to +1 hour for prototype)
+            DateTime endDateTime = new DateTime(System.currentTimeMillis() + 3600000);
+            EventDateTime end = new EventDateTime()
+                    .setDateTime(endDateTime)
+                    .setTimeZone("America/Toronto");
+            event.setEnd(end);
+
+            // EXECUTE API CALL
+            String calendarId = resolveCalendarId(userId);
+            Event createdEvent = service.events().insert(calendarId, event).execute();
+
+            return createdEvent.getId();
+
+        } catch (IOException e) {
+            e.printStackTrace(); // In production, log this or throw a custom DataAccess exception
+            return null;
+        }
+    }
+
+    /**
+     * Update an existing Google Calendar Event.
+     */
+    @Override
+    public boolean updateEvent(String userId, String eventID, Task updatedTask) {
+        try {
+            String calendarId = resolveCalendarId(userId);
+
+            // 1. Retrieve the existing event (Good practice to ensure it exists)
+            Event event = service.events().get(calendarId, eventID).execute();
+
+            // 2. Update fields based on the new Task object
+            event.setSummary(updatedTask.getName());
+            // event.setDescription(updatedTask.getDescription());
+
+            // 3. Execute Update
+            service.events().update(calendarId, eventID, event).execute();
+            return true;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Delete an event from Google Calendar.
+     */
+    @Override
+    public boolean deleteEvent(String userId, String eventID) {
+        try {
+            String calendarId = resolveCalendarId(userId);
+
+            service.events().delete(calendarId, eventID).execute();
+            return true;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /* -----------------------------------------------------------------------
+       ADDITIONAL METHODS (Required by Interface or Requested)
+       ----------------------------------------------------------------------- */
+
+    /**
+     * Fetches a list of events.
+     * Note: Your Interface had `getCalendarById` returning String, but you asked for "Get Events".
+     * I have implemented a list retrieval here. You may need to update your Interface to return List<String> or List<Task>.
+     */
+    public List<Event> getEvents(String userId) {
+        try {
+            String calendarId = resolveCalendarId(userId);
+            DateTime now = new DateTime(System.currentTimeMillis());
+
+            Events events = service.events().list(calendarId)
+                    .setMaxResults(10)
+                    .setTimeMin(now)
+                    .setOrderBy("startTime")
+                    .setSingleEvents(true)
+                    .execute();
+
+            return events.getItems();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    /* -----------------------------------------------------------------------
+       TEMPORARY MANUAL TEST ENTRY POINT
+       ----------------------------------------------------------------------- */
+    public static void main(String[] args) {
+        try {
+            String providedUserId;
+            // providedUserId = promptForUserId();
+            GoogleCalendarDataAccessObject dao = new GoogleCalendarDataAccessObject(null);
+            List<Event> events = dao.getEvents(null);
+
+            if (events.isEmpty()) {
+                System.out.println("No upcoming events were found.");
+            } else {
+                System.out.println("Upcoming events:");
+                for (Event event : events) {
+                    DateTime startTime = event.getStart().getDateTime();
+                    if (startTime == null) {
+                        startTime = event.getStart().getDate();
+                    }
+                    System.out.println("- " + event.getSummary() + " at " + startTime);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to authenticate or fetch events: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+//    private static String promptForUserId() {
+//        System.out.print("Enter the Google account email to authenticate (leave blank for primary): ");
+//        Scanner scanner = new Scanner(System.in);
+//        String input = scanner.nextLine();
+//        if (input == null) {
+//            return null;
+//        }
+//        String trimmed = input.trim();
+//        if (trimmed.isEmpty()) {
+//            return null;
+//        }
+//        return trimmed;
+//    }
+
+    @Override
+    public String getCalendarById(String userID) {
+        // This might just return the calendar ID (email) or fetch metadata
+        return userID;
+    }
+
+    @Override
+    public String getCalendarByUsername(String username) {
+        return null; // Implementation depends on how you map usernames to Google emails
+    }
+
+    @Override
+    public String getCalendarByEmail(String email) {
+        return email;
+    }
+
+
+
 }
+
