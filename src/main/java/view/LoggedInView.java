@@ -4,8 +4,6 @@ import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.LoggedInState;
 import interface_adapter.logged_in.LoggedInViewModel;
-import interface_adapter.modify_task.ModifyTaskController;
-import interface_adapter.signup.SignupController;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -15,7 +13,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.time.LocalDateTime;
 
 /**
  * The View for when the user is logged into the program.

@@ -1,9 +1,7 @@
 package interface_adapter.modify_task;
 
-import java.time.LocalDateTime;
 
-
-public class ModifyTaskState {
+public class ModifyHabitState {
     private String newTaskName = "";
     private int priority = 0;
     private String deadline = "";

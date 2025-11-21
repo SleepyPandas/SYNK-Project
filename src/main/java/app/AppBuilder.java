@@ -20,9 +20,10 @@ import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.login.LoginController;
 import interface_adapter.login.LoginPresenter;
 import interface_adapter.login.LoginViewModel;
-import interface_adapter.modify_task.ModifyTaskController;
-import interface_adapter.modify_task.ModifyTaskPresenter;
-import interface_adapter.modify_task.ModifyTaskViewModel;
+import interface_adapter.modify_task.ModifyHabitController;
+import interface_adapter.modify_task.ModifyHabitPresenter;
+import interface_adapter.modify_task.ModifyHabitViewModel;
+import interface_adapter.modify_habit.*;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
@@ -35,7 +36,6 @@ import use_case.login.LoginOutputBoundary;
 import use_case.modify_task.ModifyTaskInputBoundary;
 import use_case.modify_task.ModifyTaskInteractor;
 import use_case.modify_task.ModifyTaskOutputBoundary;
-import use_case.modify_task.ModifyTaskOutputData;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
@@ -64,7 +64,7 @@ public class AppBuilder {
     private LoginView loginView;
     private LeaderboardView leaderboardView;
     private ViewLeaderboardViewModel viewLeaderboardViewModel;
-    private ModifyTaskViewModel modifyTaskViewModel;
+    private ModifyHabitViewModel modifyHabitViewModel;
     private ModifyTaskView modifyTaskView;
 
     public AppBuilder() throws IOException {
@@ -101,8 +101,8 @@ public class AppBuilder {
     }
 
     public AppBuilder addModifyTaskView(){
-        modifyTaskViewModel = new ModifyTaskViewModel();
-        modifyTaskView = new ModifyTaskView(modifyTaskViewModel);
+        modifyHabitViewModel = new ModifyHabitViewModel();
+        modifyTaskView = new ModifyTaskView(modifyHabitViewModel);
         cardPanel.add(modifyTaskView, modifyTaskView.getViewName());
         return this;
     }
@@ -152,11 +152,11 @@ public class AppBuilder {
     }
 
     public AppBuilder addModifyTaskUseCase(){
-        final ModifyTaskOutputBoundary modifyTaskOutputBoundary = new ModifyTaskPresenter(viewManagerModel, modifyTaskViewModel, loginViewModel);
+        final ModifyTaskOutputBoundary modifyTaskOutputBoundary = new ModifyHabitPresenter(viewManagerModel, modifyHabitViewModel, loginViewModel);
         final ModifyTaskInputBoundary modifyTaskInteractor = new ModifyTaskInteractor(modifyTaskOutputBoundary, taskHabitDataAccessObject);
 
-        ModifyTaskController modifyTaskController = new ModifyTaskController(modifyTaskInteractor, loggedInViewModel);
-        modifyTaskView.setModifyTaskController(modifyTaskController);
+        ModifyHabitController modifyHabitController = new ModifyHabitController(modifyTaskInteractor, loggedInViewModel);
+        modifyTaskView.setModifyTaskController(modifyHabitController);
         return this;
     }
 
