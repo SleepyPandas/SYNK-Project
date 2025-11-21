@@ -13,5 +13,5 @@ public interface ModifyHabitOutputBoundary {
      */
     void prepareFailView(String errorMessage);
 
-    void switchToTaskListView();
+    void switchToHabitListView();
 }

@@ -3,29 +3,49 @@ package use_case.modify_habit;
 import java.time.LocalDateTime;
 
 public class ModifyHabitOutputData {
-    private final String newTaskName;
-    private final LocalDateTime newDeadline;
-    private final boolean newTaskStatus;
-    private final int newTaskPriority;
+    private final String newHabitName;
+    private final LocalDateTime newStartDateTime;
+    private final LocalDateTime newFrequency;
+    private final String newHabitGroup;
+    private final int newStreak;
+    private final boolean newHabitStatus;
+    private final int streakCount;
 
-    public ModifyHabitOutputData(String newTaskName, LocalDateTime newDeadline, boolean newTaskStatus, int newTaskPriority) {
-        this.newTaskName = newTaskName;
-        this.newDeadline = newDeadline;
-        this.newTaskStatus = newTaskStatus;
-        this.newTaskPriority = newTaskPriority;
+    public ModifyHabitOutputData(String newHabitName, LocalDateTime newStartDateTime, LocalDateTime newFrequency, String newHabitGroup, int newStreak, boolean newHabitStatus, int streakCount) {
+        this.newHabitName = newHabitName;
+        this.newStartDateTime = newStartDateTime;
+        this.newFrequency = newFrequency;
+        this.newHabitGroup = newHabitGroup;
+        this.newStreak = newStreak;
+        this.newHabitStatus = newHabitStatus;
+        this.streakCount = streakCount;
     }
 
-    public String getNewTaskName() {
-        return newTaskName;
+    public int getStreakCount() {
+        return streakCount;
     }
 
-    public LocalDateTime getNewDeadline() {
-        return newDeadline;
+    public boolean isNewHabitStatus() {
+        return newHabitStatus;
     }
 
-    public boolean getNewTaskStatus() {
-        return newTaskStatus;
+    public int getNewStreak() {
+        return newStreak;
     }
 
-    public int getNewTaskPriority() {return newTaskPriority;}
+    public String getNewHabitGroup() {
+        return newHabitGroup;
+    }
+
+    public LocalDateTime getNewFrequency() {
+        return newFrequency;
+    }
+
+    public LocalDateTime getNewStartDateTime() {
+        return newStartDateTime;
+    }
+
+    public String getNewHabitName() {
+        return newHabitName;
+    }
 }

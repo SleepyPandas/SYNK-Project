@@ -1,4 +1,4 @@
-package interface_adapter.modify_habit.modify_task;
+package interface_adapter.modify_habit;
 
 import interface_adapter.ViewModel;
 

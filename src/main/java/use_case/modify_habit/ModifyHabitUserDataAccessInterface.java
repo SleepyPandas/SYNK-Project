@@ -1,14 +1,14 @@
 package use_case.modify_habit;
 
-import entities.Task;
+import entities.Habit;
 
 public interface ModifyHabitUserDataAccessInterface {
     /***
      * Saves the modified task to the system under the given user
      * @param userID
-     * @param modifiedTask
+     * @param modifiedHabit
      */
-    void saveTask(String userID, Task modifiedTask);
+    void saveHabit(String userID, Habit modifiedHabit);
 
 
 }

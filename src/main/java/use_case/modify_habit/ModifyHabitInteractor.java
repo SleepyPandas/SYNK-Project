@@ -1,7 +1,7 @@
 package use_case.modify_habit;
 
-import entities.Task;
-import entities.TaskBuilder;
+import entities.Habit;
+import entities.HabitBuilder;
 
 import java.time.LocalDateTime;
 
@@ -14,30 +14,44 @@ public class ModifyHabitInteractor implements ModifyHabitInputBoundary {
         this.userDataAccessObject = userDataAccessObject;
     }
 
-    public void execute(ModifyHabitInputData modifyInputData) {
+    public void execute(ModifyHabitInputData modifyHabitInputData) {
+        String userID = modifyHabitInputData.getUserID();
+        String newHabitName = modifyHabitInputData.getNewHabitName();
+        int newHabitPriority = modifyHabitInputData.getNewPriority();
+        boolean newHabitStatus = modifyHabitInputData.getNewHabitStatus();
+        LocalDateTime newStartDateTime = modifyHabitInputData.getNewStartDateTime();
+        int newStreakCount = modifyHabitInputData.getNewStreakCount();
+        String newHabitGroup = modifyHabitInputData.getNewHabitGroup();
+        LocalDateTime frequency = modifyHabitInputData.getFrequency();
 
-        String newTaskName = modifyInputData.getNewTaskName();
-        int newTaskPriority = modifyInputData.getNewPriority();
-        boolean newTaskStatus = modifyInputData.getNewTaskStatus();
-        LocalDateTime newDeadline = modifyInputData.getNewDeadline();
-        String userID = modifyInputData.getUserID();
+        final Habit modifiedHabit = new HabitBuilder()
+                .setHabitName(newHabitName)
+                .setPriority(newHabitPriority)
+                .setStatus(newHabitStatus)
+                .setStartDateTime(newStartDateTime)
+                .setStreakCount(newStreakCount)
+                .setHabitGroup(newHabitGroup)
+                .setFrequency(frequency)
+                .build();
+        
+        userDataAccessObject.saveHabit(userID, modifiedHabit);
 
-        final Task modifiedTask = new TaskBuilder()
-                .setTaskName(newTaskName)
-                .setDeadline(newDeadline)
-                .setPriority(newTaskPriority)
-                .setStatus(newTaskStatus).build();
-        userDataAccessObject.saveTask(userID, modifiedTask);
-
-        final ModifyHabitOutputData outputData = new ModifyHabitOutputData(newTaskName, newDeadline, newTaskStatus,
-                newTaskPriority);
-        modifyPresenter.prepareSuccessView(outputData);
+        final ModifyHabitOutputData outputData = new ModifyHabitOutputData(
+                newHabitName,
+                newStartDateTime,
+                frequency,
+                newHabitGroup,
+                newHabitPriority,
+                newHabitStatus,
+                newStreakCount
+        );
+        modifyHabitPresenter.prepareSuccessView(outputData);
 
     }
 
     @Override
-    public void switchToTaskListView() {
-        modifyPresenter.switchToTaskListView();
+    public void switchToHabitListView() {
+        modifyHabitPresenter.switchToHabitListView();
     }
 }
 

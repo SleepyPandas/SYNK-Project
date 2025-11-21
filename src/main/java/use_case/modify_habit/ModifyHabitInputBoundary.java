@@ -8,5 +8,5 @@ public interface ModifyHabitInputBoundary {
      */
     void execute(ModifyHabitInputData modifyTaskInputData);
 
-    void switchToTaskListView();
+    void switchToHabitListView();
 }
