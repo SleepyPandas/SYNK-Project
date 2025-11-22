@@ -8,7 +8,8 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import data_access.FileUserDataAccessObject;
-import data_access.TaskHabitDataAccessObject;
+import data_access.HabitDataAccessObject;
+import data_access.TaskDataAccessObject;
 import entities.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.leaderboard.ViewLeaderboardController;
@@ -52,7 +53,8 @@ public class AppBuilder {
     // set which data access implementation to use, can be any
     // of the classes from the data_access package
     final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
-    final TaskHabitDataAccessObject taskHabitDataAccessObject;
+    final TaskDataAccessObject taskHabitDataAccessObject;
+    final HabitDataAccessObject habitDataAccessObject = new HabitDataAccessObject();
 
     private SignupView signupView;
     private SignupViewModel signupViewModel;
@@ -65,7 +67,7 @@ public class AppBuilder {
 
     public AppBuilder() throws IOException {
         cardPanel.setLayout(cardLayout);
-        taskHabitDataAccessObject = new TaskHabitDataAccessObject();
+        taskHabitDataAccessObject = new TaskDataAccessObject();
     }
 
     public AppBuilder addSignupView() {
@@ -134,7 +136,7 @@ public class AppBuilder {
     public AppBuilder addViewLeaderboardUseCase() {
         final ViewLeaderboardOutputBoundary viewLeaderboardOutputBoundary = new ViewLeaderboardPresenter(viewLeaderboardViewModel);
         final ViewLeaderboardInputBoundary viewLeaderboardInteractor = new ViewLeaderboardInteractor(
-                taskHabitDataAccessObject, viewLeaderboardOutputBoundary);
+                habitDataAccessObject, viewLeaderboardOutputBoundary);
 
         ViewLeaderboardController viewLeaderboardController = new ViewLeaderboardController(viewLeaderboardInteractor);
         leaderboardView.setViewLeaderboardController(viewLeaderboardController);
