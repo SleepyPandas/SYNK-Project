@@ -1,4 +1,5 @@
 package entities;
+import java.util.UUID;
 
 /**
  * A simple implementation of the User interface.
@@ -17,13 +18,9 @@ public class User {
         this.password = password;
     }
 
-    public User(String username, String password) {
-        this("00000", "John Doe", "NA", "");
-        this.username = username;
-        this.password = password;
+    public String getUid() {
+        return uid;
     }
-
-    public String getUid() {return uid; }
 
     public String getUsername() {
         return username;
@@ -44,4 +41,12 @@ public class User {
     public void setAvatarPath(String url) {
         this.avatarpath = url;
     }
+
+    public String uuidGenerator() {
+        //Generates a random UID for the users
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
+    }
 }
+
+
