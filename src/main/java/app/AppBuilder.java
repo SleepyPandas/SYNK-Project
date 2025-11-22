@@ -58,8 +58,7 @@ public class AppBuilder {
     // set which data access implementation to use, can be any
     // of the classes from the data_access package
     final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
-    final TaskHabitDataAccessObject taskHabitDataAccessObject = new TaskHabitDataAccessObject();
-
+    final TaskHabitDataAccessObject taskHabitDataAccessObject = new TaskHabitDataAccessObject(Paths.get("habits.csv"));
     private SignupView signupView;
     private SignupViewModel signupViewModel;
     private LoginViewModel loginViewModel;
@@ -73,8 +72,7 @@ public class AppBuilder {
 
     public AppBuilder() throws IOException {
         cardPanel.setLayout(cardLayout);
-        Path habitsPath = Paths.get("habits.csv");
-        taskHabitDataAccessObject = new TaskHabitDataAccessObject(habitsPath);
+
     }
 
     public AppBuilder addSignupView() {
@@ -147,15 +145,15 @@ public class AppBuilder {
         return this;
     }
 
-    public AppBuilder addViewLeaderboardUseCase() {
-        final ViewLeaderboardOutputBoundary viewLeaderboardOutputBoundary = new ViewLeaderboardPresenter(viewLeaderboardViewModel);
-        final ViewLeaderboardInputBoundary viewLeaderboardInteractor = new ViewLeaderboardInteractor(
-                taskHabitDataAccessObject, viewLeaderboardOutputBoundary);
-
-        ViewLeaderboardController viewLeaderboardController = new ViewLeaderboardController(viewLeaderboardInteractor);
-        leaderboardView.setViewLeaderboardController(viewLeaderboardController);
-        return this;
-    }
+//    public AppBuilder addViewLeaderboardUseCase() {
+//        final ViewLeaderboardOutputBoundary viewLeaderboardOutputBoundary = new ViewLeaderboardPresenter(viewLeaderboardViewModel);
+//        final ViewLeaderboardInputBoundary viewLeaderboardInteractor = new ViewLeaderboardInteractor(
+//                taskHabitDataAccessObject, viewLeaderboardOutputBoundary);
+//
+//        ViewLeaderboardController viewLeaderboardController = new ViewLeaderboardController(viewLeaderboardInteractor);
+//        leaderboardView.setViewLeaderboardController(viewLeaderboardController);
+//        return this;
+//    }
 
     public AppBuilder addModifyTaskUseCase(){
         final ModifyTaskOutputBoundary modifyTaskOutputBoundary = new ModifyHabitPresenter(viewManagerModel, modifyHabitViewModel, loginViewModel);

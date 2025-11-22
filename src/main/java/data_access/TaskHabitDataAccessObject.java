@@ -3,7 +3,6 @@ package data_access;// package data_access;
 import entities.Task;
 import entities.TaskBuilder;
 import jdk.jshell.spi.ExecutionControl;
-package data_access;
 import entities.Habit;
 import entities.Task;
 import use_case.gateways.TaskGateway;
@@ -32,9 +31,7 @@ import java.util.Map;
  * Prototype in-memory persistence layer backed by a simple HashMap of user id to tasks.
  * Create, Update, Remove, Read (Fetch) :
  */
-public class TaskHabitDataAccessObject implements TaskGateway, ModifyTaskUserDataAccessInterface,
-        ViewLeaderboardUserDataAccessInterface {
-public class TaskHabitDataAccessObject implements TaskGateway {
+public class TaskHabitDataAccessObject implements TaskGateway, ModifyTaskUserDataAccessInterface{
 
     private static final String HEADER = "userId,taskName,description,startTime,deadline,taskGroup,status,priority";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;

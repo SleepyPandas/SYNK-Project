@@ -26,7 +26,8 @@ public class ModifyTaskInteractor implements ModifyTaskInputBoundary {
                 .setDeadline(newDeadline)
                 .setPriority(newTaskPriority)
                 .setStatus(newTaskStatus).build();
-        userDataAccessObject.saveTask(userID, modifiedTask);
+        userDataAccessObject.deleteTask(userID, )
+        userDataAccessObject.addTask(userID, modifiedTask);
 
         final ModifyTaskOutputData outputData = new ModifyTaskOutputData(newTaskName, newDeadline, newTaskStatus,
                 newTaskPriority);

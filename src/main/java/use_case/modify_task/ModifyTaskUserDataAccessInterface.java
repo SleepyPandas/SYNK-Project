@@ -1,6 +1,7 @@
 package use_case.modify_task;
 
 import entities.Task;
+import use_case.gateways.TaskGateway;
 
 public interface ModifyTaskUserDataAccessInterface {
     /***
@@ -8,7 +9,7 @@ public interface ModifyTaskUserDataAccessInterface {
      * @param userID
      * @param modifiedTask
      */
-    void saveTask(String userID, Task modifiedTask);
+    String addTask(String userID, Task modifiedTask);
 
-
+    boolean deleteTask(String userID, Task modifiedTask);
 }

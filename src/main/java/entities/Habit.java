@@ -12,7 +12,6 @@ public class Habit implements Completable {
     private int priority;
     private boolean status;
     private String description;
-    private String description;
 
     Habit(String habitName,
           LocalDateTime startDateTime,
