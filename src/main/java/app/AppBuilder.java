@@ -8,7 +8,8 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import data_access.FileUserDataAccessObject;
-import data_access.TaskHabitDataAccessObject;
+import data_access.HabitDataAccessObject;
+import data_access.TaskDataAccessObject;
 import entities.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.leaderboard.ViewLeaderboardController;
@@ -23,9 +24,6 @@ import interface_adapter.login.LoginViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
-import interface_adapter.view_tasks_and_habits.ViewTasksAndHabitsController;
-import interface_adapter.view_tasks_and_habits.ViewTasksAndHabitsPresenter;
-import interface_adapter.view_tasks_and_habits.ViewTasksAndHabitsViewModel;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
@@ -38,10 +36,12 @@ import use_case.signup.SignupOutputBoundary;
 import use_case.view_leaderboard.ViewLeaderboardInputBoundary;
 import use_case.view_leaderboard.ViewLeaderboardInteractor;
 import use_case.view_leaderboard.ViewLeaderboardOutputBoundary;
-import use_case.view_tasks_and_habits.ViewTasksAndHabitsInputBoundary;
-import use_case.view_tasks_and_habits.ViewTasksAndHabitsInteractor;
-import use_case.view_tasks_and_habits.ViewTasksAndHabitsOutputBoundary;
-import view.*;
+import view.LeaderboardView;
+import view.LoggedInView;
+import view.LoginView;
+import view.SignupView;
+import view.ViewManager;
+
 
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
@@ -53,7 +53,8 @@ public class AppBuilder {
     // set which data access implementation to use, can be any
     // of the classes from the data_access package
     final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
-    final TaskHabitDataAccessObject taskHabitDataAccessObject;
+    final TaskDataAccessObject taskHabitDataAccessObject;
+    final HabitDataAccessObject habitDataAccessObject = new HabitDataAccessObject();
 
     private SignupView signupView;
     private SignupViewModel signupViewModel;
@@ -63,12 +64,10 @@ public class AppBuilder {
     private LoginView loginView;
     private LeaderboardView leaderboardView;
     private ViewLeaderboardViewModel viewLeaderboardViewModel;
-    private ViewTasksAndHabitsView viewTasksAndHabitsView;
-    private ViewTasksAndHabitsViewModel viewTasksAndHabitsViewModel;
 
     public AppBuilder() throws IOException {
         cardPanel.setLayout(cardLayout);
-        taskHabitDataAccessObject = new TaskHabitDataAccessObject("habits.csv");
+        taskHabitDataAccessObject = new TaskDataAccessObject();
     }
 
     public AppBuilder addSignupView() {
@@ -100,80 +99,60 @@ public class AppBuilder {
         return this;
     }
 
-    public AppBuilder addViewTasksAndHabitsView() {
-        viewTasksAndHabitsViewModel = new ViewTasksAndHabitsViewModel();
-        viewTasksAndHabitsView = new ViewTasksAndHabitsView(viewTasksAndHabitsViewModel);
-        cardPanel.add(viewTasksAndHabitsView, viewTasksAndHabitsView.getViewName());
+    public AppBuilder addSignupUseCase() {
+        final SignupOutputBoundary signupOutputBoundary = new SignupPresenter(viewManagerModel,
+                signupViewModel, loginViewModel);
+        final SignupInputBoundary userSignupInteractor = new SignupInteractor(
+                userDataAccessObject, signupOutputBoundary, userFactory);
+
+        SignupController controller = new SignupController(userSignupInteractor);
+        signupView.setSignupController(controller);
         return this;
     }
 
-        public AppBuilder addSignupUseCase () {
-            final SignupOutputBoundary signupOutputBoundary = new SignupPresenter(viewManagerModel,
-                    signupViewModel, loginViewModel);
-            final SignupInputBoundary userSignupInteractor = new SignupInteractor(
-                    userDataAccessObject, signupOutputBoundary, userFactory);
+    public AppBuilder addLoginUseCase() {
+        final LoginOutputBoundary loginOutputBoundary = new LoginPresenter(viewManagerModel,
+                loggedInViewModel, loginViewModel);
+        final LoginInputBoundary loginInteractor = new LoginInteractor(
+                userDataAccessObject, loginOutputBoundary);
 
-            SignupController controller = new SignupController(userSignupInteractor);
-            signupView.setSignupController(controller);
-            return this;
-        }
-
-        public AppBuilder addLoginUseCase () {
-            final LoginOutputBoundary loginOutputBoundary = new LoginPresenter(viewManagerModel,
-                    loggedInViewModel, loginViewModel);
-            final LoginInputBoundary loginInteractor = new LoginInteractor(
-                    userDataAccessObject, loginOutputBoundary);
-
-            LoginController loginController = new LoginController(loginInteractor);
-            loginView.setLoginController(loginController);
-            return this;
-        }
-
-        public AppBuilder addChangePasswordUseCase () {
-            final ChangePasswordOutputBoundary changePasswordOutputBoundary = new LoggedInPresenter(viewManagerModel,
-                    loggedInViewModel);
-
-            final ChangePasswordInputBoundary changePasswordInteractor =
-                    new ChangePasswordInteractor(userDataAccessObject, changePasswordOutputBoundary, userFactory);
-
-            ChangePasswordController changePasswordController = new ChangePasswordController(changePasswordInteractor);
-            loggedInView.setChangePasswordController(changePasswordController);
-            return this;
-        }
-
-        public AppBuilder addViewLeaderboardUseCase () {
-            final ViewLeaderboardOutputBoundary viewLeaderboardOutputBoundary = new ViewLeaderboardPresenter(viewLeaderboardViewModel);
-            final ViewLeaderboardInputBoundary viewLeaderboardInteractor = new ViewLeaderboardInteractor(
-                    taskHabitDataAccessObject, viewLeaderboardOutputBoundary);
-
-            ViewLeaderboardController viewLeaderboardController = new ViewLeaderboardController(viewLeaderboardInteractor);
-            leaderboardView.setViewLeaderboardController(viewLeaderboardController);
-            return this;
-        }
-
-        public AppBuilder addViewTasksAndHabitsUseCase () {
-            final ViewTasksAndHabitsOutputBoundary viewTasksAndHabitsOutputBoundary =
-                    new ViewTasksAndHabitsPresenter(viewManagerModel,
-                            viewTasksAndHabitsViewModel);
-            final ViewTasksAndHabitsInputBoundary viewTasksAndHabitsInteractor =
-                    new ViewTasksAndHabitsInteractor(
-                            userDataAccessObject, viewTasksAndHabitsOutputBoundary);
-
-            ViewTasksAndHabitsController viewTasksAndHabitsController = new ViewTasksAndHabitsController(viewTasksAndHabitsInteractor);
-            viewTasksAndHabitsView.setViewTasksAndHabitsController(viewTasksAndHabitsController);
-            return this;
-        }
-
-        public JFrame build () {
-            final JFrame application = new JFrame("User Login Example");
-            application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-            application.add(cardPanel);
-
-            viewManagerModel.setState(signupView.getViewName());
-            viewManagerModel.firePropertyChanged();
-
-            return application;
-        }
+        LoginController loginController = new LoginController(loginInteractor);
+        loginView.setLoginController(loginController);
+        return this;
     }
+
+    public AppBuilder addChangePasswordUseCase() {
+        final ChangePasswordOutputBoundary changePasswordOutputBoundary = new LoggedInPresenter(viewManagerModel,
+                loggedInViewModel);
+
+        final ChangePasswordInputBoundary changePasswordInteractor =
+                new ChangePasswordInteractor(userDataAccessObject, changePasswordOutputBoundary, userFactory);
+
+        ChangePasswordController changePasswordController = new ChangePasswordController(changePasswordInteractor);
+        loggedInView.setChangePasswordController(changePasswordController);
+        return this;
+    }
+
+    public AppBuilder addViewLeaderboardUseCase() {
+        final ViewLeaderboardOutputBoundary viewLeaderboardOutputBoundary = new ViewLeaderboardPresenter(viewLeaderboardViewModel);
+        final ViewLeaderboardInputBoundary viewLeaderboardInteractor = new ViewLeaderboardInteractor(
+                habitDataAccessObject, viewLeaderboardOutputBoundary);
+
+        ViewLeaderboardController viewLeaderboardController = new ViewLeaderboardController(viewLeaderboardInteractor);
+        leaderboardView.setViewLeaderboardController(viewLeaderboardController);
+        return this;
+    }
+
+    public JFrame build() {
+        final JFrame application = new JFrame("User Login Example");
+        application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        application.add(cardPanel);
+
+        viewManagerModel.setState(signupView.getViewName());
+        viewManagerModel.firePropertyChanged();
+
+        return application;
+    }
+}
 
