@@ -47,3 +47,4 @@ src/main/java/resources/credentials.json
 credentials.json
 /resources/credentials.json
 .credentials.json
+/.vscode/settings.json
