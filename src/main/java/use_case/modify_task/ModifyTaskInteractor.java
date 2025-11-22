@@ -2,15 +2,15 @@ package use_case.modify_task;
 
 import entities.Task;
 import entities.TaskBuilder;
-import use_case.gateways.TaskHabitGateway;
+import use_case.gateways.TaskGateway;
 
 import java.time.LocalDateTime;
 
 public class ModifyTaskInteractor implements ModifyTaskInputBoundary {
     private final ModifyTaskOutputBoundary modifyPresenter;
-    private final TaskHabitGateway userDataAccessObject;
+    private final TaskGateway userDataAccessObject;
 
-    public ModifyTaskInteractor(ModifyTaskOutputBoundary modifyPresenter, TaskHabitGateway userDataAccessObject) {
+    public ModifyTaskInteractor(ModifyTaskOutputBoundary modifyPresenter, TaskGateway userDataAccessObject) {
         this.modifyPresenter = modifyPresenter;
         this.userDataAccessObject = userDataAccessObject;
     }
