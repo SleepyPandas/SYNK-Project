@@ -12,9 +12,11 @@ public class Main {
                 .addLoggedInView()
                 .addLeaderboardView()
                 .addModifyTaskView()
+                .addModifyHabitView()
                 .addSignupUseCase()
                 .addLoginUseCase()
                 .addModifyTaskUseCase()
+                .addModifyHabitUseCase()
                 .addChangePasswordUseCase()
 //                .addViewLeaderboardUseCase()
                 .build();

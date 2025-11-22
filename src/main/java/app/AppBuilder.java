@@ -19,6 +19,9 @@ import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.login.LoginController;
 import interface_adapter.login.LoginPresenter;
 import interface_adapter.login.LoginViewModel;
+import interface_adapter.modify_habit.ModifyHabitController;
+import interface_adapter.modify_habit.ModifyHabitPresenter;
+import interface_adapter.modify_habit.ModifyHabitViewModel;
 import interface_adapter.modify_task.ModifyTaskController;
 import interface_adapter.modify_task.ModifyTaskPresenter;
 import interface_adapter.modify_task.ModifyTaskViewModel;
@@ -31,6 +34,9 @@ import use_case.change_password.ChangePasswordOutputBoundary;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
 import use_case.login.LoginOutputBoundary;
+import use_case.modify_habit.ModifyHabitInputBoundary;
+import use_case.modify_habit.ModifyHabitInteractor;
+import use_case.modify_habit.ModifyHabitOutputBoundary;
 import use_case.modify_task.ModifyTaskInputBoundary;
 import use_case.modify_task.ModifyTaskInteractor;
 import use_case.modify_task.ModifyTaskOutputBoundary;
@@ -63,6 +69,8 @@ public class AppBuilder {
     private ViewLeaderboardViewModel viewLeaderboardViewModel;
     private ModifyTaskViewModel modifyTaskViewModel;
     private ModifyTaskView modifyTaskView;
+    private ModifyHabitViewModel modifyHabitViewModel;
+    private ModifyHabitView modifyHabitView;
 
     public AppBuilder() throws IOException {
         cardPanel.setLayout(cardLayout);
@@ -103,6 +111,13 @@ public class AppBuilder {
         modifyTaskViewModel = new ModifyTaskViewModel();
         modifyTaskView = new ModifyTaskView(modifyTaskViewModel);
         cardPanel.add(modifyTaskView, modifyTaskView.getViewName());
+        return this;
+    }
+
+    public AppBuilder addModifyHabitView() {
+        modifyHabitViewModel = new ModifyHabitViewModel();
+        modifyHabitView = new ModifyHabitView(modifyHabitViewModel);
+        cardPanel.add(modifyHabitView, modifyHabitView.getViewName());
         return this;
     }
 
@@ -157,6 +172,18 @@ public class AppBuilder {
 
         ModifyTaskController modifyTaskController = new ModifyTaskController(modifyTaskInteractor, loggedInViewModel);
         modifyTaskView.setModifyTaskController(modifyTaskController);
+        return this;
+    }
+
+    public AppBuilder addModifyHabitUseCase() {
+        final ModifyHabitOutputBoundary modifyHabitOutputBoundary = new ModifyHabitPresenter(viewManagerModel,
+                modifyHabitViewModel, loginViewModel);
+        final ModifyHabitInputBoundary modifyHabitInteractor = new ModifyHabitInteractor(modifyHabitOutputBoundary,
+                habitDataAccessObject);
+
+        ModifyHabitController modifyHabitController = new ModifyHabitController(modifyHabitInteractor,
+                loggedInViewModel);
+        modifyHabitView.setModifyHabitController(modifyHabitController);
         return this;
     }
 
