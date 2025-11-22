@@ -5,7 +5,7 @@ package use_case.view_tasks_and_habits;
  */
 public interface ViewTasksAndHabitsInputBoundary {
     /**
-     * Executes the create_task use case.
+     * Executes the view_tasks_and_habits use case.
      */
     void execute(ViewTasksAndHabitsInputData createInputData);
 }

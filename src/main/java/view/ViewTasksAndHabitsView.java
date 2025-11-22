@@ -29,6 +29,8 @@ public class ViewTasksAndHabitsView extends JPanel {
         final JPanel taskTablePanel = new JPanel();
         final JPanel habitTablePanel = new JPanel();
 
+        final JButton
+
         mainPanel.add(taskTablePanel);
         mainPanel.add(habitTablePanel);
 
@@ -48,6 +50,8 @@ public class ViewTasksAndHabitsView extends JPanel {
         taskTablePanel.add(taskTable);
         habitTablePanel.add(habitTableLabel);
         habitTablePanel.add(habitTable);
+
+        this.add(mainPanel);
 
         taskModel.addTableModelListener(e -> {
             if (e.getType() == TableModelEvent.UPDATE) {

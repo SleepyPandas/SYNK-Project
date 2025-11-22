@@ -1,7 +1,7 @@
 package use_case.view_tasks_and_habits;
 import java.time.LocalDateTime;
 /**
- * The Input Data for the CreateTask Use Case.
+ * The Input Data for the Create Task Use Case.
  */
 public class ViewTasksAndHabitsInputData {
 
