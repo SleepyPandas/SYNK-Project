@@ -49,3 +49,7 @@ credentials.json
 .credentials.json
 /.vscode/settings.json
 misc.xml
+tokens
+StoredCredential
+habits.csv
+users.csv
