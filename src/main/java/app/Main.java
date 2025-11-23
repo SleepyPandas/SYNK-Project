@@ -14,9 +14,7 @@ public class Main {
                 .addSignupUseCase()
                 .addLoginUseCase()
                 .addChangePasswordUseCase()
-                .addViewLeaderboardUseCase()
-                .addViewTasksAndHabitsView()
-                .addViewTasksAndHabitsUseCase()
+//                .addViewLeaderboardUseCase()
                 .build();
 
         application.pack();
