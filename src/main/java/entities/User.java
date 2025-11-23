@@ -1,5 +1,6 @@
 package entities;
 
+
 /**
  * A simple implementation of the User interface.
  */
@@ -10,6 +11,13 @@ public class User {
     private String avatarpath;
     private String password;
 
+    public User(String uid, String username, String password) {
+        this.uid = uid;
+        this.username = username;
+        this.avatarpath = null;
+        this.password = password;
+    }
+
     public User(String uid, String username, String avatarpath, String password) {
         this.uid = uid;
         this.username = username;
@@ -17,13 +25,9 @@ public class User {
         this.password = password;
     }
 
-    public User(String username, String password) {
-        this("00000", "John Doe", "NA", "");
-        this.username = username;
-        this.password = password;
+    public String getUid() {
+        return uid;
     }
-
-    public String getUid() {return uid; }
 
     public String getUsername() {
         return username;
@@ -44,4 +48,7 @@ public class User {
     public void setAvatarPath(String url) {
         this.avatarpath = url;
     }
+
 }
+
+
