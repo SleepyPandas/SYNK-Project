@@ -7,7 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import data_access.FileUserDataAccessObject;
+import data_access.DBUserDataAccessObject;
 import data_access.HabitDataAccessObject;
 import data_access.TaskDataAccessObject;
 import entities.UserFactory;
@@ -55,7 +55,7 @@ public class AppBuilder {
 
     // set which data access implementation to use, can be any
     // of the classes from the data_access package
-    final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
+    final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory);
     final TaskDataAccessObject taskDataAccessObject;
     final HabitDataAccessObject habitDataAccessObject = new HabitDataAccessObject();
 
@@ -175,6 +175,15 @@ public class AppBuilder {
         return this;
     }
 
+//    public AppBuilder addViewLeaderboardUseCase() {
+//        final ViewLeaderboardOutputBoundary viewLeaderboardOutputBoundary = new ViewLeaderboardPresenter(viewLeaderboardViewModel);
+//        final ViewLeaderboardInputBoundary viewLeaderboardInteractor = new ViewLeaderboardInteractor(
+//                habitDataAccessObject, viewLeaderboardOutputBoundary);
+//
+//        ViewLeaderboardController viewLeaderboardController = new ViewLeaderboardController(viewLeaderboardInteractor);
+//        leaderboardView.setViewLeaderboardController(viewLeaderboardController);
+//        return this;
+//    }
     public AppBuilder addModifyHabitUseCase() {
         final ModifyHabitOutputBoundary modifyHabitOutputBoundary = new ModifyHabitPresenter(viewManagerModel,
                 modifyHabitViewModel, loginViewModel);
