@@ -19,12 +19,19 @@ public class ModifyTaskView extends JPanel implements ActionListener, PropertyCh
     private final String viewName = "modify task";
     private final ModifyTaskViewModel modifyTaskViewModel;
 
-    private final JTextField newTaskName = new JTextField();
-    private final JTextField newTaskDeadline = new JTextField();
+    private final JTextField newTaskName = new JTextField(10);
+    private final JTextField newTaskDeadline = new JTextField(10);
     private final JRadioButton taskCompleted = new JRadioButton("Completed");
     private final JRadioButton taskNotCompleted = new JRadioButton("Not completed");
     private final ButtonGroup newTaskStatus = new ButtonGroup();
     private final NumberFormat numberFormat = NumberFormat.getNumberInstance();
+
+
+    private final JTextField newDescription = new JTextField(10);
+    private final JTextField newStartTime = new JTextField(10);
+    private final JTextField newTaskGroup = new JTextField(10);
+
+
     private final JFormattedTextField newTaskPriority = new JFormattedTextField(numberFormat);
     private ModifyTaskController modifyTaskController = null;
 
@@ -38,101 +45,92 @@ public class ModifyTaskView extends JPanel implements ActionListener, PropertyCh
         newTaskStatus.add(taskCompleted);
         newTaskStatus.add(taskNotCompleted);
 
+
         JLabel taskNameLabel = new JLabel("Task name");
-        JLabel taskDeadlineLabel = new JLabel("Task deadline");
+        JLabel taskDeadlineLabel = new JLabel("Task deadline (YYYY-MM-DDTHH:MM:SS)");
         JLabel taskStatusLabel = new JLabel("Task status");
-        JLabel taskPriorityLabel = new JLabel("Task priority");
+        JLabel taskPriorityLabel = new JLabel("Task priority (Number)");
+        JLabel taskDescriptionLabel = new JLabel("Description");
+        JLabel taskStartTimeLabel = new JLabel("Start time (YYYY-MM-DDTHH:MM:SS)");
+        JLabel taskGroupLabel = new JLabel("Task Group");
+
 
         newTaskName.getDocument().addDocumentListener(new DocumentListener() {
-
-            public void documentStateHelper() {
-                final ModifyTaskState currentState = modifyTaskViewModel.getState();
-                currentState.setNewTaskName(newTaskName.getText());
+            private void documentStateHelper() {
+                modifyTaskViewModel.getState().setNewTaskName(newTaskName.getText());
             }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentStateHelper();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentStateHelper();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentStateHelper();
-            }
+            @Override public void insertUpdate(DocumentEvent e) { documentStateHelper(); }
+            @Override public void removeUpdate(DocumentEvent e) { documentStateHelper(); }
+            @Override public void changedUpdate(DocumentEvent e) { documentStateHelper(); }
         });
+
         newTaskDeadline.getDocument().addDocumentListener(new DocumentListener() {
-
-            public void documentStateHelper() {
-                final ModifyTaskState currentState = modifyTaskViewModel.getState();
-                currentState.setDeadline(newTaskDeadline.getText());
+            private void documentStateHelper() {
+                modifyTaskViewModel.getState().setDeadline(newTaskDeadline.getText());
             }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentStateHelper();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentStateHelper();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentStateHelper();
-            }
+            @Override public void insertUpdate(DocumentEvent e) { documentStateHelper(); }
+            @Override public void removeUpdate(DocumentEvent e) { documentStateHelper(); }
+            @Override public void changedUpdate(DocumentEvent e) { documentStateHelper(); }
         });
 
         newTaskPriority.getDocument().addDocumentListener(new DocumentListener() {
-
-            public void documentStateHelper() {
-                final ModifyTaskState currentState = modifyTaskViewModel.getState();
-                currentState.setPriority(newTaskPriority.getText());
+            private void documentStateHelper() {
+                modifyTaskViewModel.getState().setPriority(newTaskPriority.getText());
             }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentStateHelper();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentStateHelper();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentStateHelper();
-            }
-        });
-
-        taskCompleted.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                final ModifyTaskState currentState = modifyTaskViewModel.getState();
-                currentState.setStatus(true);
-            }
-        });
-
-        taskNotCompleted.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                final ModifyTaskState currentState = modifyTaskViewModel.getState();
-                currentState.setStatus(false);
-            }
+            @Override public void insertUpdate(DocumentEvent e) { documentStateHelper(); }
+            @Override public void removeUpdate(DocumentEvent e) { documentStateHelper(); }
+            @Override public void changedUpdate(DocumentEvent e) { documentStateHelper(); }
         });
 
 
+        newDescription.getDocument().addDocumentListener(new DocumentListener() {
+            private void documentStateHelper() {
+                modifyTaskViewModel.getState().setDescription(newDescription.getText());
+            }
+            @Override public void insertUpdate(DocumentEvent e) { documentStateHelper(); }
+            @Override public void removeUpdate(DocumentEvent e) { documentStateHelper(); }
+            @Override public void changedUpdate(DocumentEvent e) { documentStateHelper(); }
+        });
 
-        JPanel taskStatus = new JPanel();
-        JPanel taskPriority = new JPanel();
+        newStartTime.getDocument().addDocumentListener(new DocumentListener() {
+            private void documentStateHelper() {
+                modifyTaskViewModel.getState().setStartTime(newStartTime.getText());
+            }
+            @Override public void insertUpdate(DocumentEvent e) { documentStateHelper(); }
+            @Override public void removeUpdate(DocumentEvent e) { documentStateHelper(); }
+            @Override public void changedUpdate(DocumentEvent e) { documentStateHelper(); }
+        });
+
+        newTaskGroup.getDocument().addDocumentListener(new DocumentListener() {
+            private void documentStateHelper() {
+                modifyTaskViewModel.getState().setTaskGroup(newTaskGroup.getText());
+            }
+            @Override public void insertUpdate(DocumentEvent e) { documentStateHelper(); }
+            @Override public void removeUpdate(DocumentEvent e) { documentStateHelper(); }
+            @Override public void changedUpdate(DocumentEvent e) { documentStateHelper(); }
+        });
+
+
+        taskCompleted.addChangeListener(e -> {
+            if (taskCompleted.isSelected()) {
+                modifyTaskViewModel.getState().setStatus(true);
+            }
+        });
+
+        taskNotCompleted.addChangeListener(e -> {
+            if (taskNotCompleted.isSelected()) {
+                modifyTaskViewModel.getState().setStatus(false);
+            }
+        });
+
+
         JPanel taskName = new JPanel();
         JPanel taskDeadline = new JPanel();
+        JPanel taskStatus = new JPanel();
+        JPanel taskPriority = new JPanel();
+        JPanel taskDescription = new JPanel();
+        JPanel taskStartTime = new JPanel();
+        JPanel taskGroup = new JPanel();
 
         taskStatus.add(taskStatusLabel);
         taskStatus.add(taskCompleted);
@@ -151,6 +149,18 @@ public class ModifyTaskView extends JPanel implements ActionListener, PropertyCh
         taskPriority.add(newTaskPriority);
         taskPriority.setLayout(new BoxLayout(taskPriority, BoxLayout.X_AXIS));
 
+        taskDescription.add(taskDescriptionLabel);
+        taskDescription.add(newDescription);
+        taskDescription.setLayout(new BoxLayout(taskDescription, BoxLayout.X_AXIS));
+
+        taskStartTime.add(taskStartTimeLabel);
+        taskStartTime.add(newStartTime);
+        taskStartTime.setLayout(new BoxLayout(taskStartTime, BoxLayout.X_AXIS));
+
+        taskGroup.add(taskGroupLabel);
+        taskGroup.add(newTaskGroup);
+        taskGroup.setLayout(new BoxLayout(taskGroup, BoxLayout.X_AXIS));
+
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         JPanel buttons = new JPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
@@ -159,6 +169,9 @@ public class ModifyTaskView extends JPanel implements ActionListener, PropertyCh
 
         this.add(taskName);
         this.add(taskDeadline);
+        this.add(taskStartTime);
+        this.add(taskDescription);
+        this.add(taskGroup);
         this.add(taskStatus);
         this.add(taskPriority);
         this.add(buttons);
@@ -172,10 +185,36 @@ public class ModifyTaskView extends JPanel implements ActionListener, PropertyCh
         save.addActionListener(evt -> {
             if (evt.getSource().equals(save)){
                 ModifyTaskState currentState = modifyTaskViewModel.getState();
-                // TODO add old information to execute parameter list before new information is set
-                modifyTaskController.execute("", -1, "2025-09-12T00:00:00", true, currentState.getNewTaskName(), currentState.getPriority(),
-                        currentState.getDeadline(), currentState.getStatus());
-                modifyTaskController.switchToTaskListView();
+
+
+
+                // TODO: Replace these hardcoded/placeholder OLD values with actual data retrieved
+                // from the TaskListViewModel or the ModifyTaskViewModel's previous state.
+                String oldTaskName = currentState.getNewTaskName();
+                int oldPriority = 0;
+                String oldDeadline = currentState.getDeadline();
+                boolean oldStatus = currentState.getStatus();
+                String oldTaskGroup = currentState.getTaskGroup();
+                String oldDescription = currentState.getDescription();
+                String oldStartTime = currentState.getStartTime();
+
+                modifyTaskController.execute(
+                        oldTaskName,
+                        oldPriority,
+                        oldDeadline,
+                        oldStatus,
+                        oldTaskGroup,
+                        oldDescription,
+                        oldStartTime,
+                        currentState.getNewTaskName(),
+                        currentState.getPriority(),
+                        currentState.getDeadline(),
+                        currentState.getStatus(),
+                        currentState.getTaskGroup(),
+                        currentState.getDescription(),
+                        currentState.getStartTime()
+                );
+
             }
         });
     }
@@ -188,17 +227,27 @@ public class ModifyTaskView extends JPanel implements ActionListener, PropertyCh
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
 
+        ModifyTaskState state = (ModifyTaskState) evt.getNewValue();
+        if (state.getTaskError() != null && !state.getTaskError().isEmpty()) {
+            JOptionPane.showMessageDialog(this, state.getTaskError());
+            state.setTaskError(null);
+        }
+
+        newTaskName.setText(state.getNewTaskName());
+        newTaskDeadline.setText(state.getDeadline());
+        newTaskPriority.setText(state.getPriority());
+        taskCompleted.setSelected(state.getStatus());
+        taskNotCompleted.setSelected(!state.getStatus());
+        newDescription.setText(state.getDescription());
+        newStartTime.setText(state.getStartTime());
+        newTaskGroup.setText(state.getTaskGroup());
     }
 
     public String getViewName() {
         return viewName;
     }
 
-
     public void setModifyTaskController(ModifyTaskController modifyTaskController) {
         this.modifyTaskController = modifyTaskController;
     }
-
-
-
 }

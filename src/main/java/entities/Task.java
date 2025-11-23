@@ -13,14 +13,15 @@ public class Task implements Completable {
     private int priority; //May use different data object.
     private LocalDateTime startTime;
 
-    // LocalDateTime startTime this.startTime = startTime;
-    Task(String taskName, LocalDateTime deadline, String taskGroup, boolean status, int priority, String description) {
+    // ADDED startTime to the constructor signature and initialization
+    Task(String taskName, LocalDateTime deadline, String taskGroup, boolean status, int priority, String description, LocalDateTime startTime) {
         this.taskName = taskName;
         this.deadline = deadline;
         this.taskGroup = taskGroup;
         this.status = status;
         this.priority = priority;
         this.description = description;
+        this.startTime = startTime; // ADDED
     }
 
     @Override
@@ -53,7 +54,18 @@ public class Task implements Completable {
         if (this == o) return true;
         if (!(o instanceof Task)) return false;
         Task task = (Task) o;
-        return Objects.equals(task.taskName, taskName) && Objects.equals(task.deadline, deadline);
+        // IMPROVED: Added more fields for a reliable equality check
+        return status == task.status && priority == task.priority &&
+                Objects.equals(taskName, task.taskName) &&
+                Objects.equals(description, task.description) &&
+                Objects.equals(deadline, task.deadline) &&
+                Objects.equals(taskGroup, task.taskGroup) &&
+                Objects.equals(startTime, task.startTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(taskName, description, deadline, taskGroup, status, priority, startTime);
     }
 
     @Override

@@ -18,24 +18,34 @@ public class ModifyTaskController {
 
     // TODO remove previous task parameters from execute method and obtain them from Arya's task list view state
     /***
-    /***
+     /***
      * Executes modify task use case
      * @param oldTaskName
      * @param oldPriority
      * @param oldDeadline
      * @param oldStatus
+     * @param oldTaskGroup
+     * @param oldDescription
+     * @param oldStartTime     // ADDED
      * @param newTaskName
      * @param newPriority
      * @param newDeadline
      * @param newStatus
+     * @param newTaskGroup
+     * @param newDescription
+     * @param newStartTime     // ADDED
      */
     public void execute(String oldTaskName, int oldPriority, String oldDeadline, boolean oldStatus,
-                        String newTaskName, String newPriority, String newDeadline, boolean newStatus){
+                        String oldTaskGroup, String oldDescription, String oldStartTime, // ADDED
+                        String newTaskName, String newPriority, String newDeadline, boolean newStatus,
+                        String newTaskGroup, String newDescription, String newStartTime){ // ADDED
 
         String username = loggedInViewModel.getState().getUsername();
         ModifyTaskInputData modifyTaskInputData = new ModifyTaskInputData(oldTaskName, oldPriority, oldDeadline, oldStatus,
-                                                                            newTaskName, newPriority, newDeadline, newStatus, 
-                                                                            username);
+                oldTaskGroup, oldDescription, oldStartTime, // ADDED
+                newTaskName, newPriority, newDeadline, newStatus,
+                newTaskGroup, newDescription, newStartTime, // ADDED
+                username);
 
         this.modifyTaskUseCaseInteractor.execute(modifyTaskInputData);
 

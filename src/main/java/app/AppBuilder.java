@@ -63,7 +63,7 @@ public class AppBuilder {
     private SignupViewModel signupViewModel;
     private LoginViewModel loginViewModel;
     private LoggedInViewModel loggedInViewModel;
-    private LoggedInView loggedInView;
+    private ChangePasswordView changePasswordView;
     private LoginView loginView;
     private LeaderboardView leaderboardView;
     private ViewLeaderboardViewModel viewLeaderboardViewModel;
@@ -94,9 +94,9 @@ public class AppBuilder {
 
     public AppBuilder addLoggedInView() {
         loggedInViewModel = new LoggedInViewModel();
-        loggedInView = new LoggedInView(loggedInViewModel);
-        loggedInView.setViewManagerModel(viewManagerModel);
-        cardPanel.add(loggedInView, loggedInView.getViewName());
+        changePasswordView = new ChangePasswordView(loggedInViewModel);
+        changePasswordView.setViewManagerModel(viewManagerModel);
+        cardPanel.add(changePasswordView, changePasswordView.getViewName());
         return this;
     }
 
@@ -151,7 +151,7 @@ public class AppBuilder {
                 new ChangePasswordInteractor(userDataAccessObject, changePasswordOutputBoundary, userFactory);
 
         ChangePasswordController changePasswordController = new ChangePasswordController(changePasswordInteractor);
-        loggedInView.setChangePasswordController(changePasswordController);
+        changePasswordView.setChangePasswordController(changePasswordController);
         return this;
     }
 

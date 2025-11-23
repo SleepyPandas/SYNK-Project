@@ -6,6 +6,9 @@ public class ModifyTaskState {
     private String priority = "";
     private String deadline = "";
     private boolean status = false;
+    private String taskGroup = "";
+    private String description = "";
+    private String startTime = ""; // ADDED
     private String taskError;
 
 
@@ -39,6 +42,31 @@ public class ModifyTaskState {
 
     public void setStatus(boolean status) {
         this.status = status;
+    }
+
+    public String getTaskGroup() {
+        return taskGroup;
+    }
+
+    public void setTaskGroup(String taskGroup) {
+        this.taskGroup = taskGroup;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    // GETTERS AND SETTERS FOR ADDED START TIME
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
     }
 
     public String getTaskError() {

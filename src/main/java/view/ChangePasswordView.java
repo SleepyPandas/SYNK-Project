@@ -17,7 +17,7 @@ import java.beans.PropertyChangeListener;
 /**
  * The View for when the user is logged into the program.
  */
-public class LoggedInView extends JPanel implements ActionListener, PropertyChangeListener {
+public class ChangePasswordView extends JPanel implements ActionListener, PropertyChangeListener {
 
     private final String viewName = "logged in";
     private final LoggedInViewModel loggedInViewModel;
@@ -36,8 +36,9 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
     private final JButton viewTasks;
     private final JButton viewHabits;
     private final JButton modifyTask;
+    private final JLabel modifyHabit;
 
-    public LoggedInView(LoggedInViewModel loggedInViewModel) {
+    public ChangePasswordView(LoggedInViewModel loggedInViewModel) {
         this.loggedInViewModel = loggedInViewModel;
         this.loggedInViewModel.addPropertyChangeListener(this);
 
@@ -60,8 +61,9 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
         viewHabits = new JButton("View habits");
 
         viewLeaderboard = new JButton("View leaderboard");
-
+        // TODO move this code to the view tasks view
         modifyTask = new JButton("modify task");
+        modifyHabit = new JLabel("modify habit");
 
         buttons.add(viewTasks);
         buttons.add(viewHabits);
