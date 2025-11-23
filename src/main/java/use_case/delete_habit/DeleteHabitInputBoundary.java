@@ -1,6 +1,6 @@
 package use_case.delete_habit;
 
 public interface DeleteHabitInputBoundary {
-    void excute(DeleteHabitInputData inputData);
+    void execute(DeleteHabitInputData inputData);
 
 }

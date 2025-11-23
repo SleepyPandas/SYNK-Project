@@ -40,8 +40,8 @@ public class CreateHabitPresenter implements CreateHabitOutputBoundary {
         createHabitViewModel.firePropertyChanged();
 
         // 如果你希望创建成功后切回 LoggedIn 页面，可以取消注释：
-        viewManagerModel.setActiveView(loggedInViewModel.getViewName());
-        viewManagerModel.firePropertyChanged();
+        // viewManagerModel.setActiveView(loggedInViewModel.getViewName());
+        // viewManagerModel.firePropertyChanged();
     }
 
     @Override

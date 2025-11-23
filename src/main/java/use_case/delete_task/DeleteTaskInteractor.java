@@ -9,17 +9,16 @@ public class DeleteTaskInteractor implements DeleteTaskInputBoundary {
         this.dao = dao;
     }
 
-
     @Override
     public void excute(DeleteTaskInputData deleteTaskInputData) {
-        final String username = deleteTaskInputData.getUsername();
         final String taskName = deleteTaskInputData.getTaskName();
 
         if (taskName == null || taskName.trim().isEmpty()) {
             presenter.prepareFailView("Task name cannot be empty.");
             return;
         }
-        if (!dao.existsTaskByName(username, taskName)) {
+
+        if (!dao.existsTaskByName(taskName)) {
             presenter.prepareFailView(
                     "Task '" + taskName + "' does not exist."
             );
@@ -27,7 +26,7 @@ public class DeleteTaskInteractor implements DeleteTaskInputBoundary {
         }
 
         try {
-            dao.deleteTask(username, taskName);
+            dao.deleteTask(taskName);
             final DeleteTaskOutputData outputData = new DeleteTaskOutputData(taskName, false);
             presenter.prepareSuccessView(outputData);
         } catch (Exception exception) {
