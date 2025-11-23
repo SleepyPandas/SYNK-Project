@@ -47,7 +47,8 @@ public class HabitDataAccessObject implements HabitGateway {
         json.put("habitName", safe(habit.getName()));
         json.put("description", safe(habit.getDescription()));
         json.put("startDateTime", habit.getStartDateTime() == null ? "" : DATE_FORMATTER.format(habit.getStartDateTime()));
-        json.put("frequency", habit.getFrequency() == null ? "" : DATE_FORMATTER.format(habit.getFrequency()));
+        json.put("frequencyUnit", safe(habit.getFrequencyUnit()));
+        json.put("frequencyCount", habit.getFrequencyCount());
         json.put("habitGroup", safe(habit.getHabitGroup()));
         json.put("streakCount", habit.getStreakCount());
         json.put("priority", habit.getPriority());
@@ -59,19 +60,20 @@ public class HabitDataAccessObject implements HabitGateway {
         String habitName = json.getString("habitName");
         String description = json.getString("description");
         String startDateTimeRaw = json.getString("startDateTime");
-        String frequencyRaw = json.getString("frequency");
+        String frequencyUnit = json.optString("frequencyUnit", null);
+        int frequencyCount = json.optInt("frequencyCount", 0);
         String habitGroup = json.getString("habitGroup");
         int streakCount = json.getInt("streakCount");
         int priority = json.getInt("priority");
         boolean status = json.getBoolean("status");
 
         LocalDateTime startDateTime = startDateTimeRaw.isBlank() ? null : LocalDateTime.parse(startDateTimeRaw, DATE_FORMATTER);
-        LocalDateTime frequency = frequencyRaw.isBlank() ? null : LocalDateTime.parse(frequencyRaw, DATE_FORMATTER);
 
         HabitBuilder builder = new HabitBuilder()
                 .setHabitName(habitName)
                 .setStartDateTime(startDateTime)
-                .setFrequency(frequency)
+                .setFrequencyUnit(frequencyUnit)
+                .setFrequencyCount(frequencyCount)
                 .setHabitGroup(habitGroup)
                 .setStreakCount(streakCount)
                 .setPriority(priority)

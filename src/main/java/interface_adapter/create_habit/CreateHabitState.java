@@ -3,11 +3,11 @@ package interface_adapter.create_habit;
 public class CreateHabitState {
 
     private String habitName = "";
-    private String startDateTimeText = "";   // 文本形式，控制器里再 parse
+    private String startDateTimeText = "";
     private String frequencyText = "";
     private String habitGroup = "";
-    private int frequencyCount = 1;          // 一天/一周几次，默认 1
-    private String frequencyUnit = "Per Day"; // "Per Day" 或 "Per Week"
+    private int frequencyCount = 1;
+    private String frequencyUnit = "Per Day";
 
     private int streakCount = 0;
     private int priority = 0;
@@ -45,6 +45,7 @@ public class CreateHabitState {
     public void setFrequencyUnit(String frequencyUnit) {
         this.frequencyUnit = frequencyUnit;
     }
+
     public String getHabitName() {
         return habitName;
     }

@@ -14,7 +14,7 @@ public class CreateHabitInteractor implements CreateHabitInputBoundary {
 
 
     @Override
-    public void excute(CreateHabitInputData createHabitInputData) {
+    public void execute(CreateHabitInputData createHabitInputData) {
         final String username = createHabitInputData.getUsername();
         final String habitName = createHabitInputData.getHabitName();
 

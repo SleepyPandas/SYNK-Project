@@ -9,7 +9,7 @@ public class DeleteHabitController {
     public DeleteHabitController(DeleteHabitInputBoundary interactor) {
         this.interactor = interactor;
     }
-    public void excute(String username, String habitName) {
+    public void execute(String username, String habitName) {
         final DeleteHabitInputData inputData = new DeleteHabitInputData(username, habitName);
         interactor.excute(inputData);
     }

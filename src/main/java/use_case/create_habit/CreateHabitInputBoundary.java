@@ -1,6 +1,6 @@
 package use_case.create_habit;
 
 public interface CreateHabitInputBoundary {
-    void excute(CreateHabitInputData createHabitInputData);
+    void execute(CreateHabitInputData createHabitInputData);
 
 }

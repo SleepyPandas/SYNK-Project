@@ -14,7 +14,7 @@ public class CreateHabitController {
         this.interactor = interactor;
     }
 
-    public void excute(String username,
+    public void execute(String username,
                         String habitName,
                         String startDateTimeText,
                         int frequencyCount,
@@ -45,6 +45,6 @@ public class CreateHabitController {
                 priority
         );
 
-        interactor.excute(inputData);
+        interactor.execute(inputData);
     }
 }

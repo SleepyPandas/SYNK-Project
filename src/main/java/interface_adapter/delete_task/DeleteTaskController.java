@@ -10,7 +10,7 @@ public class DeleteTaskController {
         this.interactor = interactor;
     }
 
-    public void excute(String username, String taskName) {
+    public void execute(String username, String taskName) {
         final DeleteTaskInputData inputData = new DeleteTaskInputData(username, taskName);
         interactor.excute(inputData);
     }
