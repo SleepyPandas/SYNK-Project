@@ -12,6 +12,7 @@ public class Habit implements Completable {
     private int streakCount;
     private int priority;
     private boolean status;
+    private String description;
 
     Habit(String habitName,
           LocalDateTime startDateTime,
@@ -29,6 +30,7 @@ public class Habit implements Completable {
         this.streakCount = streakCount;
         this.priority = priority;
         this.status = status;
+        this.description = this.habitName + " started on " + this.startDateTime.toString();
     }
 
     @Override
@@ -37,14 +39,23 @@ public class Habit implements Completable {
     @Override
     public boolean isCompleted() { return status; }
 
+    @Override
+    public String getName() {
+        return this.habitName;
+    }
+
+    @Override
+    public String getDescription() {
+        return this.description;
+    }
+
+
     public void incrementStreak() { this.streakCount++; }
 
     public String getHabitName() { return this.habitName; }
-
     public void setHabitName(String habitName) { this.habitName = habitName; }
 
     public LocalDateTime getStartDateTime() { return this.startDateTime; }
-
     public void setStartDateTime(LocalDateTime startDateTime) { this.startDateTime = startDateTime; }
 
     public int getFrequencyCount() { return frequencyCount; }
@@ -88,5 +99,9 @@ public class Habit implements Completable {
                 ", priority=" + priority +
                 ", status=" + status +
                 '}';
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

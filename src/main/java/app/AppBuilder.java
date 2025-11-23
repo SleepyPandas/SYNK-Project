@@ -7,8 +7,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import data_access.FileUserDataAccessObject;
-import data_access.TaskHabitDataAccessObject;
+import data_access.DBUserDataAccessObject;
+import data_access.HabitDataAccessObject;
+import data_access.TaskDataAccessObject;
 import entities.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.leaderboard.ViewLeaderboardController;
@@ -41,6 +42,7 @@ import view.LoginView;
 import view.SignupView;
 import view.ViewManager;
 
+
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
     private final CardLayout cardLayout = new CardLayout();
@@ -50,8 +52,9 @@ public class AppBuilder {
 
     // set which data access implementation to use, can be any
     // of the classes from the data_access package
-    final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
-    final TaskHabitDataAccessObject taskHabitDataAccessObject;
+    final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory);
+    final TaskDataAccessObject taskHabitDataAccessObject;
+    final HabitDataAccessObject habitDataAccessObject = new HabitDataAccessObject();
 
     private SignupView signupView;
     private SignupViewModel signupViewModel;
@@ -64,7 +67,7 @@ public class AppBuilder {
 
     public AppBuilder() throws IOException {
         cardPanel.setLayout(cardLayout);
-        taskHabitDataAccessObject = new TaskHabitDataAccessObject("habits.csv");
+        taskHabitDataAccessObject = new TaskDataAccessObject();
     }
 
     public AppBuilder addSignupView() {
@@ -130,15 +133,15 @@ public class AppBuilder {
         return this;
     }
 
-    public AppBuilder addViewLeaderboardUseCase() {
-        final ViewLeaderboardOutputBoundary viewLeaderboardOutputBoundary = new ViewLeaderboardPresenter(viewLeaderboardViewModel);
-        final ViewLeaderboardInputBoundary viewLeaderboardInteractor = new ViewLeaderboardInteractor(
-                taskHabitDataAccessObject, viewLeaderboardOutputBoundary);
-
-        ViewLeaderboardController viewLeaderboardController = new ViewLeaderboardController(viewLeaderboardInteractor);
-        leaderboardView.setViewLeaderboardController(viewLeaderboardController);
-        return this;
-    }
+//    public AppBuilder addViewLeaderboardUseCase() {
+//        final ViewLeaderboardOutputBoundary viewLeaderboardOutputBoundary = new ViewLeaderboardPresenter(viewLeaderboardViewModel);
+//        final ViewLeaderboardInputBoundary viewLeaderboardInteractor = new ViewLeaderboardInteractor(
+//                habitDataAccessObject, viewLeaderboardOutputBoundary);
+//
+//        ViewLeaderboardController viewLeaderboardController = new ViewLeaderboardController(viewLeaderboardInteractor);
+//        leaderboardView.setViewLeaderboardController(viewLeaderboardController);
+//        return this;
+//    }
 
     public JFrame build() {
         final JFrame application = new JFrame("User Login Example");
