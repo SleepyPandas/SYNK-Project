@@ -10,7 +10,7 @@ import javax.swing.WindowConstants;
 
 import data_access.FileUserDataAccessObject;
 import data_access.GoogleCalendarDataAccessObject;
-import data_access.TaskHabitDataAccessObject;
+//import data_access.TaskHabitDataAccessObject;
 import data_access.HabitDataAccessObject;
 import data_access.TaskDataAccessObject;
 import entities.UserFactory;
@@ -66,7 +66,7 @@ public class AppBuilder {
     final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
     final TaskDataAccessObject taskHabitDataAccessObject;
     final HabitDataAccessObject habitDataAccessObject = new HabitDataAccessObject();
-    final TaskHabitDataAccessObject taskHabitDataAccessObject;
+//    final TaskHabitDataAccessObject taskHabitDataAccessObject;
     final ViewLeaderboardUserDataAccessInterface viewLeaderboardUserDataAccessInterface;
     private final CalendarGateway calendarGateway; // Calendar gateway used for syncing to Google Calendar
 
@@ -83,8 +83,8 @@ public class AppBuilder {
 
     public AppBuilder() throws IOException, GeneralSecurityException { // Constructor now accounts for calendar gateway setup
         cardPanel.setLayout(cardLayout);
-        Path habitsPath = Paths.get("habits.csv");
-        taskHabitDataAccessObject = new TaskHabitDataAccessObject(habitsPath);
+//        Path habitsPath = Paths.get("habits.csv");
+//        taskHabitDataAccessObject = new TaskHabitDataAccessObject(habitsPath);
         calendarGateway = new GoogleCalendarDataAccessObject(); // Initialize Google Calendar gateway implementation
         viewLeaderboardUserDataAccessInterface = null;
         taskHabitDataAccessObject = new TaskDataAccessObject();
@@ -157,7 +157,8 @@ public class AppBuilder {
         final ViewLeaderboardOutputBoundary viewLeaderboardOutputBoundary = new ViewLeaderboardPresenter(viewLeaderboardViewModel);
         final ViewLeaderboardInputBoundary viewLeaderboardInteractor = new ViewLeaderboardInteractor(
                 viewLeaderboardUserDataAccessInterface, viewLeaderboardOutputBoundary);
-                habitDataAccessObject, viewLeaderboardOutputBoundary);
+
+        // habitDataAccessObject, viewLeaderboardOutputBoundary);
 
         ViewLeaderboardController viewLeaderboardController = new ViewLeaderboardController(viewLeaderboardInteractor);
         leaderboardView.setViewLeaderboardController(viewLeaderboardController);
