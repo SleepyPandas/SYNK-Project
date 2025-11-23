@@ -19,6 +19,8 @@ public class DeleteTaskPresenter implements DeleteTaskOutputBoundary {
         final DeleteTaskState deleteTaskState = deleteTaskViewModel.getState();
 
         deleteTaskState.setUsername(outputData.getUsername());
+        deleteTaskState.setTaskName(outputData.getTaskName());
+
         deleteTaskState.setSuccessMessage(
                 "Task '" + outputData.getTaskName()
                         + "' deleted successfully for user '" + outputData.getUsername() + "'."
@@ -27,11 +29,8 @@ public class DeleteTaskPresenter implements DeleteTaskOutputBoundary {
 
         deleteTaskViewModel.setState(deleteTaskState);
         deleteTaskViewModel.firePropertyChanged();
-
-        // for view changing
-        // viewManagerModel.setActiveView("SomeOtherViewName");
-        // viewManagerModel.firePropertyChanged();
     }
+
 
     @Override
     public void prepareFailView(String errorMessage) {

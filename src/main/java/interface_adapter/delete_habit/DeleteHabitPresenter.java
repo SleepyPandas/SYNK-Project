@@ -19,7 +19,6 @@ public class DeleteHabitPresenter implements DeleteHabitOutputBoundary {
     public void prepareSuccessView(DeleteHabitOutputData outputData) {
         DeleteHabitState deleteHabitState = deleteHabitViewModel.getState();
 
-        // 把用户名和习惯名都写回到 state 里
         deleteHabitState.setUsername(outputData.getUsername());
         deleteHabitState.setHabitName(outputData.getHabitName());
 
@@ -31,7 +30,7 @@ public class DeleteHabitPresenter implements DeleteHabitOutputBoundary {
         deleteHabitViewModel.setState(deleteHabitState);
         deleteHabitViewModel.firePropertyChanged();
 
-        // 如果你希望删除后切换页面，可以在这里做：
+        //
         // viewManagerModel.setActiveView("SomeOtherViewName");
     }
 
