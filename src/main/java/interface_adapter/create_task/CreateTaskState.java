@@ -3,6 +3,7 @@ package interface_adapter.create_task;
 import java.time.LocalDateTime;
 
 public class CreateTaskState {
+    private String username = "";
     private String taskName = "";
     private String description = "";
     private LocalDateTime deadline = null;
@@ -12,6 +13,7 @@ public class CreateTaskState {
     private String successMessage = null;
 
     public CreateTaskState(CreateTaskState copy) {
+        this.username = copy.username;
         this.taskName = copy.taskName;
         this.description = copy.description;
         this.deadline = copy.deadline;
@@ -22,6 +24,14 @@ public class CreateTaskState {
     }
 
     public CreateTaskState() {
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getTaskName() {

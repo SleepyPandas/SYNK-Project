@@ -22,6 +22,7 @@ public class CreateTaskView extends JPanel implements ActionListener, PropertyCh
 
     private final CreateTaskViewModel createTaskViewModel;
 
+    private final JTextField usernameInputField = new JTextField(15);
     private final JTextField taskNameInputField = new JTextField(15);
     private final JTextField descriptionInputField = new JTextField(15);
     private final JTextField deadlineInputField = new JTextField(15);
@@ -40,11 +41,14 @@ public class CreateTaskView extends JPanel implements ActionListener, PropertyCh
         JLabel title = new JLabel(CreateTaskViewModel.TITLE_LABEL);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        LabelTextPanel usernamePanel = new LabelTextPanel(
+                new JLabel(CreateTaskViewModel.USERNAME_LABEL), usernameInputField);
+
         LabelTextPanel taskNamePanel = new LabelTextPanel(
                 new JLabel(CreateTaskViewModel.TASK_NAME_LABEL), taskNameInputField);
 
         LabelTextPanel descriptionPanel = new LabelTextPanel(
-                new JLabel("Description"), descriptionInputField);
+                new JLabel(CreateTaskViewModel.DESCRIPTION_LABEL), descriptionInputField);
 
         LabelTextPanel deadlinePanel = new LabelTextPanel(
                 new JLabel(CreateTaskViewModel.DEADLINE_LABEL), deadlineInputField);
@@ -91,6 +95,7 @@ public class CreateTaskView extends JPanel implements ActionListener, PropertyCh
                 }
 
                 createTaskController.execute(
+                        state.getUsername(),
                         state.getTaskName(),
                         state.getDescription(),
                         deadline,
@@ -103,6 +108,7 @@ public class CreateTaskView extends JPanel implements ActionListener, PropertyCh
 
         cancelButton.addActionListener(this);
 
+        addUsernameListener();
         addTaskNameListener();
         addDescriptionListener();
         addDeadlineListener();
@@ -111,12 +117,26 @@ public class CreateTaskView extends JPanel implements ActionListener, PropertyCh
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.add(title);
+        this.add(usernamePanel);
         this.add(taskNamePanel);
         this.add(descriptionPanel);
         this.add(deadlinePanel);
         this.add(taskGroupPanel);
         this.add(priorityPanel);
         this.add(buttons);
+    }
+
+    private void addUsernameListener() {
+        usernameInputField.getDocument().addDocumentListener(new DocumentListener() {
+            private void update() {
+                CreateTaskState state = createTaskViewModel.getState();
+                state.setUsername(usernameInputField.getText());
+                createTaskViewModel.setState(state);
+            }
+            public void insertUpdate(DocumentEvent e) { update(); }
+            public void removeUpdate(DocumentEvent e) { update(); }
+            public void changedUpdate(DocumentEvent e) { update(); }
+        });
     }
 
     private void addTaskNameListener() {
