@@ -1,8 +1,7 @@
-package data_access;// package data_access;
+package data_access;
 
 import entities.Task;
 import entities.TaskBuilder;
-import jdk.jshell.spi.ExecutionControl;
 import use_case.gateways.TaskGateway;
 
 import java.io.BufferedReader;
@@ -19,60 +18,61 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Prototype in-memory persistence layer backed by a simple HashMap of user id to tasks.
- * Create, Update, Remove, Read (Fetch) :
+ * Persistence layer for Tasks backed by a CSV file.
+ * Implements Create, Update, Remove, Read (Fetch) operations for tasks.
  */
-public class TaskHabitDataAccessObject implements TaskGateway {
+public class TaskDataAccessObject implements TaskGateway {
 
-    private static final String HEADER = "userId,taskName,description,startTime,deadline,taskGroup,status,priority";
+    private static final String TASK_HEADER = "userId,taskName,description,startTime,deadline,taskGroup,status,priority";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
-    private final File csvFile;
+    private final File taskCsvFile;
     private final Map<String, ArrayList<Task>> userTasks = new HashMap<>();
 
-    public TaskHabitDataAccessObject() {
+    public TaskDataAccessObject() {
         this(Path.of("tasks.csv"));
     }
 
-    public TaskHabitDataAccessObject(Path csvPath) {
-        this.csvFile = csvPath.toFile();
-        initializeFileIfNeeded();
-        loadFromCsv();
+    public TaskDataAccessObject(Path taskCsvPath) {
+        this.taskCsvFile = taskCsvPath.toFile();
+        initializeFileIfNeeded(taskCsvFile, TASK_HEADER);
+        loadTasksFromCsv();
     }
 
-    private void initializeFileIfNeeded() {
+    private void initializeFileIfNeeded(File csvFile, String header) {
         if (csvFile.exists()) {
             return;
         }
         try {
-            csvFile.getParentFile(); // parent may be null for relative paths
             if (csvFile.getParentFile() != null) {
                 csvFile.getParentFile().mkdirs();
             }
             if (csvFile.createNewFile()) {
-                writeHeader();
+                writeHeader(csvFile, header);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Unable to initialize tasks CSV", e);
+            throw new RuntimeException("Unable to initialize CSV file: " + csvFile.getName(), e);
         }
     }
 
-    private void writeHeader() throws IOException {
+    private void writeHeader(File csvFile, String header) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(csvFile))) {
-            writer.write(HEADER);
+            writer.write(header);
             writer.newLine();
         }
     }
 
-    private void loadFromCsv() {
+    // ========== TASK PERSISTENCE METHODS ==========
+
+    private void loadTasksFromCsv() {
         userTasks.clear();
-        try (BufferedReader reader = new BufferedReader(new FileReader(csvFile))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(taskCsvFile))) {
             final String headerLine = reader.readLine();
             if (headerLine == null) {
-                writeHeader();
+                writeHeader(taskCsvFile, TASK_HEADER);
                 return;
             }
-            if (!HEADER.equals(headerLine)) {
+            if (!TASK_HEADER.equals(headerLine)) {
                 throw new IllegalStateException("Unexpected header in tasks CSV");
             }
             String line;
@@ -105,8 +105,6 @@ public class TaskHabitDataAccessObject implements TaskGateway {
                 Task task = new TaskBuilder()
                         .setTaskName(taskName)
                         .setDescription(description)
-                        // WE NEED A START TIME FIELD IN THE BUILDER
-                        //.setStartTime(startTime)
                         .setDeadline(deadline)
                         .setTaskGroup(taskGroup)
                         .setStatus(status)
@@ -120,9 +118,9 @@ public class TaskHabitDataAccessObject implements TaskGateway {
         }
     }
 
-    private void persistToCsv() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(csvFile))) {
-            writer.write(HEADER);
+    private void persistTasksToCsv() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(taskCsvFile))) {
+            writer.write(TASK_HEADER);
             writer.newLine();
             for (Map.Entry<String, ArrayList<Task>> entry : userTasks.entrySet()) {
                 final String userId = entry.getKey();
@@ -152,15 +150,15 @@ public class TaskHabitDataAccessObject implements TaskGateway {
         return value == null ? "" : value;
     }
 
+    // ========== TASK GATEWAY IMPLEMENTATION ==========
+
     @Override
     public String addTask(String userId, Task task) {
-        // Compute if absent to initialize user's task list, if it exists return it
-
         ArrayList<Task> tasksForUser = userTasks.computeIfAbsent(userId, key -> new ArrayList<>());
 
         try {
             tasksForUser.add(task);
-            persistToCsv();
+            persistTasksToCsv();
         } catch (Exception e) {
             e.printStackTrace();
             return "Error Adding Task";
@@ -173,13 +171,11 @@ public class TaskHabitDataAccessObject implements TaskGateway {
         ArrayList<Task> tasks = userTasks.get(userId);
 
         if (tasks == null) {
-            // Returns Empty List if no tasks for user
             return new ArrayList<>();
         }
 
         return tasks;
     }
-
 
     @Override
     public boolean deleteTask(String userId, Task task) {
@@ -190,7 +186,7 @@ public class TaskHabitDataAccessObject implements TaskGateway {
 
         boolean removed = tasks.remove(task);
         if (removed && !(tasks.contains(task))) {
-            persistToCsv();
+            persistTasksToCsv();
             return removed;
         }
         return false;
