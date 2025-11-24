@@ -4,6 +4,9 @@ import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.LoggedInState;
 import interface_adapter.logged_in.LoggedInViewModel;
+import interface_adapter.sync_to_google_calendar.SyncToGoogleCalendarController;
+import interface_adapter.sync_to_google_calendar.SyncToGoogleCalendarControllerState;
+import interface_adapter.sync_to_google_calendar.SyncToGoogleCalendarViewModel;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -17,28 +20,27 @@ import java.beans.PropertyChangeListener;
 /**
  * The View for when the user is logged into the program.
  */
-public class ChangePasswordView extends JPanel implements ActionListener, PropertyChangeListener {
+public class LoggedInView extends JPanel implements ActionListener, PropertyChangeListener {
 
     private final String viewName = "logged in";
     private final LoggedInViewModel loggedInViewModel;
     private final JLabel passwordErrorField = new JLabel();
     private ChangePasswordController changePasswordController = null;
     private ViewManagerModel viewManagerModel;
-
+    private SyncToGoogleCalendarController syncToGoogleCalendarController; // Injected controller to kick off calendar sync
+    private SyncToGoogleCalendarViewModel syncToGoogleCalendarViewModel; //  View model providing sync result updates
 
     private final JLabel username;
 
     private final JButton logOut;
     private final JButton viewLeaderboard;
+    private final JButton syncCalendarButton; //  Button to sync tasks to Google Calendar
+    private final JLabel syncStatusLabel = new JLabel(); //  Inline status label for sync results
 
     private final JTextField passwordInputField = new JTextField(15);
     private final JButton changePassword;
-    private final JButton viewTasks;
-    private final JButton viewHabits;
-    private final JButton modifyTask;
-    private final JLabel modifyHabit;
 
-    public ChangePasswordView(LoggedInViewModel loggedInViewModel) {
+    public LoggedInView(LoggedInViewModel loggedInViewModel) {
         this.loggedInViewModel = loggedInViewModel;
         this.loggedInViewModel.addPropertyChangeListener(this);
 
@@ -53,26 +55,16 @@ public class ChangePasswordView extends JPanel implements ActionListener, Proper
 
         final JPanel buttons = new JPanel();
         logOut = new JButton("Log Out");
+        buttons.add(logOut);
 
         changePassword = new JButton("Change Password");
-
-        viewTasks = new JButton("View tasks");
-
-        viewHabits = new JButton("View habits");
-
-        viewLeaderboard = new JButton("View leaderboard");
-        // TODO move this code to the view tasks view
-        modifyTask = new JButton("modify task");
-        modifyHabit = new JLabel("modify habit");
-
-        buttons.add(viewTasks);
-        buttons.add(viewHabits);
-        buttons.add(viewLeaderboard);
-        buttons.add(logOut);
         buttons.add(changePassword);
-        buttons.add(modifyTask);
 
+        viewLeaderboard = new JButton("View Leaderboard");
         buttons.add(viewLeaderboard);
+
+        syncCalendarButton = new JButton("Sync to Google Calendar"); //  Create sync trigger button
+        buttons.add(syncCalendarButton); // Add sync button alongside other actions
 
         logOut.addActionListener(this);
         
@@ -123,10 +115,10 @@ public class ChangePasswordView extends JPanel implements ActionListener, Proper
                 }
         );
 
-        modifyTask.addActionListener(evt -> {
-            if (evt.getSource().equals(modifyTask)){
-                this.viewManagerModel.setState("modify task");
-                this.viewManagerModel.firePropertyChanged();
+        syncCalendarButton.addActionListener(evt -> { // Invoke calendar sync when button is clicked
+            if (evt.getSource().equals(syncCalendarButton) && syncToGoogleCalendarController != null) {
+                final LoggedInState currentState = loggedInViewModel.getState(); // Use logged-in username as user identifier for sync
+                syncToGoogleCalendarController.execute(currentState.getUsername()); // Trigger sync interactor via controller
             }
         });
 
@@ -137,6 +129,7 @@ public class ChangePasswordView extends JPanel implements ActionListener, Proper
         this.add(passwordInfo);
         this.add(passwordErrorField);
         this.add(buttons);
+        this.add(syncStatusLabel); // Show latest sync success/error message in UI
     }
 
     /**
@@ -157,6 +150,16 @@ public class ChangePasswordView extends JPanel implements ActionListener, Proper
             final LoggedInState state = (LoggedInState) evt.getNewValue();
             JOptionPane.showMessageDialog(null, "password updated for " + state.getUsername());
         }
+        else if (evt.getPropertyName().equals("sync")) { // React to sync view model updates
+            final SyncToGoogleCalendarControllerState syncState = (SyncToGoogleCalendarControllerState) evt.getNewValue(); //  Capture sync state updates
+            if (syncState.isSuccess()) {
+                syncStatusLabel.setText(syncState.getStatusMessage()); // Reflect successful sync in label
+                JOptionPane.showMessageDialog(this, syncState.getStatusMessage(), "Sync Complete", JOptionPane.INFORMATION_MESSAGE); //  Show confirmation dialog on success
+            } else {
+                syncStatusLabel.setText(syncState.getError()); //  Show error on failure
+                JOptionPane.showMessageDialog(this, syncState.getError(), "Sync Failed", JOptionPane.ERROR_MESSAGE); //  Alert user when sync fails
+            }
+        }
 
     }
 
@@ -170,5 +173,14 @@ public class ChangePasswordView extends JPanel implements ActionListener, Proper
 
     public void setViewManagerModel(ViewManagerModel viewManagerModel) {
         this.viewManagerModel = viewManagerModel;
+    }
+
+    public void setSyncToGoogleCalendarController(SyncToGoogleCalendarController syncToGoogleCalendarController) { //  Allow builder to inject sync controller
+        this.syncToGoogleCalendarController = syncToGoogleCalendarController; //  Store injected sync controller
+    }
+
+    public void setSyncToGoogleCalendarViewModel(SyncToGoogleCalendarViewModel syncToGoogleCalendarViewModel) { //  Subscribe to sync view model updates
+        this.syncToGoogleCalendarViewModel = syncToGoogleCalendarViewModel; //  Capture sync view model reference
+        this.syncToGoogleCalendarViewModel.addPropertyChangeListener(this); // Listen for sync result changes
     }
 }
