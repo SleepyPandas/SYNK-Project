@@ -22,9 +22,8 @@ public class InMemoryUserDataAccessObject implements UserGateway {
     }
 
     @Override
-    public boolean createUser(User user) {
+    public void createUser(User user) {
         users.put(user.getName(), user);
-        return true;
     }
 
     @Override
@@ -33,24 +32,18 @@ public class InMemoryUserDataAccessObject implements UserGateway {
     }
 
     @Override
-    public boolean updateUser(String oldUserID, User newUser) {
+    public void updateUser(String oldUserID, User newUser) {
         for (User user : users.values()){
             if (user.getName().equals(oldUserID)){
                 users.replace(oldUserID, newUser);
-                return true;
             }
         }
-        return false;
     }
 
     @Override
-    public boolean deleteUser(String oldUserID){
-        if (!this.existsByName(oldUserID)) {
-            return false;
-        } else{
-            users.remove(oldUserID);
-            return true;
-        }
+    public void deleteUser(String oldUserID){
+        users.remove(oldUserID);
+
     }
 
 
