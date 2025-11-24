@@ -115,6 +115,7 @@ public class AppBuilder {
     public AppBuilder addLeaderboardView() {
         viewLeaderboardViewModel = new ViewLeaderboardViewModel();
         leaderboardView = new LeaderboardView(viewLeaderboardViewModel);
+        leaderboardView.setViewManagerModel(viewManagerModel);
         cardPanel.add(leaderboardView, leaderboardView.getViewName());
         return this;
     }
