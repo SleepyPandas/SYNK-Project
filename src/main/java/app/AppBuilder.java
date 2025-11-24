@@ -10,7 +10,6 @@ import javax.swing.WindowConstants;
 
 import data_access.FileUserDataAccessObject;
 import data_access.GoogleCalendarDataAccessObject;
-//import data_access.TaskHabitDataAccessObject;
 import data_access.HabitDataAccessObject;
 import data_access.TaskDataAccessObject;
 import entities.UserFactory;
@@ -54,8 +53,13 @@ import use_case.sync_to_google_calendar.SyncToGoogleCalendarOutputBoundary;
 import use_case.view_leaderboard.ViewLeaderboardInputBoundary;
 import use_case.view_leaderboard.ViewLeaderboardInteractor;
 import use_case.view_leaderboard.ViewLeaderboardOutputBoundary;
-import use_case.view_leaderboard.ViewLeaderboardUserDataAccessInterface;
+
 import view.*;
+import view.LeaderboardView;
+import view.LoggedInView;
+import view.LoginView;
+import view.SignupView;
+import view.ViewManager;
 
 
 public class AppBuilder {
@@ -68,9 +72,8 @@ public class AppBuilder {
     // set which data access implementation to use, can be any
     // of the classes from the data_access package
     final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
-    final HabitDataAccessObject habitDataAccessObject = new HabitDataAccessObject();
     final TaskDataAccessObject taskDataAccessObject = new TaskDataAccessObject();
-    final ViewLeaderboardUserDataAccessInterface viewLeaderboardUserDataAccessInterface;
+    final HabitDataAccessObject habitDataAccessObject = new HabitDataAccessObject();
     private final CalendarGateway calendarGateway; // Calendar gateway used for syncing to Google Calendar
 
     private SignupView signupView;
@@ -93,7 +96,6 @@ public class AppBuilder {
     public AppBuilder() throws IOException, GeneralSecurityException { // Constructor now accounts for calendar gateway setup
         cardPanel.setLayout(cardLayout);
         calendarGateway = new GoogleCalendarDataAccessObject(); // Initialize Google Calendar gateway implementation
-        viewLeaderboardUserDataAccessInterface = null;
     }
 
     public AppBuilder addSignupView() {
@@ -178,8 +180,7 @@ public class AppBuilder {
     public AppBuilder addViewLeaderboardUseCase() {
         final ViewLeaderboardOutputBoundary viewLeaderboardOutputBoundary = new ViewLeaderboardPresenter(viewLeaderboardViewModel);
         final ViewLeaderboardInputBoundary viewLeaderboardInteractor = new ViewLeaderboardInteractor(
-                viewLeaderboardUserDataAccessInterface, viewLeaderboardOutputBoundary);
-
+                habitDataAccessObject, viewLeaderboardOutputBoundary);
 
         ViewLeaderboardController viewLeaderboardController = new ViewLeaderboardController(viewLeaderboardInteractor);
         leaderboardView.setViewLeaderboardController(viewLeaderboardController);
