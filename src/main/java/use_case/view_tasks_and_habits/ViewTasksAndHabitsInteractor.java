@@ -1,23 +1,25 @@
 package use_case.view_tasks_and_habits;
 
 
-import data_access.FileUserDataAccessObject;
+import data_access.DBUserDataAccessObject;
 import data_access.HabitDataAccessObject;
 import data_access.TaskDataAccessObject;
 import entities.Task;
 import entities.Habit;
+
+import interface_adapter.logged_in.LoggedInViewModel;
 
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.ArrayList;
 
 public class ViewTasksAndHabitsInteractor implements ViewTasksAndHabitsInputBoundary {
-    private FileUserDataAccessObject userDataAccess;
+    private DBUserDataAccessObject userDataAccess;
     private TaskDataAccessObject taskDataAccess;
     private HabitDataAccessObject habitDataAccess;
     private ViewTasksAndHabitsOutputBoundary presenter;
 
-    public ViewTasksAndHabitsInteractor(FileUserDataAccessObject userDataAccess, ViewTasksAndHabitsOutputBoundary presenter){
+    public ViewTasksAndHabitsInteractor(TaskDataAccessObject taskDataAccess, HabitDataAccessObject habitDataAccess, DBUserDataAccessObject userDataAccess, ViewTasksAndHabitsOutputBoundary presenter){
         this.presenter = presenter;
         this.userDataAccess = userDataAccess;
         this.taskDataAccess = new TaskDataAccessObject();
@@ -30,8 +32,8 @@ public class ViewTasksAndHabitsInteractor implements ViewTasksAndHabitsInputBoun
 
     }
 
-    public ArrayList<ArrayList<String>> getFormattedTasks(){
-        ArrayList<Task> taskList = this.taskDataAccess.fetchTasks(this.userDataAccess.toString());
+    public ArrayList<ArrayList<String>> getFormattedTasks(LoggedInViewModel loggedInViewModel) {
+        ArrayList<Task> taskList = this.taskDataAccess.fetchTasks(loggedInViewModel.getState().getUsername());
 
         ArrayList<ArrayList<String>> formattedTasks = new ArrayList<>();
 
@@ -117,8 +119,8 @@ public class ViewTasksAndHabitsInteractor implements ViewTasksAndHabitsInputBoun
         return formattedTasks;
     }
 
-    public ArrayList<ArrayList<String>> getFormattedHabits(){
-        ArrayList<Habit> habitList = this.habitDataAccess.fetchHabits(this.userDataAccess.toString());
+    public ArrayList<ArrayList<String>> getFormattedHabits(LoggedInViewModel loggedInViewModel){
+        ArrayList<Habit> habitList = this.habitDataAccess.fetchHabits(loggedInViewModel.getState().getUsername());
 
         ArrayList<ArrayList<String>> formattedHabits = new ArrayList<>();
 

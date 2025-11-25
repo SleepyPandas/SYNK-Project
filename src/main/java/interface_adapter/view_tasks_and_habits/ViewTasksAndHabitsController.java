@@ -1,20 +1,26 @@
 package interface_adapter.view_tasks_and_habits;
 
+
 import use_case.view_tasks_and_habits.ViewTasksAndHabitsInputBoundary;
 import use_case.view_tasks_and_habits.ViewTasksAndHabitsInputData;
+import view.LoggedInView;
 import view.ViewTasksAndHabitsView;
+
+import interface_adapter.logged_in.LoggedInState;
 
 import java.util.ArrayList;
 
 /**
- * The controller for the Login Use Case.
+ * The controller for the View Tasks and Habits Use Case.
  */
 public class ViewTasksAndHabitsController {
 
     private final ViewTasksAndHabitsInputBoundary viewTasksAndHabitsUseCaseInteractor;
+    private final LoggedInViewModel loggedInViewModel;
 
-    public ViewTasksAndHabitsController(ViewTasksAndHabitsInputBoundary viewTasksAndHabitsUseCaseInteractor) {
+    public ViewTasksAndHabitsController(ViewTasksAndHabitsInputBoundary viewTasksAndHabitsUseCaseInteractor, LoggedInViewModel loggedInViewModel) {
         this.viewTasksAndHabitsUseCaseInteractor = viewTasksAndHabitsUseCaseInteractor;
+        this.loggedInViewModel = loggedInViewModel;
     }
 
     /**
@@ -30,11 +36,11 @@ public class ViewTasksAndHabitsController {
     public void exit() {
     }
 
-    public ArrayList<ArrayList<String>> getFormattedTasks() {
-        return viewTasksAndHabitsUseCaseInteractor.getFormattedTasks();
+    public ArrayList<ArrayList<String>> getFormattedTasks(LoggedInViewModel loggedInViewModel) {
+        return viewTasksAndHabitsUseCaseInteractor.getFormattedTasks(this.loggedInViewModel);
     }
 
-    public ArrayList<ArrayList<String>> getFormattedHabits() {
-        return viewTasksAndHabitsUseCaseInteractor.getFormattedHabits();
+    public ArrayList<ArrayList<String>> getFormattedHabits(LoggedInViewModel loggedInViewModel) {
+        return viewTasksAndHabitsUseCaseInteractor.getFormattedHabits(this.loggedInViewModel);
     }
 }

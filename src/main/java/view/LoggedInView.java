@@ -7,6 +7,7 @@ import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.sync_to_google_calendar.SyncToGoogleCalendarController;
 import interface_adapter.sync_to_google_calendar.SyncToGoogleCalendarControllerState;
 import interface_adapter.sync_to_google_calendar.SyncToGoogleCalendarViewModel;
+import interface_adapter.view_tasks_and_habits.ViewTasksAndHabitsViewModel;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -37,6 +38,7 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
     private ViewManagerModel viewManagerModel;
     private SyncToGoogleCalendarController syncToGoogleCalendarController; // Injected controller to kick off calendar sync
     private SyncToGoogleCalendarViewModel syncToGoogleCalendarViewModel; //  View model providing sync result updates
+    private ViewTasksAndHabitsViewModel viewTasksAndHabitsViewModel;
 
     private final JLabel username;
 
@@ -73,6 +75,8 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
 
         syncCalendarButton = new JButton("Sync to Google Calendar"); //  Create sync trigger button
         buttons.add(syncCalendarButton); // Add sync button alongside other actions
+
+        final JPanel viewTasksAndHabits = new ViewTasksAndHabitsView(viewTasksAndHabitsViewModel);
 
         logOut.addActionListener(this);
         
