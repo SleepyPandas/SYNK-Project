@@ -74,7 +74,6 @@ public class ModifyHabitInteractor implements ModifyHabitInputBoundary {
                 }
             }
 
-            // Delete old habit and add modified habit
             userDataAccessObject.deleteHabit(userID, oldHabit);
             userDataAccessObject.addHabit(userID, modifiedHabit);
 

@@ -24,6 +24,7 @@ import interface_adapter.login.LoginController;
 import interface_adapter.login.LoginPresenter;
 import interface_adapter.login.LoginViewModel;
 import interface_adapter.modify_habit.ModifyHabitController;
+import interface_adapter.modify_habit.ModifyHabitPresenter;
 import interface_adapter.modify_habit.ModifyHabitViewModel;
 import interface_adapter.modify_task.ModifyTaskController;
 import interface_adapter.modify_task.ModifyTaskPresenter;
@@ -41,6 +42,10 @@ import use_case.gateways.CalendarGateway;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
 import use_case.login.LoginOutputBoundary;
+import use_case.modify_habit.ModifyHabitInputBoundary;
+import use_case.modify_habit.ModifyHabitInteractor;
+import use_case.modify_habit.ModifyHabitOutputBoundary;
+import use_case.modify_habit.ModifyHabitOutputData;
 import use_case.modify_task.ModifyTaskInputBoundary;
 import use_case.modify_task.ModifyTaskInteractor;
 import use_case.modify_task.ModifyTaskOutputBoundary;
@@ -213,6 +218,13 @@ public class AppBuilder {
     }
 
     public AppBuilder addModifyHabitUseCase(){
+        final ModifyHabitOutputBoundary modifyHabitOutputBoundary = new ModifyHabitPresenter(viewManagerModel,
+                modifyHabitViewModel, loginViewModel);
+        final ModifyHabitInputBoundary modifyHabitInteractor = new ModifyHabitInteractor(modifyHabitOutputBoundary,
+                habitDataAccessObject);
+
+        modifyHabitController = new ModifyHabitController(modifyHabitInteractor, loggedInViewModel);
+        modifyHabitView.setModifyHabitController(modifyHabitController);
         return this;
     }
 

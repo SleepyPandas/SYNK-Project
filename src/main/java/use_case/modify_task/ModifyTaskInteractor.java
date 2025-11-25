@@ -25,7 +25,7 @@ public class ModifyTaskInteractor implements ModifyTaskInputBoundary {
         String oldDeadline = modifyInputData.getOldDeadline();
         String oldTaskGroup = modifyInputData.getOldTaskGroup();
         String oldDescription = modifyInputData.getOldDescription();
-        String oldStartTimeRaw = modifyInputData.getOldStartTime(); // ADDED
+        String oldStartTimeRaw = modifyInputData.getOldStartTime();
 
         String newTaskName = modifyInputData.getNewTaskName();
         String newTaskPriority = modifyInputData.getNewPriority();
@@ -33,7 +33,7 @@ public class ModifyTaskInteractor implements ModifyTaskInputBoundary {
         String newDeadline = modifyInputData.getNewDeadline();
         String newTaskGroup = modifyInputData.getNewTaskGroup();
         String newDescription = modifyInputData.getNewDescription();
-        String newStartTimeRaw = modifyInputData.getNewStartTime(); // ADDED
+        String newStartTimeRaw = modifyInputData.getNewStartTime();
         String userID = modifyInputData.getUserID();
 
         try{

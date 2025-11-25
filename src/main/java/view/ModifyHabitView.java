@@ -30,11 +30,12 @@ public class ModifyHabitView extends JPanel implements ActionListener, PropertyC
     private final NumberFormat numberFormat = NumberFormat.getNumberInstance();
     private final JFormattedTextField newHabitPriority = new JFormattedTextField(numberFormat);
     private final JFormattedTextField newStreakCount = new JFormattedTextField(numberFormat);
+
     private ModifyHabitController modifyHabitController = null;
 
     private final JButton save = new JButton("save");
     private final JButton cancel = new JButton("cancel");
-    private ViewManagerModel setViewManagerModel;
+    private ViewManagerModel viewManagerModel;
 
     public ModifyHabitView(ModifyHabitViewModel modifyHabitViewModel) {
         this.modifyHabitViewModel = modifyHabitViewModel;
@@ -79,7 +80,7 @@ public class ModifyHabitView extends JPanel implements ActionListener, PropertyC
             public void documentStateHelper() {
                 final ModifyHabitState currentState = modifyHabitViewModel.getState();
                 // Parse and set startDateTime - you may want to add proper parsing
-                currentState.setStartDateTime(null); // TODO: Parse from text field
+                currentState.setStartDateTime(newStartDateTime.getText());
             }
 
             @Override
@@ -296,7 +297,13 @@ public class ModifyHabitView extends JPanel implements ActionListener, PropertyC
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-
+        final ModifyHabitState state = (ModifyHabitState) evt.getNewValue();
+        newHabitName.setText(state.getHabitName());
+        newStartDateTime.setText(state.getStartDateTime());
+        newFrequency.setText(state.getFrequency());
+        newHabitGroup.setText(state.getHabitGroup());
+        newHabitPriority.setText(state.getPriority());
+        newStreakCount.setText(state.getStreakCount());
     }
 
     public String getViewName() {
@@ -308,6 +315,6 @@ public class ModifyHabitView extends JPanel implements ActionListener, PropertyC
     }
 
     public void setViewManagerModel(ViewManagerModel viewManagerModel){
-        this.setViewManagerModel = viewManagerModel;
+        this.viewManagerModel = viewManagerModel;
     }
 }

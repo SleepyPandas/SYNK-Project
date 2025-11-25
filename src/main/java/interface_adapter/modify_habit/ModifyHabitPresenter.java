@@ -25,13 +25,13 @@ public class ModifyHabitPresenter implements ModifyHabitOutputBoundary {
 
     @Override
     public void prepareSuccessView(ModifyHabitOutputData outputData) {
-        // on success, switch to habit list view
-        // TODO switch to Arya's use case's view when ready
+        // TODO set viewmanagermodel to Arya's view when ready
     }
 
     @Override
     public void prepareFailView(String errorMessage) {
-
+        viewManagerModel.setState(modifyHabitViewModel.getViewName());
+        viewManagerModel.firePropertyChanged();
     }
 
     public void switchToHabitListView(){
