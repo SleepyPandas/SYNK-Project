@@ -112,6 +112,7 @@ public class AppBuilder {
     public AppBuilder addUpdateProfileView() {
         updateProfileViewModel = new  UpdateProfileViewModel();
         updateProfileView = new  UpdateProfileView(updateProfileViewModel);
+        updateProfileView.setViewManagerModel(viewManagerModel);
         cardPanel.add(updateProfileView, updateProfileView.getViewName());
         return this;
     }

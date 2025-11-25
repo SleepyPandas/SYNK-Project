@@ -28,7 +28,7 @@ public class UpdateProfileView extends JPanel implements ActionListener, Propert
     private final UpdateProfileViewModel updateProfileViewModel;
     private ChangePasswordController changePasswordController = null;
     private UpdateProfileController updateProfileController = null;
-    private ViewManagerModel viewManagerModel;
+        private ViewManagerModel viewManagerModel;
 
     private final JTextField usernameInputField = new JTextField(15);
     private final JTextField passwordInputField = new JTextField(15);
