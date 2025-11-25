@@ -23,7 +23,7 @@ public class InMemoryUserDataAccessObject implements UserGateway {
 
     @Override
     public void createUser(User user) {
-        users.put(user.getName(), user);
+        users.put(user.getUsername(), user);
     }
 
     @Override

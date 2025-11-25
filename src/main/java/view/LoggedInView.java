@@ -32,6 +32,8 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
     private final JButton logOut;
     private final JButton viewLeaderboard;
     private final JButton updateProfile;
+    private final JButton syncCalendarButton; //  Button to sync tasks to Google Calendar
+    private final JLabel syncStatusLabel = new JLabel(); //  Inline status label for sync results
 
 
 
@@ -54,6 +56,9 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
 
         updateProfile = new JButton("Update Profile");
         buttons.add(updateProfile);
+
+        syncCalendarButton = new JButton("Sync to Google Calendar"); //  Create sync trigger button
+        buttons.add(syncCalendarButton); // Add sync button alongside other actions
 
         logOut.addActionListener(this);
         
