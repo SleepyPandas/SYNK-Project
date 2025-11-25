@@ -55,7 +55,8 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
                     final String username = String.valueOf(col[headers.get("username")]);
                     final String avatarpath = String.valueOf(col[headers.get("avatarpath")]);
                     final String password = String.valueOf(col[headers.get("password")]);
-                    final User user = userFactory.create(username, password);
+
+                    final User user = userFactory.create(uid, username, avatarpath, password);
                     usersByName.put(username, user);
                     usersByUid.put(uid, user);
                 }
@@ -108,6 +109,7 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
     @Override
     public void save(User user) {
         usersByName.put(user.getUsername(), user);
+        usersByUid.put(user.getUid(), user);
         this.save();
     }
 
