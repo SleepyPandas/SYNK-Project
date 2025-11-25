@@ -1,7 +1,7 @@
 package view;
 
 import interface_adapter.ViewManagerModel;
-import interface_adapter.update_profile.ChangePasswordController;
+import view.UpdateProfileView;
 import interface_adapter.logged_in.LoggedInState;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.sync_to_google_calendar.SyncToGoogleCalendarController;
@@ -24,11 +24,15 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
 
     private final String viewName = "logged in";
     private final LoggedInViewModel loggedInViewModel;
+    private UpdateProfileView updateProfileView;
+
     private ViewManagerModel viewManagerModel;
     private SyncToGoogleCalendarController syncToGoogleCalendarController; // Injected controller to kick off calendar sync
     private SyncToGoogleCalendarViewModel syncToGoogleCalendarViewModel; //  View model providing sync result updates
 
     private final JLabel username;
+    private final JLabel avatarLabel;
+
     private final JButton logOut;
     private final JButton viewLeaderboard;
     private final JButton updateProfile;
@@ -46,6 +50,13 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
 
         final JLabel usernameInfo = new JLabel("Currently logged in: ");
         username = new JLabel();
+        avatarLabel = new JLabel();
+
+        JPanel userPanel = new JPanel();
+        userPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        userPanel.add(avatarLabel);
+        userPanel.add(usernameInfo);
+        userPanel.add(username);
 
         final JPanel buttons = new JPanel();
         logOut = new JButton("Log Out");
@@ -72,6 +83,13 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
 
         updateProfile.addActionListener(evt -> {
             if (evt.getSource().equals(updateProfile) && viewManagerModel != null) {
+                LoggedInState state = loggedInViewModel.getState();   // 注意是小写 loggedInViewModel
+                String uid = state.getUid();
+
+                if (updateProfileView != null) {
+                    updateProfileView.setCurrentUid(uid);
+                }
+
                 viewManagerModel.setState("updateprofile");
                 viewManagerModel.firePropertyChanged();
             }
@@ -91,10 +109,7 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
         });
 
         this.add(title);
-        this.add(usernameInfo);
-        this.add(username);
-
-
+        this.add(userPanel);
         this.add(buttons);
         this.add(syncStatusLabel); // Show latest sync success/error message in UI
     }
@@ -112,6 +127,7 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
         if (evt.getPropertyName().equals("state")) {
             final LoggedInState state = (LoggedInState) evt.getNewValue();
             username.setText(state.getUsername());
+            updateAvatar(state.getAvatarPath());
         }
         else if (evt.getPropertyName().equals("password")) {
             final LoggedInState state = (LoggedInState) evt.getNewValue();
@@ -134,7 +150,19 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
         return viewName;
     }
 
+    public void setUpdateProfileView(UpdateProfileView updateProfileView) {
+        this.updateProfileView = updateProfileView;
+    }
 
+    private void updateAvatar(String avatarPath) {
+        if (avatarPath == null || avatarPath.isBlank()) {
+            avatarLabel.setIcon(null);
+            return;
+        }
+        ImageIcon icon = new ImageIcon(avatarPath);
+        Image img = icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
+        avatarLabel.setIcon(new ImageIcon(img));
+    }
 
     public void setViewManagerModel(ViewManagerModel viewManagerModel) {
         this.viewManagerModel = viewManagerModel;

@@ -140,7 +140,7 @@ public class AppBuilder {
 
     public AppBuilder addChangePasswordUseCase() {
         final ChangePasswordOutputBoundary changePasswordOutputBoundary = new UpdateProfilePresenter(viewManagerModel,
-                updateProfileViewModel);
+                updateProfileViewModel, loggedInViewModel);
 
         final ChangePasswordInputBoundary changePasswordInteractor =
                 new ChangePasswordInteractor(userDataAccessObject, changePasswordOutputBoundary, userFactory);
@@ -162,7 +162,7 @@ public class AppBuilder {
 
     public AppBuilder addUpdateProfileUseCase() {
         final UpdateProfileOutputBoundary updateProfileOutputBoundary =
-                new UpdateProfilePresenter(viewManagerModel, updateProfileViewModel);
+                new UpdateProfilePresenter(viewManagerModel, updateProfileViewModel, loggedInViewModel);
 
         final UpdateProfileBoundary updateProfileInteractor =
                 new UpdateProfileInteractor(userDataAccessObject, updateProfileOutputBoundary);

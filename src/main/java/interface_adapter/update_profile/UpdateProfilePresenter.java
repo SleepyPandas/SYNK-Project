@@ -1,6 +1,8 @@
 package interface_adapter.update_profile;
 
 import interface_adapter.ViewManagerModel;
+import interface_adapter.logged_in.LoggedInState;
+import interface_adapter.logged_in.LoggedInViewModel;
 import use_case.change_password.ChangePasswordOutputBoundary;
 import use_case.change_password.ChangePasswordOutputData;
 import use_case.update_profile.UpdateProfileOutputBoundary;
@@ -13,12 +15,15 @@ public class UpdateProfilePresenter implements UpdateProfileOutputBoundary, Chan
 
     private final ViewManagerModel viewManagerModel;
     private final UpdateProfileViewModel updateProfileViewModel;
+    private final LoggedInViewModel loggedInViewModel;
 
 
     public UpdateProfilePresenter(ViewManagerModel viewManagerModel,
-                                  UpdateProfileViewModel updateProfileViewModel) {
+                                  UpdateProfileViewModel updateProfileViewModel,
+                                  LoggedInViewModel loggedInViewModel) {
         this.viewManagerModel = viewManagerModel;
         this.updateProfileViewModel = updateProfileViewModel;
+        this.loggedInViewModel = loggedInViewModel;
     }
 
     @Override
@@ -34,6 +39,16 @@ public class UpdateProfilePresenter implements UpdateProfileOutputBoundary, Chan
 
         updateProfileViewModel.setState(state);
         updateProfileViewModel.firePropertyChanged();
+
+        LoggedInState loggedInState = loggedInViewModel.getState();
+        loggedInState.setUid(response.getUid());
+        loggedInState.setUsername(response.getUsername());
+        loggedInState.setAvatarPath(response.getAvatarPath());
+        loggedInViewModel.setState(loggedInState);
+        loggedInViewModel.firePropertyChanged();
+
+        viewManagerModel.setState(loggedInViewModel.getViewName());
+        viewManagerModel.firePropertyChanged();
     }
 
     @Override
