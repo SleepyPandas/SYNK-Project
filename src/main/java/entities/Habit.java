@@ -93,7 +93,10 @@ public class Habit implements Completable {
         if (this == o) return true;
         if (!(o instanceof Habit)) return false;
         Habit habit = (Habit) o;
-        return Objects.equals(habit.habitName, habitName) && Objects.equals(habit.startDateTime, startDateTime);
+        return Objects.equals(habit.habitName, habitName) && Objects.equals(habit.startDateTime, startDateTime) &&
+                Objects.equals(habit.frequency, frequency) && Objects.equals(habit.habitGroup, habitGroup) &&
+                Objects.equals(habit.description, description) && Objects.equals(habit.status, status) &&
+                Objects.equals(habit.priority, priority) && Objects.equals(habit.streakCount, streakCount);
     }
 
     @Override

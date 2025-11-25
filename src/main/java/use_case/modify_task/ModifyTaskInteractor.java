@@ -5,19 +5,20 @@ import entities.TaskBuilder;
 import use_case.gateways.TaskGateway;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class ModifyTaskInteractor implements ModifyTaskInputBoundary {
-    private final ModifyTaskOutputBoundary modifyPresenter;
+    private final ModifyTaskOutputBoundary modifyTaskPresenter;
     private final TaskGateway userDataAccessObject;
 
-    public ModifyTaskInteractor(ModifyTaskOutputBoundary modifyPresenter, TaskGateway userDataAccessObject) {
-        this.modifyPresenter = modifyPresenter;
+    public ModifyTaskInteractor(ModifyTaskOutputBoundary modifyTaskPresenter, TaskGateway userDataAccessObject) {
+        this.modifyTaskPresenter = modifyTaskPresenter;
         this.userDataAccessObject = userDataAccessObject;
     }
 
     public void execute(ModifyTaskInputData modifyInputData) {
 
-        // Old Task Data
+
         String oldTaskName = modifyInputData.getOldTaskName();
         int oldTaskPriority = modifyInputData.getOldPriority();
         boolean oldTaskStatus = modifyInputData.getOldTaskStatus();
@@ -26,7 +27,6 @@ public class ModifyTaskInteractor implements ModifyTaskInputBoundary {
         String oldDescription = modifyInputData.getOldDescription();
         String oldStartTimeRaw = modifyInputData.getOldStartTime(); // ADDED
 
-        // New Task Data
         String newTaskName = modifyInputData.getNewTaskName();
         String newTaskPriority = modifyInputData.getNewPriority();
         boolean newTaskStatus = modifyInputData.getNewTaskStatus();
@@ -39,13 +39,14 @@ public class ModifyTaskInteractor implements ModifyTaskInputBoundary {
         try{
 
             LocalDateTime newDeadlineFormatted = LocalDateTime.parse(newDeadline);
-            LocalDateTime newStartTimeFormatted = newStartTimeRaw.isBlank() ? null : LocalDateTime.parse(newStartTimeRaw); // ADDED parsing
+            LocalDateTime newStartTimeFormatted = LocalDateTime.parse(newStartTimeRaw);
             int newPriorityFormatted = Integer.parseInt(newTaskPriority);
 
             if (newDeadlineFormatted.isBefore(LocalDateTime.now())) {
-                modifyPresenter.prepareFailView("New Deadline cannot be in the past.");
+                modifyTaskPresenter.prepareFailView("New deadline cannot be in the past.");
                 return;
             }
+
 
             final Task modifiedTask = new TaskBuilder()
                     .setTaskName(newTaskName)
@@ -57,7 +58,8 @@ public class ModifyTaskInteractor implements ModifyTaskInputBoundary {
                     .setStatus(newTaskStatus).build();
 
             LocalDateTime oldDeadlineFormatted = LocalDateTime.parse(oldDeadline);
-            LocalDateTime oldStartTimeFormatted = oldStartTimeRaw.isBlank() ? null : LocalDateTime.parse(oldStartTimeRaw); // ADDED parsing
+            LocalDateTime oldStartTimeFormatted = oldStartTimeRaw.isBlank() ? null :
+                    LocalDateTime.parse(oldStartTimeRaw);
 
             final Task oldTask = new TaskBuilder()
                     .setTaskName(oldTaskName)
@@ -68,20 +70,28 @@ public class ModifyTaskInteractor implements ModifyTaskInputBoundary {
                     .setPriority(oldTaskPriority)
                     .setStatus(oldTaskStatus).build();
 
+            ArrayList<Task> taskList = userDataAccessObject.fetchTasks(userID);
+            for (Task task : taskList) {
+                if (!task.equals(oldTask) && task.getName().equals(modifiedTask.getName())){
+                    modifyTaskPresenter.prepareFailView("Task already exists");
+                    return;
+                }
+            }
+
             userDataAccessObject.deleteTask(userID, oldTask);
             userDataAccessObject.addTask(userID, modifiedTask);
 
 
-            modifyPresenter.prepareSuccessView();
+            modifyTaskPresenter.prepareSuccessView(new ModifyTaskOutputData());
         } catch (java.time.format.DateTimeParseException d) {
-            modifyPresenter.prepareFailView("Invalid date/time format. Use ISO format (e.g., YYYY-MM-DDTHH:MM:SS) for dates.");
+            modifyTaskPresenter.prepareFailView("Invalid date/time format. Use ISO format (e.g., YYYY-MM-DDTHH:MM:SS) for dates.");
         } catch (NumberFormatException n) {
-            modifyPresenter.prepareFailView("Invalid Priority. Must be a whole number.");
+            modifyTaskPresenter.prepareFailView("Invalid Priority. Must be a whole number.");
         }
     }
 
     @Override
     public void switchToTaskListView() {
-        modifyPresenter.switchToTaskListView();
+        modifyTaskPresenter.switchToTaskListView();
     }
 }

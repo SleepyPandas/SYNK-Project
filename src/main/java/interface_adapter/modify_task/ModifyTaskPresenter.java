@@ -22,7 +22,7 @@ public class ModifyTaskPresenter implements ModifyTaskOutputBoundary {
     }
 
     @Override
-    public void prepareSuccessView() {
+    public void prepareSuccessView(ModifyTaskOutputData outputData) {
         // on success, switch to task list view
         // TODO switch to Arya's use case's view when ready
     }

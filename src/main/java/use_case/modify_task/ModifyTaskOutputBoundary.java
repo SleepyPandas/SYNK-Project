@@ -4,7 +4,7 @@ public interface ModifyTaskOutputBoundary {
     /**
      * Prepares the success view for the Login Use Case.
      */
-    void prepareSuccessView();
+    void prepareSuccessView(ModifyTaskOutputData outputData);
 
     /**
      * Prepares the failure view for the modify task use case.

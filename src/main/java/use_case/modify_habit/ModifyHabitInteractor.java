@@ -5,6 +5,7 @@ import entities.HabitBuilder;
 import use_case.gateways.HabitGateway;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class ModifyHabitInteractor implements ModifyHabitInputBoundary {
     private final ModifyHabitOutputBoundary modifyHabitPresenter;
@@ -36,8 +37,6 @@ public class ModifyHabitInteractor implements ModifyHabitInputBoundary {
         String newHabitGroup = modifyHabitInputData.getNewHabitGroup();
         String newFrequency = modifyHabitInputData.getNewFrequency();
 
-
-
         try {
             // Parse new habit values
             LocalDateTime newStartDateTimeFormatted = LocalDateTime.parse(newStartDateTime);
@@ -67,11 +66,19 @@ public class ModifyHabitInteractor implements ModifyHabitInputBoundary {
                     .setFrequency(LocalDateTime.parse(oldFrequency))
                     .build();
 
+            ArrayList<Habit> habitList = userDataAccessObject.fetchHabits(userID);
+            for (Habit habit : habitList) {
+                if (!habit.equals(oldHabit) && habit.getName().equals(modifiedHabit.getName())){
+                    modifyHabitPresenter.prepareFailView("Habit already exists");
+                    return;
+                }
+            }
+
             // Delete old habit and add modified habit
             userDataAccessObject.deleteHabit(userID, oldHabit);
             userDataAccessObject.addHabit(userID, modifiedHabit);
 
-            modifyHabitPresenter.prepareSuccessView();
+            modifyHabitPresenter.prepareSuccessView(new ModifyHabitOutputData());
 
         } catch (java.time.format.DateTimeParseException d) {
             modifyHabitPresenter.prepareFailView("Invalid Date/Time Format");
