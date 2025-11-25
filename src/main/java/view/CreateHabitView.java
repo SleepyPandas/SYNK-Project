@@ -1,6 +1,9 @@
-package interface_adapter.create_habit;
+package view;
 
 import interface_adapter.ViewModel;
+import interface_adapter.create_habit.CreateHabitController;
+import interface_adapter.create_habit.CreateHabitState;
+import interface_adapter.create_habit.CreateHabitViewModel;
 
 import javax.swing.*;
 import java.awt.*;

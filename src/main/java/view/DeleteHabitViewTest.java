@@ -19,7 +19,7 @@ public class DeleteHabitViewTest {
         // Swing 建议放在 EDT 中启动
         SwingUtilities.invokeLater(() -> {
             // 1. 创建 ViewModel
-            DeleteHabitViewModel viewModel = new DeleteHabitViewModel("test");
+            DeleteHabitViewModel viewModel = new DeleteHabitViewModel("src/test");
 
             // 2. 创建 DeleteHabitView
             DeleteHabitView view = new DeleteHabitView(viewModel);
