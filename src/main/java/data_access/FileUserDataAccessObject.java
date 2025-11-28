@@ -127,6 +127,7 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
     public void changePassword(User user) {
         // Replace the User object in the map
         usersByName.put(user.getUsername(), user);
+        usersByUid.put(user.getUid(), user);
         save();
     }
 }
