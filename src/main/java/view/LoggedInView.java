@@ -100,7 +100,6 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
 
         viewTasksAndHabits.addActionListener(evt -> {
             if (evt.getSource().equals(viewTasksAndHabits) && viewManagerModel != null) {
-                viewTasksAndHabitsController.;
                 viewManagerModel.setState("view tasks and habits");
                 viewManagerModel.firePropertyChanged();
             }

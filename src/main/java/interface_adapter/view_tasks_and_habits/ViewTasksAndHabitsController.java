@@ -36,11 +36,7 @@ public class ViewTasksAndHabitsController {
     public void exit() {
     }
 
-    public ArrayList<ArrayList<String>> getFormattedTasks(LoggedInViewModel loggedInViewModel) {
-        return viewTasksAndHabitsUseCaseInteractor.getFormattedTasks(this.loggedInViewModel);
-    }
-
-    public ArrayList<ArrayList<String>> getFormattedHabits(LoggedInViewModel loggedInViewModel) {
-        return viewTasksAndHabitsUseCaseInteractor.getFormattedHabits(this.loggedInViewModel);
+    public void getFormattedTasksAndHabits(LoggedInViewModel loggedInViewModel) {
+        viewTasksAndHabitsUseCaseInteractor.getFormattedTasksAndHabits(this.loggedInViewModel);
     }
 }

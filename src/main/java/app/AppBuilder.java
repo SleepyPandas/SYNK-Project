@@ -82,6 +82,7 @@ public class AppBuilder {
     private LoggedInView loggedInView;
     private ViewTasksAndHabitsView viewtasksAndHabitsView;
     private ViewTasksAndHabitsViewModel viewTasksAndHabitsViewModel;
+    private ViewTasksAndHabitsController viewTasksAndHabitsController;
     private LoginView loginView;
     private LeaderboardView leaderboardView;
     private ViewLeaderboardViewModel viewLeaderboardViewModel;
@@ -119,7 +120,7 @@ public class AppBuilder {
 
     public AppBuilder addViewTasksAndHabitsView() {
         viewTasksAndHabitsViewModel = new ViewTasksAndHabitsViewModel();
-        viewtasksAndHabitsView = new ViewTasksAndHabitsView(viewTasksAndHabitsViewModel, viewManagerModel, loggedInViewModel);
+        viewtasksAndHabitsView = new ViewTasksAndHabitsView(viewTasksAndHabitsViewModel, viewManagerModel, loggedInViewModel, viewTasksAndHabitsController);
         viewtasksAndHabitsView.setViewManagerModel(viewManagerModel);
         cardPanel.add(viewtasksAndHabitsView, viewtasksAndHabitsView.getViewName());
         return this;
