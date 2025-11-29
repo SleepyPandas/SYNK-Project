@@ -1,7 +1,6 @@
 package test.useCaseTest;
 
 import data_access.InMemoryHabitDataAccessObject;
-import entities.Habit;
 import org.junit.jupiter.api.Test;
 import use_case.create_habit.*;
 
@@ -10,28 +9,6 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CreateHabitInteractorTest {
-
-    // Adapter to bridge CreateHabitUserDataAccess and InMemoryHabitDataAccessObject
-    static class InMemoryHabitDAOAdapter implements CreateHabitUserDataAccess {
-        private final InMemoryHabitDataAccessObject dao;
-
-        public InMemoryHabitDAOAdapter(InMemoryHabitDataAccessObject dao) {
-            this.dao = dao;
-        }
-
-        @Override
-        public void save(String username, Habit habit) {
-            dao.addHabit(username, habit);
-        }
-
-        @Override
-        public boolean existsByName(String username, String habitName) {
-            return !dao.getHabitsForUser(username).stream()
-                    .filter(h -> h.getName().equals(habitName))
-                    .findFirst()
-                    .isEmpty();
-        }
-    }
 
     static class TestPresenter implements CreateHabitOutputBoundary {
         String failMessage;
@@ -53,10 +30,9 @@ class CreateHabitInteractorTest {
     @Test
     void createHabit_successfullyCreatesHabit() {
         // Arrange
-        InMemoryHabitDataAccessObject realDAO = new InMemoryHabitDataAccessObject();
-        InMemoryHabitDAOAdapter adapter = new InMemoryHabitDAOAdapter(realDAO);
+        InMemoryHabitDataAccessObject habitGateway = new InMemoryHabitDataAccessObject();
         TestPresenter presenter = new TestPresenter();
-        CreateHabitInteractor interactor = new CreateHabitInteractor(adapter, presenter);
+        CreateHabitInteractor interactor = new CreateHabitInteractor(habitGateway, presenter);
 
         CreateHabitInputData input = new CreateHabitInputData(
                 "roy",
@@ -75,18 +51,17 @@ class CreateHabitInteractorTest {
         assertNotNull(presenter.successData);
         assertEquals("Exercise", presenter.successData.getHabitName());
 
-        // Verify it's in the real DAO
-        assertEquals(1, realDAO.getHabitsForUser("roy").size());
-        assertEquals("Exercise", realDAO.getHabitsForUser("roy").get(0).getName());
+        // Verify it's in the gateway
+        assertEquals(1, habitGateway.getHabitsForUser("roy").size());
+        assertEquals("Exercise", habitGateway.getHabitsForUser("roy").get(0).getName());
     }
 
     @Test
     void createHabit_failsWhenNameIsEmpty() {
         // Arrange
-        InMemoryHabitDataAccessObject realDAO = new InMemoryHabitDataAccessObject();
-        InMemoryHabitDAOAdapter adapter = new InMemoryHabitDAOAdapter(realDAO);
+        InMemoryHabitDataAccessObject habitGateway = new InMemoryHabitDataAccessObject();
         TestPresenter presenter = new TestPresenter();
-        CreateHabitInteractor interactor = new CreateHabitInteractor(adapter, presenter);
+        CreateHabitInteractor interactor = new CreateHabitInteractor(habitGateway, presenter);
 
         CreateHabitInputData input = new CreateHabitInputData(
                 "roy",
@@ -108,10 +83,9 @@ class CreateHabitInteractorTest {
     @Test
     void createHabit_failsWhenHabitAlreadyExists() {
         // Arrange
-        InMemoryHabitDataAccessObject realDAO = new InMemoryHabitDataAccessObject();
-        InMemoryHabitDAOAdapter adapter = new InMemoryHabitDAOAdapter(realDAO);
+        InMemoryHabitDataAccessObject habitGateway = new InMemoryHabitDataAccessObject();
         TestPresenter presenter = new TestPresenter();
-        CreateHabitInteractor interactor = new CreateHabitInteractor(adapter, presenter);
+        CreateHabitInteractor interactor = new CreateHabitInteractor(habitGateway, presenter);
 
         // Pre-populate DAO
         CreateHabitInputData input1 = new CreateHabitInputData(
@@ -134,19 +108,39 @@ class CreateHabitInteractorTest {
     @Test
     void createHabit_failsWhenDAOThrowsException() {
         // Arrange
-        CreateHabitUserDataAccess throwingDAO = new CreateHabitUserDataAccess() {
+        use_case.gateways.HabitGateway throwingGateway = new use_case.gateways.HabitGateway() {
             @Override
-            public void save(String username, Habit habit) {
+            public String addHabit(String userId, entities.Habit habit) {
                 throw new RuntimeException("Database error");
             }
 
             @Override
-            public boolean existsByName(String username, String habitName) {
+            public java.util.ArrayList<entities.Habit> fetchHabits(String userId) {
+                return new java.util.ArrayList<>();
+            }
+
+            @Override
+            public boolean deleteHabit(String userId, entities.Habit habit) {
                 return false;
+            }
+
+            @Override
+            public java.util.Map<String, java.util.List<entities.Habit>> getAllUsersWithHabits() {
+                return new java.util.HashMap<>();
+            }
+
+            @Override
+            public java.util.List<String> getAllUsernames() {
+                return new java.util.ArrayList<>();
+            }
+
+            @Override
+            public java.util.List<entities.Habit> getHabitsForUser(String username) {
+                return new java.util.ArrayList<>();
             }
         };
         TestPresenter presenter = new TestPresenter();
-        CreateHabitInteractor interactor = new CreateHabitInteractor(throwingDAO, presenter);
+        CreateHabitInteractor interactor = new CreateHabitInteractor(throwingGateway, presenter);
 
         CreateHabitInputData input = new CreateHabitInputData(
                 "roy",
@@ -167,10 +161,9 @@ class CreateHabitInteractorTest {
     @Test
     void createHabit_failsWhenNameIsNull() {
         // Arrange
-        InMemoryHabitDataAccessObject realDAO = new InMemoryHabitDataAccessObject();
-        InMemoryHabitDAOAdapter adapter = new InMemoryHabitDAOAdapter(realDAO);
+        InMemoryHabitDataAccessObject habitGateway = new InMemoryHabitDataAccessObject();
         TestPresenter presenter = new TestPresenter();
-        CreateHabitInteractor interactor = new CreateHabitInteractor(adapter, presenter);
+        CreateHabitInteractor interactor = new CreateHabitInteractor(habitGateway, presenter);
 
         CreateHabitInputData input = new CreateHabitInputData(
                 "roy",
@@ -192,10 +185,9 @@ class CreateHabitInteractorTest {
     @Test
     void createHabit_failsWhenNameIsWhitespace() {
         // Arrange
-        InMemoryHabitDataAccessObject realDAO = new InMemoryHabitDataAccessObject();
-        InMemoryHabitDAOAdapter adapter = new InMemoryHabitDAOAdapter(realDAO);
+        InMemoryHabitDataAccessObject habitGateway = new InMemoryHabitDataAccessObject();
         TestPresenter presenter = new TestPresenter();
-        CreateHabitInteractor interactor = new CreateHabitInteractor(adapter, presenter);
+        CreateHabitInteractor interactor = new CreateHabitInteractor(habitGateway, presenter);
 
         CreateHabitInputData input = new CreateHabitInputData(
                 "roy",
@@ -217,19 +209,39 @@ class CreateHabitInteractorTest {
     @Test
     void createHabit_failsWhenBuilderThrowsIllegalStateException() {
         // Arrange
-        CreateHabitUserDataAccess throwingDAO = new CreateHabitUserDataAccess() {
+        use_case.gateways.HabitGateway throwingGateway = new use_case.gateways.HabitGateway() {
             @Override
-            public void save(String username, Habit habit) {
+            public String addHabit(String userId, entities.Habit habit) {
                 throw new IllegalStateException("DAO State Error");
             }
 
             @Override
-            public boolean existsByName(String username, String habitName) {
+            public java.util.ArrayList<entities.Habit> fetchHabits(String userId) {
+                return new java.util.ArrayList<>();
+            }
+
+            @Override
+            public boolean deleteHabit(String userId, entities.Habit habit) {
                 return false;
+            }
+
+            @Override
+            public java.util.Map<String, java.util.List<entities.Habit>> getAllUsersWithHabits() {
+                return new java.util.HashMap<>();
+            }
+
+            @Override
+            public java.util.List<String> getAllUsernames() {
+                return new java.util.ArrayList<>();
+            }
+
+            @Override
+            public java.util.List<entities.Habit> getHabitsForUser(String username) {
+                return new java.util.ArrayList<>();
             }
         };
         TestPresenter presenter = new TestPresenter();
-        CreateHabitInteractor interactor = new CreateHabitInteractor(throwingDAO, presenter);
+        CreateHabitInteractor interactor = new CreateHabitInteractor(throwingGateway, presenter);
 
         CreateHabitInputData input = new CreateHabitInputData(
                 "roy",

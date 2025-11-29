@@ -2,16 +2,18 @@ package use_case.create_habit;
 
 import entities.Habit;
 import entities.HabitBuilder;
+import use_case.gateways.HabitGateway;
+
+import java.util.List;
 
 public class CreateHabitInteractor implements CreateHabitInputBoundary {
-    private final CreateHabitUserDataAccess habitDataAccessObject;
+    private final HabitGateway habitGateway;
     private final CreateHabitOutputBoundary createHabitPresenter;
 
-    public CreateHabitInteractor(CreateHabitUserDataAccess habitDataAccessObject, CreateHabitOutputBoundary createHabitPresenter) {
-        this.habitDataAccessObject = habitDataAccessObject;
+    public CreateHabitInteractor(HabitGateway habitGateway, CreateHabitOutputBoundary createHabitPresenter) {
+        this.habitGateway = habitGateway;
         this.createHabitPresenter = createHabitPresenter;
     }
-
 
     @Override
     public void execute(CreateHabitInputData createHabitInputData) {
@@ -23,10 +25,14 @@ public class CreateHabitInteractor implements CreateHabitInputBoundary {
             return;
         }
 
-        if (habitDataAccessObject.existsByName(username, habitName)) {
+        // Check if habit exists by fetching all habits and searching by name
+        List<Habit> existingHabits = habitGateway.getHabitsForUser(username);
+        boolean habitExists = existingHabits.stream()
+                .anyMatch(habit -> habit.getName().equals(habitName));
+
+        if (habitExists) {
             createHabitPresenter.prepareFailView(
-                    "Habit with name '" + habitName + "' already exists."
-            );
+                    "Habit with name '" + habitName + "' already exists.");
             return;
         }
 
@@ -40,13 +46,11 @@ public class CreateHabitInteractor implements CreateHabitInputBoundary {
                     .setPriority(createHabitInputData.getPriority())
                     .build();
 
-
-            habitDataAccessObject.save(username, newHabit);
+            habitGateway.addHabit(username, newHabit);
             final CreateHabitOutputData outputData = new CreateHabitOutputData(
                     newHabit.getName(),
                     newHabit.getStartDateTime(),
-                    false
-            );
+                    false);
 
             createHabitPresenter.prepareSuccessView(outputData);
         } catch (IllegalStateException exception) {
@@ -54,7 +58,7 @@ public class CreateHabitInteractor implements CreateHabitInputBoundary {
 
         } catch (Exception exception) {
             createHabitPresenter.prepareFailView(
-                    "Failed to create habit: " + exception.getMessage()
-            );
+                    "Failed to create habit: " + exception.getMessage());
         }
-}}
+    }
+}

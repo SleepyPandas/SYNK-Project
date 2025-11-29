@@ -2,19 +2,20 @@ package use_case.create_task;
 
 import entities.Task;
 import entities.TaskBuilder;
+import use_case.gateways.TaskGateway;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class CreateTaskInteractor implements CreateTaskInputBoundary {
-    private final CreateTaskUserDataAccessInterface dao;
+    private final TaskGateway taskGateway;
     private final CreateTaskOutputBoundary presenter;
 
-    public CreateTaskInteractor(CreateTaskUserDataAccessInterface dao,
-                                CreateTaskOutputBoundary presenter) {
+    public CreateTaskInteractor(TaskGateway taskGateway,
+            CreateTaskOutputBoundary presenter) {
         this.presenter = presenter;
-        this.dao = dao;
+        this.taskGateway = taskGateway;
     }
-
 
     @Override
     public void execute(CreateTaskInputData inputdata) {
@@ -29,13 +30,19 @@ public class CreateTaskInteractor implements CreateTaskInputBoundary {
             return;
         }
 
-        if (dao.existsByName(inputdata.getTaskName())) {
+        String username = inputdata.getUsername();
+        String taskName = inputdata.getTaskName();
+
+        // Check if task exists by fetching all tasks and searching by name
+        List<Task> existingTasks = taskGateway.fetchTasks(username);
+        boolean taskExists = existingTasks.stream()
+                .anyMatch(task -> task.getName().equals(taskName));
+
+        if (taskExists) {
             presenter.prepareFailView("Task already exists.");
             return;
         }
 
-        String username = inputdata.getUsername();
-        String taskName = inputdata.getTaskName();
         String description = inputdata.getDescription();
         LocalDateTime deadline = inputdata.getDeadline();
         String taskGroup = inputdata.getTaskGroup();
@@ -51,7 +58,7 @@ public class CreateTaskInteractor implements CreateTaskInputBoundary {
                 .setPriority(priority)
                 .build();
 
-        dao.save(newTask);
+        taskGateway.addTask(username, newTask);
         presenter.prepareSuccessView(
                 new CreateTaskOutputData(username, newTask.getName(), true, "Task created successfully!"));
 

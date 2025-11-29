@@ -1,14 +1,20 @@
 package use_case.delete_habit;
 
+import entities.Habit;
+import use_case.gateways.HabitGateway;
+
+import java.util.List;
+import java.util.Optional;
+
 public class DeleteHabitInteractor implements DeleteHabitInputBoundary {
 
     private final DeleteHabitOutputBoundary presenter;
-    private final DeleteHabitUserDataAccess dao;
+    private final HabitGateway habitGateway;
 
     public DeleteHabitInteractor(DeleteHabitOutputBoundary presenter,
-                                 DeleteHabitUserDataAccess dao) {
+            HabitGateway habitGateway) {
         this.presenter = presenter;
-        this.dao = dao;
+        this.habitGateway = habitGateway;
     }
 
     @Override
@@ -21,17 +27,22 @@ public class DeleteHabitInteractor implements DeleteHabitInputBoundary {
             return;
         }
 
-        if (!dao.existsByName(username, habitName)) {
+        // Fetch all habits for user and find the one with matching name
+        List<Habit> habits = habitGateway.getHabitsForUser(username);
+        Optional<Habit> habitToDelete = habits.stream()
+                .filter(habit -> habit.getName().equals(habitName))
+                .findFirst();
+
+        if (habitToDelete.isEmpty()) {
             presenter.prepareFailView(
                     "Habit '" + habitName + "' does not exist for user '" + username + "'.");
             return;
         }
 
         try {
-            dao.deleteHabit(username, habitName);
+            habitGateway.deleteHabit(username, habitToDelete.get());
 
-            DeleteHabitOutputData outputData =
-                    new DeleteHabitOutputData(username, habitName, false);
+            DeleteHabitOutputData outputData = new DeleteHabitOutputData(username, habitName, false);
 
             presenter.prepareSuccessView(outputData);
 
