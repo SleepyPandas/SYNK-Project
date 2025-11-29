@@ -75,7 +75,9 @@ public class UpdateProfileView extends JPanel implements ActionListener, Propert
                         final UpdateProfileState currentState = updateProfileViewModel.getState();
 
                         this.changePasswordController.execute(
+                                currentState.getUid(),
                                 currentState.getUsername(),
+                                currentState.getAvatarPath(),
                                 currentState.getPassword()
                         );
                     }
