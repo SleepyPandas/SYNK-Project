@@ -13,8 +13,8 @@ public class Task implements Completable, Cloneable {
     private int priority; //May use different data object.
     private LocalDateTime startTime;
 
-    // ADDED startTime to the constructor signature and initialization
-    Task(String taskName, LocalDateTime deadline, String taskGroup, boolean status, int priority, String description, LocalDateTime startTime) {
+    // LocalDateTime startTime this.startTime = startTime;
+    Task(String taskName, LocalDateTime deadline, String taskGroup, boolean status, int priority, String description) {
         this.taskName = taskName;
         this.deadline = deadline;
         this.taskGroup = taskGroup;
@@ -82,6 +82,7 @@ public class Task implements Completable, Cloneable {
     }
 
 
+    @Override
     public String getDescription() {
         return description;
     }
@@ -90,15 +91,7 @@ public class Task implements Completable, Cloneable {
      * @return
      */
     @Override
-    public String getTitle() {
-        return this.taskName;
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public Object getDueDate() {
+    public LocalDateTime getDueDate() {
         return this.deadline;
     }
 

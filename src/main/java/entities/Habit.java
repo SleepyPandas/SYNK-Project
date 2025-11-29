@@ -2,7 +2,6 @@ package entities;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.time.Period;
 
 public class Habit implements Completable, Cloneable {
     private String habitName;
@@ -17,7 +16,6 @@ public class Habit implements Completable, Cloneable {
     Habit(String habitName,
           LocalDateTime startDateTime,
           int frequency,
-          LocalDateTime lastDateTimeCompleted,
           String habitGroup,
           int streakCount,
           int priority,
@@ -52,16 +50,8 @@ public class Habit implements Completable, Cloneable {
      * @return
      */
     @Override
-    public String getTitle() {
-        return "";
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public Object getDueDate() {
-        return null;
+    public LocalDateTime getDueDate() {
+        return this.getDueDate();
     }
 
 

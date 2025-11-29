@@ -50,6 +50,6 @@ public class TaskBuilder {
         if (taskName == null || taskName.isBlank()) {
             throw new IllegalStateException("taskName must not be null or empty");
         }
-        return new Task(taskName, deadline, taskGroup, status, priority, description, startTime);
+        return new Task(taskName, deadline, taskGroup, status, priority, description);
     }
 }

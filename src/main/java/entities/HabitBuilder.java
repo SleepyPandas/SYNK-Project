@@ -28,11 +28,6 @@ public class HabitBuilder {
         return this;
     }
 
-    public HabitBuilder setlastDateTimeCompleted(LocalDateTime LastDateTimeCompleted) {
-        this.lastDateTimeCompleted = lastDateTimeCompleted;
-        return this;
-    }
-
     public HabitBuilder setHabitGroup(String habitGroup) {
         this.habitGroup = habitGroup;
         return this;
@@ -60,7 +55,7 @@ public class HabitBuilder {
         if (startDateTime == null) {
             throw new IllegalStateException("startDateTime must not be null");
         }
-        return new Habit(habitName, startDateTime, frequency, lastDateTimeCompleted, habitGroup, streakCount, priority, status);
+        return new Habit(habitName, startDateTime, frequency, habitGroup, streakCount, priority, status);
     }
 
 }
