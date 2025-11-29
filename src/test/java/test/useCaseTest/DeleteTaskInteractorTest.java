@@ -12,41 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DeleteTaskInteractorTest {
 
-    // Adapter to bridge DeleteTaskUserDataAccess and InMemoryTaskDataAccessObject
-    static class InMemoryTaskDAOAdapter implements DeleteTaskUserDataAccess {
-        private final InMemoryTaskDataAccessObject dao;
-
-        public InMemoryTaskDAOAdapter(InMemoryTaskDataAccessObject dao) {
-            this.dao = dao;
-        }
-
-        @Override
-        public void deleteTask(String username, String taskName) {
-            // Fetch task to delete
-            Task taskToDelete = dao.fetchTasks(username).stream()
-                    .filter(t -> t.getName().equals(taskName))
-                    .findFirst()
-                    .orElse(null);
-
-            if (taskToDelete != null) {
-                dao.deleteTask(username, taskToDelete);
-            }
-        }
-
-        @Override
-        public boolean existsTaskByName(String username, String taskName) {
-            return !dao.fetchTasks(username).stream()
-                    .filter(t -> t.getName().equals(taskName))
-                    .findFirst()
-                    .isEmpty();
-        }
-
-        // Helper for setup
-        public void addTask(String username, Task task) {
-            dao.addTask(username, task);
-        }
-    }
-
     static class TestPresenter implements DeleteTaskOutputBoundary {
         String failMessage;
         DeleteTaskOutputData successData;
@@ -67,17 +32,16 @@ class DeleteTaskInteractorTest {
     @Test
     void deleteTask_successfullyDeletesTask() {
         // Arrange
-        InMemoryTaskDataAccessObject realDAO = new InMemoryTaskDataAccessObject();
-        InMemoryTaskDAOAdapter adapter = new InMemoryTaskDAOAdapter(realDAO);
+        InMemoryTaskDataAccessObject taskGateway = new InMemoryTaskDataAccessObject();
         TestPresenter presenter = new TestPresenter();
-        DeleteTaskInteractor interactor = new DeleteTaskInteractor(presenter, adapter);
+        DeleteTaskInteractor interactor = new DeleteTaskInteractor(presenter, taskGateway);
 
         // Setup: Add a task
         Task task = new TaskBuilder()
                 .setTaskName("Study")
                 .setDeadline(LocalDateTime.now())
                 .build();
-        adapter.addTask("roy", task);
+        taskGateway.addTask("roy", task);
 
         DeleteTaskInputData input = new DeleteTaskInputData("roy", "Study");
 
@@ -89,17 +53,16 @@ class DeleteTaskInteractorTest {
         assertNotNull(presenter.successData);
         assertEquals("Study", presenter.successData.getTaskName());
 
-        // Verify it's gone from real DAO
-        assertEquals(0, realDAO.fetchTasks("roy").size());
+        // Verify it's gone from gateway
+        assertEquals(0, taskGateway.fetchTasks("roy").size());
     }
 
     @Test
     void deleteTask_failsWhenUsernameIsEmpty() {
         // Arrange
-        InMemoryTaskDataAccessObject realDAO = new InMemoryTaskDataAccessObject();
-        InMemoryTaskDAOAdapter adapter = new InMemoryTaskDAOAdapter(realDAO);
+        InMemoryTaskDataAccessObject taskGateway = new InMemoryTaskDataAccessObject();
         TestPresenter presenter = new TestPresenter();
-        DeleteTaskInteractor interactor = new DeleteTaskInteractor(presenter, adapter);
+        DeleteTaskInteractor interactor = new DeleteTaskInteractor(presenter, taskGateway);
 
         DeleteTaskInputData input = new DeleteTaskInputData("", "Study");
 
@@ -114,10 +77,9 @@ class DeleteTaskInteractorTest {
     @Test
     void deleteTask_failsWhenTaskNameIsEmpty() {
         // Arrange
-        InMemoryTaskDataAccessObject realDAO = new InMemoryTaskDataAccessObject();
-        InMemoryTaskDAOAdapter adapter = new InMemoryTaskDAOAdapter(realDAO);
+        InMemoryTaskDataAccessObject taskGateway = new InMemoryTaskDataAccessObject();
         TestPresenter presenter = new TestPresenter();
-        DeleteTaskInteractor interactor = new DeleteTaskInteractor(presenter, adapter);
+        DeleteTaskInteractor interactor = new DeleteTaskInteractor(presenter, taskGateway);
 
         DeleteTaskInputData input = new DeleteTaskInputData("roy", "");
 
@@ -132,10 +94,9 @@ class DeleteTaskInteractorTest {
     @Test
     void deleteTask_failsWhenTaskDoesNotExist() {
         // Arrange
-        InMemoryTaskDataAccessObject realDAO = new InMemoryTaskDataAccessObject();
-        InMemoryTaskDAOAdapter adapter = new InMemoryTaskDAOAdapter(realDAO);
+        InMemoryTaskDataAccessObject taskGateway = new InMemoryTaskDataAccessObject();
         TestPresenter presenter = new TestPresenter();
-        DeleteTaskInteractor interactor = new DeleteTaskInteractor(presenter, adapter);
+        DeleteTaskInteractor interactor = new DeleteTaskInteractor(presenter, taskGateway);
 
         DeleteTaskInputData input = new DeleteTaskInputData("roy", "NonExistent");
 
@@ -150,19 +111,31 @@ class DeleteTaskInteractorTest {
     @Test
     void deleteTask_failsWhenDAOThrowsException() {
         // Arrange
-        DeleteTaskUserDataAccess throwingDAO = new DeleteTaskUserDataAccess() {
+        use_case.gateways.TaskGateway throwingGateway = new use_case.gateways.TaskGateway() {
             @Override
-            public void deleteTask(String username, String taskName) {
-                throw new RuntimeException("Database error");
+            public String addTask(String userId, Task task) {
+                return null;
             }
 
             @Override
-            public boolean existsTaskByName(String username, String taskName) {
-                return true; // Pretend it exists
+            public java.util.ArrayList<Task> fetchTasks(String userId) {
+                // Return a fake task so existsByName check passes
+                Task fakeTask = new TaskBuilder()
+                        .setTaskName("Study")
+                        .setDeadline(LocalDateTime.now())
+                        .build();
+                java.util.ArrayList<Task> tasks = new java.util.ArrayList<>();
+                tasks.add(fakeTask);
+                return tasks;
+            }
+
+            @Override
+            public boolean deleteTask(String userId, Task task) {
+                throw new RuntimeException("Database error");
             }
         };
         TestPresenter presenter = new TestPresenter();
-        DeleteTaskInteractor interactor = new DeleteTaskInteractor(presenter, throwingDAO);
+        DeleteTaskInteractor interactor = new DeleteTaskInteractor(presenter, throwingGateway);
 
         DeleteTaskInputData input = new DeleteTaskInputData("roy", "Study");
 
@@ -173,13 +146,13 @@ class DeleteTaskInteractorTest {
         assertTrue(presenter.failMessage.contains("Failed to delete task"));
         assertTrue(presenter.failMessage.contains("Database error"));
     }
+
     @Test
     void deleteTask_failsWhenUsernameIsNull() {
         // Arrange
-        InMemoryTaskDataAccessObject realDAO = new InMemoryTaskDataAccessObject();
-        InMemoryTaskDAOAdapter adapter = new InMemoryTaskDAOAdapter(realDAO);
+        InMemoryTaskDataAccessObject taskGateway = new InMemoryTaskDataAccessObject();
         TestPresenter presenter = new TestPresenter();
-        DeleteTaskInteractor interactor = new DeleteTaskInteractor(presenter, adapter);
+        DeleteTaskInteractor interactor = new DeleteTaskInteractor(presenter, taskGateway);
 
         DeleteTaskInputData input = new DeleteTaskInputData(null, "Study");
 
@@ -194,10 +167,9 @@ class DeleteTaskInteractorTest {
     @Test
     void deleteTask_failsWhenUsernameIsWhitespace() {
         // Arrange
-        InMemoryTaskDataAccessObject realDAO = new InMemoryTaskDataAccessObject();
-        InMemoryTaskDAOAdapter adapter = new InMemoryTaskDAOAdapter(realDAO);
+        InMemoryTaskDataAccessObject taskGateway = new InMemoryTaskDataAccessObject();
         TestPresenter presenter = new TestPresenter();
-        DeleteTaskInteractor interactor = new DeleteTaskInteractor(presenter, adapter);
+        DeleteTaskInteractor interactor = new DeleteTaskInteractor(presenter, taskGateway);
 
         DeleteTaskInputData input = new DeleteTaskInputData("   ", "Study");
 
@@ -212,10 +184,9 @@ class DeleteTaskInteractorTest {
     @Test
     void deleteTask_failsWhenTaskNameIsNull() {
         // Arrange
-        InMemoryTaskDataAccessObject realDAO = new InMemoryTaskDataAccessObject();
-        InMemoryTaskDAOAdapter adapter = new InMemoryTaskDAOAdapter(realDAO);
+        InMemoryTaskDataAccessObject taskGateway = new InMemoryTaskDataAccessObject();
         TestPresenter presenter = new TestPresenter();
-        DeleteTaskInteractor interactor = new DeleteTaskInteractor(presenter, adapter);
+        DeleteTaskInteractor interactor = new DeleteTaskInteractor(presenter, taskGateway);
 
         DeleteTaskInputData input = new DeleteTaskInputData("roy", null);
 
@@ -230,10 +201,9 @@ class DeleteTaskInteractorTest {
     @Test
     void deleteTask_failsWhenTaskNameIsWhitespace() {
         // Arrange
-        InMemoryTaskDataAccessObject realDAO = new InMemoryTaskDataAccessObject();
-        InMemoryTaskDAOAdapter adapter = new InMemoryTaskDAOAdapter(realDAO);
+        InMemoryTaskDataAccessObject taskGateway = new InMemoryTaskDataAccessObject();
         TestPresenter presenter = new TestPresenter();
-        DeleteTaskInteractor interactor = new DeleteTaskInteractor(presenter, adapter);
+        DeleteTaskInteractor interactor = new DeleteTaskInteractor(presenter, taskGateway);
 
         DeleteTaskInputData input = new DeleteTaskInputData("roy", "   ");
 

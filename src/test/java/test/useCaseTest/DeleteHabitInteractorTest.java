@@ -12,53 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DeleteHabitInteractorTest {
 
-    // Adapter to bridge DeleteHabitUserDataAccess and InMemoryHabitDataAccessObject
-    static class InMemoryHabitDAOAdapter implements DeleteHabitUserDataAccess {
-        private final InMemoryHabitDataAccessObject dao;
-
-        public InMemoryHabitDAOAdapter(InMemoryHabitDataAccessObject dao) {
-            this.dao = dao;
-        }
-
-        @Override
-        public void deleteHabit(String username, String habitName) {
-            // Need to find the habit object first because InMemoryDAO requires Habit object
-            // to delete
-            // But wait, InMemoryHabitDataAccessObject.deleteHabit takes (String userId,
-            // Habit habit)
-            // The interface DeleteHabitUserDataAccess takes (String username, String habit)
-
-            // We need to fetch the habit first.
-            Habit habitToDelete = dao.getHabitsForUser(username).stream()
-                    .filter(h -> h.getName().equals(habitName))
-                    .findFirst()
-                    .orElse(null);
-
-            if (habitToDelete != null) {
-                dao.deleteHabit(username, habitToDelete);
-            } else {
-                // If it doesn't exist, the interactor should have checked existsByName first.
-                // But if we are here, maybe we should throw or do nothing?
-                // The DAO contract in interactor implies void return.
-                // If the interactor logic is correct, it checks existsByName before calling
-                // delete.
-            }
-        }
-
-        @Override
-        public boolean existsByName(String username, String habitName) {
-            return !dao.getHabitsForUser(username).stream()
-                    .filter(h -> h.getName().equals(habitName))
-                    .findFirst()
-                    .isEmpty();
-        }
-
-        // Helper to add habit for setup
-        public void addHabit(String username, Habit habit) {
-            dao.addHabit(username, habit);
-        }
-    }
-
     static class TestPresenter implements DeleteHabitOutputBoundary {
         String failMessage;
         DeleteHabitOutputData successData;
@@ -79,17 +32,16 @@ class DeleteHabitInteractorTest {
     @Test
     void deleteHabit_successfullyDeletesHabit() {
         // Arrange
-        InMemoryHabitDataAccessObject realDAO = new InMemoryHabitDataAccessObject();
-        InMemoryHabitDAOAdapter adapter = new InMemoryHabitDAOAdapter(realDAO);
+        InMemoryHabitDataAccessObject habitGateway = new InMemoryHabitDataAccessObject();
         TestPresenter presenter = new TestPresenter();
-        DeleteHabitInteractor interactor = new DeleteHabitInteractor(presenter, adapter);
+        DeleteHabitInteractor interactor = new DeleteHabitInteractor(presenter, habitGateway);
 
         // Setup: Add a habit
         Habit habit = new HabitBuilder()
                 .setHabitName("Exercise")
                 .setStartDateTime(LocalDateTime.now())
                 .build();
-        adapter.addHabit("roy", habit);
+        habitGateway.addHabit("roy", habit);
 
         DeleteHabitInputData input = new DeleteHabitInputData("roy", "Exercise");
 
@@ -101,17 +53,16 @@ class DeleteHabitInteractorTest {
         assertNotNull(presenter.successData);
         assertEquals("Exercise", presenter.successData.getHabitName());
 
-        // Verify it's gone from real DAO
-        assertEquals(0, realDAO.getHabitsForUser("roy").size());
+        // Verify it's gone from gateway
+        assertEquals(0, habitGateway.getHabitsForUser("roy").size());
     }
 
     @Test
     void deleteHabit_failsWhenNameIsEmpty() {
         // Arrange
-        InMemoryHabitDataAccessObject realDAO = new InMemoryHabitDataAccessObject();
-        InMemoryHabitDAOAdapter adapter = new InMemoryHabitDAOAdapter(realDAO);
+        InMemoryHabitDataAccessObject habitGateway = new InMemoryHabitDataAccessObject();
         TestPresenter presenter = new TestPresenter();
-        DeleteHabitInteractor interactor = new DeleteHabitInteractor(presenter, adapter);
+        DeleteHabitInteractor interactor = new DeleteHabitInteractor(presenter, habitGateway);
 
         DeleteHabitInputData input = new DeleteHabitInputData("roy", "");
 
@@ -126,10 +77,9 @@ class DeleteHabitInteractorTest {
     @Test
     void deleteHabit_failsWhenHabitDoesNotExist() {
         // Arrange
-        InMemoryHabitDataAccessObject realDAO = new InMemoryHabitDataAccessObject();
-        InMemoryHabitDAOAdapter adapter = new InMemoryHabitDAOAdapter(realDAO);
+        InMemoryHabitDataAccessObject habitGateway = new InMemoryHabitDataAccessObject();
         TestPresenter presenter = new TestPresenter();
-        DeleteHabitInteractor interactor = new DeleteHabitInteractor(presenter, adapter);
+        DeleteHabitInteractor interactor = new DeleteHabitInteractor(presenter, habitGateway);
 
         DeleteHabitInputData input = new DeleteHabitInputData("roy", "NonExistent");
 
@@ -144,19 +94,46 @@ class DeleteHabitInteractorTest {
     @Test
     void deleteHabit_failsWhenDAOThrowsException() {
         // Arrange
-        DeleteHabitUserDataAccess throwingDAO = new DeleteHabitUserDataAccess() {
+        use_case.gateways.HabitGateway throwingGateway = new use_case.gateways.HabitGateway() {
             @Override
-            public void deleteHabit(String username, String habit) {
+            public String addHabit(String userId, Habit habit) {
+                return null;
+            }
+
+            @Override
+            public java.util.ArrayList<Habit> fetchHabits(String userId) {
+                return new java.util.ArrayList<>();
+            }
+
+            @Override
+            public boolean deleteHabit(String userId, Habit habit) {
                 throw new RuntimeException("Database error");
             }
 
             @Override
-            public boolean existsByName(String username, String habitName) {
-                return true; // Pretend it exists to reach delete
+            public java.util.Map<String, java.util.List<Habit>> getAllUsersWithHabits() {
+                return new java.util.HashMap<>();
+            }
+
+            @Override
+            public java.util.List<String> getAllUsernames() {
+                return new java.util.ArrayList<>();
+            }
+
+            @Override
+            public java.util.List<Habit> getHabitsForUser(String username) {
+                // Return a fake habit so existsByName check passes
+                Habit fakeHabit = new HabitBuilder()
+                        .setHabitName("Exercise")
+                        .setStartDateTime(LocalDateTime.now())
+                        .build();
+                java.util.List<Habit> habits = new java.util.ArrayList<>();
+                habits.add(fakeHabit);
+                return habits;
             }
         };
         TestPresenter presenter = new TestPresenter();
-        DeleteHabitInteractor interactor = new DeleteHabitInteractor(presenter, throwingDAO);
+        DeleteHabitInteractor interactor = new DeleteHabitInteractor(presenter, throwingGateway);
 
         DeleteHabitInputData input = new DeleteHabitInputData("roy", "Exercise");
 
@@ -167,13 +144,13 @@ class DeleteHabitInteractorTest {
         assertTrue(presenter.failMessage.contains("Failed to delete habit"));
         assertTrue(presenter.failMessage.contains("Database error"));
     }
+
     @Test
     void deleteHabit_failsWhenNameIsNull() {
         // Arrange
-        InMemoryHabitDataAccessObject realDAO = new InMemoryHabitDataAccessObject();
-        InMemoryHabitDAOAdapter adapter = new InMemoryHabitDAOAdapter(realDAO);
+        InMemoryHabitDataAccessObject habitGateway = new InMemoryHabitDataAccessObject();
         TestPresenter presenter = new TestPresenter();
-        DeleteHabitInteractor interactor = new DeleteHabitInteractor(presenter, adapter);
+        DeleteHabitInteractor interactor = new DeleteHabitInteractor(presenter, habitGateway);
 
         DeleteHabitInputData input = new DeleteHabitInputData("roy", null);
 
@@ -188,10 +165,9 @@ class DeleteHabitInteractorTest {
     @Test
     void deleteHabit_failsWhenNameIsWhitespace() {
         // Arrange
-        InMemoryHabitDataAccessObject realDAO = new InMemoryHabitDataAccessObject();
-        InMemoryHabitDAOAdapter adapter = new InMemoryHabitDAOAdapter(realDAO);
+        InMemoryHabitDataAccessObject habitGateway = new InMemoryHabitDataAccessObject();
         TestPresenter presenter = new TestPresenter();
-        DeleteHabitInteractor interactor = new DeleteHabitInteractor(presenter, adapter);
+        DeleteHabitInteractor interactor = new DeleteHabitInteractor(presenter, habitGateway);
 
         DeleteHabitInputData input = new DeleteHabitInputData("roy", "   ");
 

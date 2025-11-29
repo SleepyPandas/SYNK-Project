@@ -1,13 +1,19 @@
 package use_case.delete_task;
 
+import entities.Task;
+import use_case.gateways.TaskGateway;
+
+import java.util.List;
+import java.util.Optional;
+
 public class DeleteTaskInteractor implements DeleteTaskInputBoundary {
     private final DeleteTaskOutputBoundary presenter;
-    private final DeleteTaskUserDataAccess dao;
+    private final TaskGateway taskGateway;
 
     public DeleteTaskInteractor(DeleteTaskOutputBoundary presenter,
-                                DeleteTaskUserDataAccess dao) {
+            TaskGateway taskGateway) {
         this.presenter = presenter;
-        this.dao = dao;
+        this.taskGateway = taskGateway;
     }
 
     @Override
@@ -25,22 +31,25 @@ public class DeleteTaskInteractor implements DeleteTaskInputBoundary {
             return;
         }
 
-        if (!dao.existsTaskByName(username, taskName)) {
+        // Fetch all tasks for user and find the one with matching name
+        List<Task> tasks = taskGateway.fetchTasks(username);
+        Optional<Task> taskToDelete = tasks.stream()
+                .filter(task -> task.getName().equals(taskName))
+                .findFirst();
+
+        if (taskToDelete.isEmpty()) {
             presenter.prepareFailView(
-                    "Task '" + taskName + "' does not exist for user '" + username + "'."
-            );
+                    "Task '" + taskName + "' does not exist for user '" + username + "'.");
             return;
         }
 
         try {
-            dao.deleteTask(username, taskName);
-            final DeleteTaskOutputData outputData =
-                    new DeleteTaskOutputData(username, taskName, false);
+            taskGateway.deleteTask(username, taskToDelete.get());
+            final DeleteTaskOutputData outputData = new DeleteTaskOutputData(username, taskName, false);
             presenter.prepareSuccessView(outputData);
         } catch (Exception exception) {
             presenter.prepareFailView(
-                    "Failed to delete task: " + exception.getMessage()
-            );
+                    "Failed to delete task: " + exception.getMessage());
         }
     }
 }
