@@ -1,6 +1,20 @@
 package data_access;// package data_access;
 
-// I commented because im using java 24 modules and these are not required to be imported in module-info.java
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.security.GeneralSecurityException;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -21,28 +35,14 @@ import com.google.api.services.calendar.model.Events;
 import entities.Completable;
 import use_case.gateways.CalendarGateway;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.security.GeneralSecurityException;
-import java.time.Duration;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 
 public class GoogleCalendarDataAccessObject implements CalendarGateway {
 
     private static final String APPLICATION_NAME = "CSC-207-SYNK";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
-    private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR); // Changed to Write access
+    private static final List<String> SCOPES =
+            Collections.singletonList(CalendarScopes.CALENDAR); // Changed to Write access
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
     private static final String DEFAULT_USER_ID = "user";
     private static final Duration TOKEN_VALIDITY = Duration.ofDays(30); // Re-authorize after 30 days
@@ -341,4 +341,3 @@ public class GoogleCalendarDataAccessObject implements CalendarGateway {
     }
 
 }
-
