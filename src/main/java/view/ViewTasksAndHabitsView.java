@@ -33,6 +33,8 @@ public class ViewTasksAndHabitsView extends JPanel implements ActionListener, Pr
 
     private DefaultTableModel taskModel;
     private DefaultTableModel habitModel;
+    private final JComboBox<String> taskSortCombo;
+    private final JComboBox<String> habitSortCombo;
     private JTable taskTable;
     private JTable habitTable;
 
@@ -81,16 +83,18 @@ public class ViewTasksAndHabitsView extends JPanel implements ActionListener, Pr
             if (value instanceof String) {
                 button.setText((String) value);
             }
+        
             return button;
         }
 
+        
         @Override
         public Object getCellEditorValue() {
             // Return the string placeholder from the model
             if (designation.equals("task")) {
                 return taskModel.getValueAt(clickedRow, taskTable.getColumnCount() - 1);
             } else {
-                return habitModel.getValueAt(clickedRow, habitTable.getColumnCount() - 1);
+                return taskModel.getValueAt(clickedRow, taskTable.getColumnCount() - 1);
             }
         }
 
@@ -104,6 +108,7 @@ public class ViewTasksAndHabitsView extends JPanel implements ActionListener, Pr
                 String taskName = taskModel.getValueAt(clickedRow, 0).toString();
                 String taskStartTime = taskModel.getValueAt(clickedRow, 1).toString();
                 String taskDueDateTime = taskModel.getValueAt(clickedRow, 2).toString(); // Back to Index 1 shifted
+        
                 String taskGroup = taskModel.getValueAt(clickedRow, 3).toString(); // Back to Index 2 shifted
                 String taskStatusText = taskModel.getValueAt(clickedRow, 4).toString(); // Back to Index 3 shifted
                 String taskPriority = taskModel.getValueAt(clickedRow, 5).toString(); // Back to Index 4 shifted
@@ -229,9 +234,16 @@ public class ViewTasksAndHabitsView extends JPanel implements ActionListener, Pr
 
         this.exitButton = new JButton("Exit");
         this.refreshButton = new JButton("Refresh");
+        // Initialize sorting combo boxes
+        this.taskSortCombo = new JComboBox<>(new String[]{"None","Priority","Deadline"});
+        this.habitSortCombo = new JComboBox<>(new String[]{"None","Priority","StartTime"});
 
         buttonPanel.add(this.exitButton);
         buttonPanel.add(this.refreshButton);
+        buttonPanel.add(new JLabel("Task Sort:"));
+        buttonPanel.add(this.taskSortCombo);
+        buttonPanel.add(new JLabel("Habit Sort:"));
+        buttonPanel.add(this.habitSortCombo);
 
         final JLabel TableLabel = new JLabel("Tasks and Habits");
 
@@ -283,7 +295,9 @@ public class ViewTasksAndHabitsView extends JPanel implements ActionListener, Pr
                 if (evt.getSource().equals(refreshButton)) {
 
                     if (viewTasksAndHabitsController != null) {
-                        viewTasksAndHabitsController.getFormattedTasksAndHabits(loggedInViewModel);
+                        String taskSort = (String) taskSortCombo.getSelectedItem();
+                        String habitSort = (String) habitSortCombo.getSelectedItem();
+                        viewTasksAndHabitsController.getFormattedTasksAndHabits(loggedInViewModel, taskSort, habitSort);
                     } else {
                         JOptionPane.showMessageDialog(ViewTasksAndHabitsView.this,
                                 "Initialization in progress. Please wait a moment.",
@@ -293,9 +307,28 @@ public class ViewTasksAndHabitsView extends JPanel implements ActionListener, Pr
             }
         });
 
+        // React to sort selection changes
+        this.taskSortCombo.addActionListener(e -> {
+            if (viewTasksAndHabitsController != null && loggedInViewModel != null) {
+                String taskSort = (String) taskSortCombo.getSelectedItem();
+                String habitSort = (String) habitSortCombo.getSelectedItem();
+                viewTasksAndHabitsController.getFormattedTasksAndHabits(loggedInViewModel, taskSort, habitSort);
+            }
+        });
+
+        this.habitSortCombo.addActionListener(e -> {
+            if (viewTasksAndHabitsController != null && loggedInViewModel != null) {
+                String taskSort = (String) taskSortCombo.getSelectedItem();
+                String habitSort = (String) habitSortCombo.getSelectedItem();
+                viewTasksAndHabitsController.getFormattedTasksAndHabits(loggedInViewModel, taskSort, habitSort);
+            }
+        });
+
 
         if (this.viewTasksAndHabitsController != null && this.loggedInViewModel != null) {
-            this.viewTasksAndHabitsController.getFormattedTasksAndHabits(this.loggedInViewModel);
+            String taskSort = (String) taskSortCombo.getSelectedItem();
+            String habitSort = (String) habitSortCombo.getSelectedItem();
+            this.viewTasksAndHabitsController.getFormattedTasksAndHabits(this.loggedInViewModel, taskSort, habitSort);
         }
 
     }
@@ -337,7 +370,7 @@ public class ViewTasksAndHabitsView extends JPanel implements ActionListener, Pr
     public void setViewTasksAndHabitsController (ViewTasksAndHabitsController viewTasksAndHabitsController){
         this.viewTasksAndHabitsController = viewTasksAndHabitsController;
         if (this.loggedInViewModel != null) {
-            this.viewTasksAndHabitsController.getFormattedTasksAndHabits(this.loggedInViewModel);
+            this.viewTasksAndHabitsController.getFormattedTasksAndHabits(this.loggedInViewModel, "None", "None");
         }
     }
 

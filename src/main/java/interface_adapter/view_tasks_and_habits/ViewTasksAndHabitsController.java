@@ -34,6 +34,11 @@ public class ViewTasksAndHabitsController {
     }
 
     public void getFormattedTasksAndHabits(LoggedInViewModel loggedInViewModel) {
-        viewTasksAndHabitsUseCaseInteractor.getFormattedTasksAndHabits(loggedInViewModel);
+        // default sorts -> None
+        viewTasksAndHabitsUseCaseInteractor.getFormattedTasksAndHabits(loggedInViewModel, "None", "None");
+    }
+
+    public void getFormattedTasksAndHabits(LoggedInViewModel loggedInViewModel, String taskSort, String habitSort) {
+        viewTasksAndHabitsUseCaseInteractor.getFormattedTasksAndHabits(loggedInViewModel, taskSort, habitSort);
     }
 }

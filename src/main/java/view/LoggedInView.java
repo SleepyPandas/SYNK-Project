@@ -101,7 +101,7 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
         viewTasksAndHabits.addActionListener(evt -> {
             if (evt.getSource().equals(viewTasksAndHabits) && viewManagerModel != null) {
                 // When the button is clicked, we fetch the data and then switch the view
-                viewTasksAndHabitsController.getFormattedTasksAndHabits(loggedInViewModel);
+                viewTasksAndHabitsController.getFormattedTasksAndHabits(loggedInViewModel, "None", "None");
                 viewManagerModel.setState("view tasks and habits");
                 viewManagerModel.firePropertyChanged();
             }
@@ -190,7 +190,7 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
             if (viewTasksAndHabitsController != null && state.getUsername() != null && !state.getUsername().isEmpty()) {
                 System.out.println("User logged in. Triggering initial task/habit data load for: " + state.getUsername());
                 // The logged-in ViewModel holds the necessary username information
-                this.viewTasksAndHabitsController.getFormattedTasksAndHabits(loggedInViewModel);
+                this.viewTasksAndHabitsController.getFormattedTasksAndHabits(loggedInViewModel, "None", "None");
             }
 
 
