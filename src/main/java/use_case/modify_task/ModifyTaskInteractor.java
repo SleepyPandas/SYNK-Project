@@ -45,7 +45,10 @@ public class ModifyTaskInteractor implements ModifyTaskInputBoundary {
         final DateTimeFormatter[] formatters = {customFormat, isoFlexibleFormat};
 
         for (DateTimeFormatter formatter : formatters) {
-            return LocalDateTime.parse(deadline, formatter);
+            try {
+                return LocalDateTime.parse(deadline, formatter);
+            } catch (java.time.format.DateTimeParseException ignoredException) {
+            }
         }
 
         throw new java.time.format.DateTimeParseException("Unable to parse date: " + deadline, deadline, 0);
