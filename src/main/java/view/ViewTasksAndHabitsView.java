@@ -4,6 +4,7 @@ import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.modify_habit.ModifyHabitState;
 import interface_adapter.modify_habit.ModifyHabitViewModel;
+import interface_adapter.modify_task.ModifyTaskState;
 import interface_adapter.modify_task.ModifyTaskViewModel;
 import interface_adapter.view_tasks_and_habits.ViewTasksAndHabitsController;
 import interface_adapter.view_tasks_and_habits.ViewTasksAndHabitsState;
@@ -98,19 +99,56 @@ public class ViewTasksAndHabitsView extends JPanel implements ActionListener, Pr
             fireEditingStopped();
 
             if (designation.equals("task")) {
-                String taskName = taskModel.getValueAt(clickedRow, 0).toString();
-                System.out.println("Task Modify Button Clicked for Task: " + taskName + " (Row: " + clickedRow + ")");
+                // Reverting to the original 6-column structure:
+                // Index 0: Task Name
+                // Index 1: Due Date/Time (Deadline)
+                // Index 2: Group
+                // Index 3: Status Text
+                // Index 4: Priority
+                // Index 5: Description
 
-                // viewTasksAndHabitsController.modifyTask(taskName);
+                String taskName = taskModel.getValueAt(clickedRow, 0).toString();
+                String taskDueDateTime = taskModel.getValueAt(clickedRow, 1).toString(); // Back to Index 1
+                String taskGroup = taskModel.getValueAt(clickedRow, 2).toString(); // Back to Index 2
+                String taskStatusText = taskModel.getValueAt(clickedRow, 3).toString(); // Back to Index 3
+                String taskPriority = taskModel.getValueAt(clickedRow, 4).toString(); // Back to Index 4
+                String taskDescription = taskModel.getValueAt(clickedRow, 5).toString(); // Back to Index 5
+
+                boolean taskStatus;
+                if (taskStatusText.equals("Complete")){
+                    taskStatus = true;
+                } else{
+                    taskStatus = false;
+                }
+
+                ModifyTaskState taskState = modifyTaskViewModel.getState();
+
+                taskState.setOldTaskName(taskName);
+                taskState.setOldDeadline(taskDueDateTime);
+                taskState.setOldPriority(taskPriority);
+                taskState.setOldStatus(taskStatus);
+                taskState.setOldTaskGroup(taskGroup);
+                taskState.setOldDescription(taskDescription);
+
+                taskState.setNewTaskName(taskName);
+                taskState.setDeadline(taskDueDateTime);
+                taskState.setPriority(taskPriority);
+                taskState.setStatus(taskStatus);
+                taskState.setTaskGroup(taskGroup);
+                taskState.setDescription(taskDescription);
+
+                modifyTaskViewModel.firePropertyChanged();
+                viewManagerModel.setState(modifyTaskViewModel.getViewName());
+                viewManagerModel.firePropertyChanged();
 
             } else if (designation.equals("habit")) {
                 String habitName = habitModel.getValueAt(clickedRow, 0).toString();
-                String habitStartDateTime = habitModel.getValueAt(clickedRow, 1).toString();
+                String startTime = habitModel.getValueAt(clickedRow, 1).toString();
                 String habitFrequency = habitModel.getValueAt(clickedRow, 2).toString();
                 String habitGroup = habitModel.getValueAt(clickedRow, 3).toString();
                 String habitStreakCount = habitModel.getValueAt(clickedRow, 4).toString();
                 String habitPriority = habitModel.getValueAt(clickedRow, 5).toString();
-                String habitStatusText = habitModel.getValueAt(clickedRow, 6).toString();
+                String habitStatusText = habitModel.getValueAt(clickedRow,6).toString();
                 boolean habitStatus;
                 if (habitStatusText.equals("Complete")){
                     habitStatus = true;
@@ -124,7 +162,7 @@ public class ViewTasksAndHabitsView extends JPanel implements ActionListener, Pr
                 habitState.setOldStatus(habitStatus);
                 habitState.setOldPriority(habitPriority);
                 habitState.setOldStreakCount(habitStreakCount);
-                habitState.setOldStartDateTime(habitStartDateTime);
+                habitState.setOldStartDateTime(startTime);
 
                 habitState.setHabitName(habitName);
                 habitState.setHabitGroup(habitGroup);
@@ -132,7 +170,7 @@ public class ViewTasksAndHabitsView extends JPanel implements ActionListener, Pr
                 habitState.setStatus(habitStatus);
                 habitState.setPriority(habitPriority);
                 habitState.setStreakCount(habitStreakCount);
-                habitState.setStartDateTime(habitStartDateTime);
+                habitState.setStartDateTime(startTime);
 
                 modifyHabitViewModel.firePropertyChanged();
                 viewManagerModel.setState(modifyHabitViewModel.getViewName());

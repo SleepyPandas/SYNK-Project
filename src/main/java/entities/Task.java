@@ -21,7 +21,7 @@ public class Task implements Completable, Cloneable {
         this.status = status;
         this.priority = priority;
         this.description = description;
-        this.startTime = startTime; // ADDED
+
     }
 
     @Override

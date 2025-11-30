@@ -8,7 +8,6 @@ public class ModifyTaskState {
     private boolean status = false;
     private String taskGroup = "";
     private String description = "";
-    private String startTime = "";
     private String taskError;
     private String oldTaskName = "";
     private String oldPriority = "";
@@ -16,7 +15,6 @@ public class ModifyTaskState {
     private boolean oldStatus = false;
     private String oldTaskGroup = "";
     private String oldDescription = "";
-    private String oldStartTime = "";
 
 
 
@@ -68,14 +66,6 @@ public class ModifyTaskState {
         this.description = description;
     }
 
-
-    public String getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
-    }
 
     public String getTaskError() {
         return taskError;
@@ -133,11 +123,4 @@ public class ModifyTaskState {
         this.oldDescription = oldDescription;
     }
 
-    public String getOldStartTime() {
-        return oldStartTime;
-    }
-
-    public void setOldStartTime(String oldStartTime) {
-        this.oldStartTime = oldStartTime;
-    }
 }

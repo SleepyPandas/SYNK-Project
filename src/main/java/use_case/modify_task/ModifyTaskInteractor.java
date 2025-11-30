@@ -5,7 +5,9 @@ import entities.TaskBuilder;
 import use_case.gateways.TaskGateway;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class ModifyTaskInteractor implements ModifyTaskInputBoundary {
     private final ModifyTaskOutputBoundary modifyTaskPresenter;
@@ -17,6 +19,10 @@ public class ModifyTaskInteractor implements ModifyTaskInputBoundary {
     }
 
     public void execute(ModifyTaskInputData modifyInputData){
+        final DateTimeFormatter INPUT_FORMAT = DateTimeFormatter.ofPattern("dd MMMM, yyyy HH:mm", Locale.ENGLISH);
+
+
+        final DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
         String oldTaskName = modifyInputData.getOldTaskName();
         String oldTaskPriority = modifyInputData.getOldPriority();
@@ -24,7 +30,6 @@ public class ModifyTaskInteractor implements ModifyTaskInputBoundary {
         String oldDeadline = modifyInputData.getOldDeadline();
         String oldTaskGroup = modifyInputData.getOldTaskGroup();
         String oldDescription = modifyInputData.getOldDescription();
-        String oldStartTimeRaw = modifyInputData.getOldStartTime();
 
         String newTaskName = modifyInputData.getNewTaskName();
         String newTaskPriority = modifyInputData.getNewPriority();
@@ -32,13 +37,11 @@ public class ModifyTaskInteractor implements ModifyTaskInputBoundary {
         String newDeadline = modifyInputData.getNewDeadline();
         String newTaskGroup = modifyInputData.getNewTaskGroup();
         String newDescription = modifyInputData.getNewDescription();
-        String newStartTimeRaw = modifyInputData.getNewStartTime();
         String userID = modifyInputData.getUserID();
 
         try{
+            LocalDateTime newDeadlineFormatted = LocalDateTime.parse(newDeadline, INPUT_FORMAT);
 
-            LocalDateTime newDeadlineFormatted = LocalDateTime.parse(newDeadline);
-            LocalDateTime newStartTimeFormatted = LocalDateTime.parse(newStartTimeRaw);
             int newPriorityFormatted = Integer.parseInt(newTaskPriority);
             int oldPriorityFormatted = Integer.parseInt(oldTaskPriority);
 
@@ -47,14 +50,12 @@ public class ModifyTaskInteractor implements ModifyTaskInputBoundary {
                 return;
             }
 
-            LocalDateTime oldDeadlineFormatted = LocalDateTime.parse(oldDeadline);
-            LocalDateTime oldStartTimeFormatted = LocalDateTime.parse(oldStartTimeRaw);
+            LocalDateTime oldDeadlineFormatted = LocalDateTime.parse(oldDeadline, INPUT_FORMAT);
 
             final Task oldTask = new TaskBuilder()
                     .setTaskName(oldTaskName)
                     .setDescription(oldDescription)
                     .setDeadline(oldDeadlineFormatted)
-                    .setStartTime(oldStartTimeFormatted)
                     .setTaskGroup(oldTaskGroup)
                     .setPriority(oldPriorityFormatted)
                     .setStatus(oldTaskStatus).build();
@@ -63,7 +64,6 @@ public class ModifyTaskInteractor implements ModifyTaskInputBoundary {
             modifiedTask.setTaskName(newTaskName);
             modifiedTask.setDescription(newDescription);
             modifiedTask.setDeadline(newDeadlineFormatted);
-            modifiedTask.setStartTime(newStartTimeFormatted);
             modifiedTask.setTaskGroup(newTaskGroup);
             modifiedTask.setPriority(newPriorityFormatted);
             modifiedTask.setStatus(newTaskStatus);

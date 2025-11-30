@@ -1,7 +1,7 @@
 package interface_adapter.modify_task;
 
 import interface_adapter.ViewManagerModel;
-import interface_adapter.login.LoginViewModel;
+import interface_adapter.view_tasks_and_habits.ViewTasksAndHabitsState;
 import interface_adapter.view_tasks_and_habits.ViewTasksAndHabitsViewModel;
 import use_case.modify_task.ModifyTaskOutputBoundary;
 import use_case.modify_task.ModifyTaskOutputData;
@@ -22,11 +22,11 @@ public class ModifyTaskPresenter implements ModifyTaskOutputBoundary {
 
     @Override
     public void prepareSuccessView(ModifyTaskOutputData outputData) {
-        // ViewTasksAndHabitState currState = tasksViewModel.getState();
-        // currState.setTaskList(outputData.getTaskList());
-        // tasksViewModel.firePropertyChanged();
+         ViewTasksAndHabitsState currState = tasksViewModel.getState();
+         currState.setFormattedTasks(outputData.getTaskList());
+         tasksViewModel.firePropertyChanged();
 
-        // switchToTaskListView();
+         switchToTaskListView();
     }
 
     @Override
@@ -37,7 +37,7 @@ public class ModifyTaskPresenter implements ModifyTaskOutputBoundary {
     }
 
     public void switchToTaskListView(){
-//`        viewManagerModel.setState(viewTasksModel.getViewName());
-//        viewManagerModel.firePropertyChanged();`
+        viewManagerModel.setState(tasksViewModel.getViewName());
+        viewManagerModel.firePropertyChanged();
     }
 }

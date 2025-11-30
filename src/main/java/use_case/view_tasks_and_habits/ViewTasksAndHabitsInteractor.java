@@ -9,10 +9,7 @@ import entities.Habit;
 
 import interface_adapter.logged_in.LoggedInViewModel;
 
-import use_case.view_tasks_and_habits.ViewTasksAndHabitsOutputData;
-
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.ArrayList;
 
 public class ViewTasksAndHabitsInteractor implements ViewTasksAndHabitsInputBoundary {

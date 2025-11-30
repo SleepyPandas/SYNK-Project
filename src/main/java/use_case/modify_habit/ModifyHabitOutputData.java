@@ -88,6 +88,8 @@ public class ModifyHabitOutputData {
 
             formattedHabit.add(habitGroup);
 
+            formattedHabit.add(Integer.toString(habitStreakCount));
+
             formattedHabit.add(Integer.toString(priority));
 
             if (status == true) {
