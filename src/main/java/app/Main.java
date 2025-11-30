@@ -15,6 +15,7 @@ public class Main {
                 .addModifyTaskView()
                 .addModifyHabitView()
                 .addViewTasksAndHabitsView()
+                .addUpdateProfileView()
                 .addStatsView()
                 .addSignupUseCase()
                 .addLoginUseCase()
@@ -25,6 +26,7 @@ public class Main {
                 .addViewTasksAndHabitsUseCase()
                 .addSyncToGoogleCalendarUseCase()
                 .addViewStatsUseCase()
+                .addUpdateProfileUseCase()
                 .build();
 
         application.pack();
