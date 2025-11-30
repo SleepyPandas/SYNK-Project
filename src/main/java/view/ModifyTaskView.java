@@ -244,13 +244,17 @@ public class ModifyTaskView extends JPanel implements ActionListener, PropertyCh
 
         ModifyTaskState state = (ModifyTaskState) evt.getNewValue();
 
-        newTaskName.setText(state.getNewTaskName());
-        newTaskDeadline.setText(state.getDeadline());
-        newTaskPriority.setText(state.getPriority());
-        taskCompleted.setSelected(state.getStatus());
-        taskNotCompleted.setSelected(!state.getStatus());
-        newDescription.setText(state.getDescription());
-        newTaskGroup.setText(state.getTaskGroup());
+        if (state.getTaskError() != null){
+            JOptionPane.showMessageDialog(this, state.getTaskError());
+        } else {
+            newTaskName.setText(state.getNewTaskName());
+            newTaskDeadline.setText(state.getDeadline());
+            newTaskPriority.setText(state.getPriority());
+            taskCompleted.setSelected(state.getStatus());
+            taskNotCompleted.setSelected(!state.getStatus());
+            newDescription.setText(state.getDescription());
+            newTaskGroup.setText(state.getTaskGroup());
+        }
     }
 
     public String getViewName() {

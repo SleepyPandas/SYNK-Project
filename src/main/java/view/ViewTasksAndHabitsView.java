@@ -99,13 +99,7 @@ public class ViewTasksAndHabitsView extends JPanel implements ActionListener, Pr
             fireEditingStopped();
 
             if (designation.equals("task")) {
-                // Reverting to the original 6-column structure:
-                // Index 0: Task Name
-                // Index 1: Due Date/Time (Deadline)
-                // Index 2: Group
-                // Index 3: Status Text
-                // Index 4: Priority
-                // Index 5: Description
+
 
                 String taskName = taskModel.getValueAt(clickedRow, 0).toString();
                 String taskDueDateTime = taskModel.getValueAt(clickedRow, 1).toString(); // Back to Index 1

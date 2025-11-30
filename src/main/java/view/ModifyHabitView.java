@@ -296,7 +296,6 @@ public class ModifyHabitView extends JPanel implements ActionListener, PropertyC
                         currentState.getHabitGroup(),
                         currentState.getFrequency()
                 );
-                modifyHabitController.switchToHabitListView();
             }
         });
     }
@@ -309,16 +308,20 @@ public class ModifyHabitView extends JPanel implements ActionListener, PropertyC
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         final ModifyHabitState currState = (ModifyHabitState) evt.getNewValue();
-        newHabitName.setText(currState.getOldHabitName());
-        newFrequency.setText(currState.getOldFrequency());
-        newHabitPriority.setText(currState.getOldPriority());
-        newStreakCount.setText(currState.getOldStreakCount());
-        newHabitGroup.setText(currState.getOldHabitGroup());
-        newStartDateTime.setText(currState.getOldStartDateTime());
-        if (currState.getOldStatus()){
-            habitCompleted.setSelected(true);
+        if (currState.getHabitError() != null){
+            JOptionPane.showMessageDialog(this, currState.getHabitError());
         } else {
-            habitCompleted.setSelected(false);
+            newHabitName.setText(currState.getOldHabitName());
+            newFrequency.setText(currState.getOldFrequency());
+            newHabitPriority.setText(currState.getOldPriority());
+            newStreakCount.setText(currState.getOldStreakCount());
+            newHabitGroup.setText(currState.getOldHabitGroup());
+            newStartDateTime.setText(currState.getOldStartDateTime());
+            if (currState.getOldStatus()) {
+                habitCompleted.setSelected(true);
+            } else {
+                habitCompleted.setSelected(false);
+            }
         }
     }
 
