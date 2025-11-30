@@ -3,14 +3,11 @@ package use_case.modify_habit;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.Locale;
 
 import entities.Habit;
 import entities.HabitBuilder;
-import entities.Task;
 import strategy.HabitValidationStrategy;
-import strategy.TaskValidationStrategy;
 import strategy.ValidationStrategy;
 import use_case.gateways.HabitGateway;
 
@@ -100,18 +97,17 @@ public class ModifyHabitInteractor implements ModifyHabitInputBoundary {
             modifiedHabit.setHabitGroup(newHabitGroup);
             modifiedHabit.setFrequency(newFrequencyFormatted);
 
-            String validation = habitValidation.validate(userID, oldHabit, modifiedHabit);
-            if (validation == null ) {
+            final String validation = habitValidation.validate(userID, oldHabit, modifiedHabit);
+            if (validation == null) {
                 habitDataAccessObject.deleteHabit(userID, oldHabit);
                 habitDataAccessObject.addHabit(userID, modifiedHabit);
 
                 modifyHabitPresenter.prepareSuccessView(new
                         ModifyHabitOutputData(habitDataAccessObject.fetchHabits(userID)));
-            } else {
+            }
+            else {
                 modifyHabitPresenter.prepareFailView(validation);
             }
-
-
 
         }
         catch (DateTimeParseException dateParseException) {

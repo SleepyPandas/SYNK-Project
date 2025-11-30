@@ -36,16 +36,20 @@ public class ModifyTaskOutputData{
                 taskStartTimeToString = taskStartTime.format(ISO_FORMATTER);
                 switch (taskStartTimeToString.substring(5, 7)) {
                     case "01":
-                        formattedTask.add(taskStartTimeToString.substring(8, 10) + " January, " + taskStartTimeToString.substring(0, 4) + " " + taskStartTimeToString.substring(11, 16));
+                        formattedTask.add(taskStartTimeToString.substring(8, 10) + " January, "
+                                + taskStartTimeToString.substring(0, 4) + " " + taskStartTimeToString.substring(11, 16));
                         break;
                     case "02":
-                        formattedTask.add(taskStartTimeToString.substring(8, 10) + " February, " + taskStartTimeToString.substring(0, 4) + " " + taskStartTimeToString.substring(11, 16));
+                        formattedTask.add(taskStartTimeToString.substring(8, 10) + " February, "
+                                + taskStartTimeToString.substring(0, 4) + " " + taskStartTimeToString.substring(11, 16));
                         break;
                     case "03":
-                        formattedTask.add(taskStartTimeToString.substring(8, 10) + " March, " + taskStartTimeToString.substring(0, 4) + " " + taskStartTimeToString.substring(11, 16));
+                        formattedTask.add(taskStartTimeToString.substring(8, 10) + " March, "
+                                + taskStartTimeToString.substring(0, 4) + " " + taskStartTimeToString.substring(11, 16));
                         break;
                     case "04":
-                        formattedTask.add(taskStartTimeToString.substring(8, 10) + " April, " + taskStartTimeToString.substring(0, 4) + " " + taskStartTimeToString.substring(11, 16));
+                        formattedTask.add(taskStartTimeToString.substring(8, 10) + " April, "
+                                + taskStartTimeToString.substring(0, 4) + " " + taskStartTimeToString.substring(11, 16));
                         break;
                     case "05":
                         formattedTask.add(taskStartTimeToString.substring(8, 10) + " May, " + taskStartTimeToString.substring(0, 4) + " " + taskStartTimeToString.substring(11, 16));
@@ -111,28 +115,29 @@ public class ModifyTaskOutputData{
                             taskDeadlineToString.substring(0, 4) + " " + taskDeadlineToString.substring(11, 16));
                     break;
                 case "09":
-                    formattedTask.add(taskDeadlineToString.substring(8, 10) + " September, " +
-                            taskDeadlineToString.substring(0, 4) + " " + taskDeadlineToString.substring(11, 16));
+                    formattedTask.add(taskDeadlineToString.substring(8, 10) + " September, "
+                           + taskDeadlineToString.substring(0, 4) + " " + taskDeadlineToString.substring(11, 16));
                     break;
                 case "10":
-                    formattedTask.add(taskDeadlineToString.substring(8, 10) + " October, " +
-                            taskDeadlineToString.substring(0, 4) + " " + taskDeadlineToString.substring(11, 16));
+                    formattedTask.add(taskDeadlineToString.substring(8, 10) + " October, "
+                           + taskDeadlineToString.substring(0, 4) + " " + taskDeadlineToString.substring(11, 16));
                     break;
                 case "11":
-                    formattedTask.add(taskDeadlineToString.substring(8, 10) + " November, " +
-                            taskDeadlineToString.substring(0, 4) + " " + taskDeadlineToString.substring(11, 16));
+                    formattedTask.add(taskDeadlineToString.substring(8, 10) + " November, "
+                            +taskDeadlineToString.substring(0, 4) + " " + taskDeadlineToString.substring(11, 16));
                     break;
                 case "12":
-                    formattedTask.add(taskDeadlineToString.substring(8, 10) + " December, " +
-                            taskDeadlineToString.substring(0, 4) + " " + taskDeadlineToString.substring(11, 16));
+                    formattedTask.add(taskDeadlineToString.substring(8, 10) + " December, "
+                            +taskDeadlineToString.substring(0, 4) + " " + taskDeadlineToString.substring(11, 16));
                     break;
             }
 
             formattedTask.add(taskGroup);
 
-            if (status == true) {
+            if (status) {
                 formattedTask.add("Complete");
-            } else {
+            }
+            else {
                 formattedTask.add("Incomplete");
             }
 
