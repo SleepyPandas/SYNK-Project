@@ -19,6 +19,10 @@ public class Main {
                 .addChangePasswordUseCase()
                 .addViewLeaderboardUseCase()
                 .addViewTasksAndHabitsUseCase()
+                .addCreateTaskUseCase()
+                .addDeleteTaskUseCase()
+                .addCreateHabitUseCase()
+                .addDeleteHabitUseCase()
                 .addSyncToGoogleCalendarUseCase()
                 .addViewStatsUseCase()
                 .build();
