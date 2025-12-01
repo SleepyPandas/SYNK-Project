@@ -203,11 +203,7 @@ public class ViewTasksAndHabitsInteractor implements ViewTasksAndHabitsInputBoun
 
                 formattedHabit.add(Integer.toString(habitFrequency));
 
-                // Last Date Time Completed - Not available in Entity, using placeholder
-                formattedHabit.add("N/A");
-
                 formattedHabit.add(habitGroup);
-                formattedHabit.add(Integer.toString(habitStreakCount));
 
                 formattedHabit.add(Integer.toString(habitStreakCount));
 
