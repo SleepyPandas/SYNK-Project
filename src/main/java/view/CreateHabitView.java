@@ -1,6 +1,7 @@
 package view;
 
-import interface_adapter.ViewModel;
+import interface_adapter.ViewManagerModel;
+import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.create_habit.CreateHabitController;
 import interface_adapter.create_habit.CreateHabitState;
 import interface_adapter.create_habit.CreateHabitViewModel;
@@ -13,157 +14,122 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 /**
- * Swing View for Create Habit.
- * Frequency is input as an integer (e.g., days).
+ * View for creating a new Habit.
+ * All business attributes are entered by the user, while the username
+ * is taken from the LoggedInViewModel.
  */
 public class CreateHabitView extends JPanel implements ActionListener, PropertyChangeListener {
 
-    private final CreateHabitController controller;
     private final CreateHabitViewModel viewModel;
+    private final ViewManagerModel viewManagerModel;
+    private final LoggedInViewModel loggedInViewModel;
 
-    // Save current username directly, passed externally during construction (can be
-    // changed to read from LoggedInViewModel)
-    private final String username;
+    private CreateHabitController controller;
 
-    // UI Components
-    private final JTextField habitNameField = new JTextField(20);
-    private final JTextField startDateTimeField = new JTextField(20);
-    private final JTextField frequencyField = new JTextField(20);
-    private final JTextField habitGroupField = new JTextField(20);
-    private final JTextField streakCountField = new JTextField(5);
-    private final JTextField priorityField = new JTextField(5);
+    private final JTextField habitNameField = new JTextField(15);
+    private final JTextField startDateTimeField = new JTextField(15);
+    private final JTextField frequencyField = new JTextField(15);
+    private final JTextField habitGroupField = new JTextField(15);
+    private final JTextField streakCountField = new JTextField(15);
+    private final JTextField priorityField = new JTextField(15);
 
     private final JLabel messageLabel = new JLabel(" ");
 
-    private final JButton createButton = new JButton();
-    private final JButton cancelButton = new JButton();
+    private final JButton createButton = new JButton("Create");
+    private final JButton cancelButton = new JButton("Cancel");
 
-    public CreateHabitView(CreateHabitController controller,
-            CreateHabitViewModel viewModel,
-            String username) {
-        this.controller = controller;
+    public CreateHabitView(CreateHabitViewModel viewModel,
+                           ViewManagerModel viewManagerModel,
+                           LoggedInViewModel loggedInViewModel) {
         this.viewModel = viewModel;
-        this.username = username;
+        this.viewManagerModel = viewManagerModel;
+        this.loggedInViewModel = loggedInViewModel;
 
         this.viewModel.addPropertyChangeListener(this);
 
-        // Initialize UI
-        loadLabelsFromViewModel();
-        setupLayout();
-        addListeners();
-    }
+        setLayout(new BorderLayout());
 
-    private void loadLabelsFromViewModel() {
-        // Title can be used externally or not
-        createButton.setText(CreateHabitViewModel.CREATE_BUTTON_LABEL);
-        cancelButton.setText(CreateHabitViewModel.CANCEL_BUTTON_LABEL);
-    }
-
-    private void setupLayout() {
-        this.setLayout(new BorderLayout());
+        JLabel title = new JLabel("Create New Habit", SwingConstants.CENTER);
+        title.setFont(title.getFont().deriveFont(Font.BOLD, 18f));
+        add(title, BorderLayout.NORTH);
 
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(4, 4, 4, 4);
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         int row = 0;
 
-        // Habit Name
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        formPanel.add(new JLabel(CreateHabitViewModel.HABIT_NAME_LABEL + ":"), gbc);
-
+        gbc.gridx = 0; gbc.gridy = row;
+        formPanel.add(new JLabel("Habit Name:"), gbc);
         gbc.gridx = 1;
-        habitNameField.setToolTipText("e.g., Exercise, Reading...");
         formPanel.add(habitNameField, gbc);
         row++;
 
-        // Start Date & Time
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        formPanel.add(new JLabel(CreateHabitViewModel.START_DATETIME_LABEL + ":"), gbc);
-
+        gbc.gridx = 0; gbc.gridy = row;
+        formPanel.add(new JLabel("Start Date & Time (yyyy-MM-ddTHH:mm):"), gbc);
         gbc.gridx = 1;
-        startDateTimeField.setToolTipText("Format: yyyy-MM-dd'T'HH:mm, e.g., 2025-11-23T09:00");
         formPanel.add(startDateTimeField, gbc);
         row++;
 
-        // Frequency Date & Time
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        formPanel.add(new JLabel(CreateHabitViewModel.FREQUENCY_LABEL + ":"), gbc);
-
+        gbc.gridx = 0; gbc.gridy = row;
+        formPanel.add(new JLabel("Frequency (days):"), gbc);
         gbc.gridx = 1;
-        frequencyField.setToolTipText("Frequency in days (integer)");
         formPanel.add(frequencyField, gbc);
         row++;
 
-        // Habit Group
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        formPanel.add(new JLabel(CreateHabitViewModel.HABIT_GROUP_LABEL + ":"), gbc);
-
+        gbc.gridx = 0; gbc.gridy = row;
+        formPanel.add(new JLabel("Habit Group:"), gbc);
         gbc.gridx = 1;
-        habitGroupField.setToolTipText("e.g., Health, Study, Work...");
         formPanel.add(habitGroupField, gbc);
         row++;
 
-        // Streak Count
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        formPanel.add(new JLabel(CreateHabitViewModel.STREAK_COUNT_LABEL + ":"), gbc);
-
+        gbc.gridx = 0; gbc.gridy = row;
+        formPanel.add(new JLabel("Streak Count:"), gbc);
         gbc.gridx = 1;
         formPanel.add(streakCountField, gbc);
         row++;
 
-        // Priority
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        formPanel.add(new JLabel(CreateHabitViewModel.PRIORITY_LABEL + ":"), gbc);
-
+        gbc.gridx = 0; gbc.gridy = row;
+        formPanel.add(new JLabel("Priority (integer):"), gbc);
         gbc.gridx = 1;
         formPanel.add(priorityField, gbc);
         row++;
 
-        // Message label
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        gbc.gridwidth = 2;
-        messageLabel.setForeground(Color.RED);
-        formPanel.add(messageLabel, gbc);
-        row++;
+        add(formPanel, BorderLayout.CENTER);
 
-        this.add(formPanel, BorderLayout.CENTER);
+        JPanel southPanel = new JPanel(new BorderLayout());
+        JPanel buttons = new JPanel();
+        buttons.add(createButton);
+        buttons.add(cancelButton);
+        southPanel.add(buttons, BorderLayout.NORTH);
+        southPanel.add(messageLabel, BorderLayout.SOUTH);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.add(createButton);
-        buttonPanel.add(cancelButton);
+        add(southPanel, BorderLayout.SOUTH);
 
-        this.add(buttonPanel, BorderLayout.SOUTH);
+        createButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleCreate();
+            }
+        });
+
+        cancelButton.addActionListener(e -> {
+            viewManagerModel.setState("view tasks and habits");
+            viewManagerModel.firePropertyChanged();
+        });
     }
 
-    private void addListeners() {
-        createButton.addActionListener(this);
-        cancelButton.addActionListener(this);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        Object source = e.getSource();
-
-        if (source == createButton) {
-            onCreate();
-        } else if (source == cancelButton) {
-            onCancel();
+    private void handleCreate() {
+        if (controller == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Create Habit controller not initialized.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
-    }
 
-    private void onCreate() {
-        // Get data from view
+        String username = loggedInViewModel.getState().getUsername();
         String habitName = habitNameField.getText().trim();
         String startDateTimeText = startDateTimeField.getText().trim();
         String frequencyText = frequencyField.getText().trim();
@@ -171,58 +137,28 @@ public class CreateHabitView extends JPanel implements ActionListener, PropertyC
         String streakText = streakCountField.getText().trim();
         String priorityText = priorityField.getText().trim();
 
-        int streakCount;
-        int priority;
-
-        try {
-            streakCount = streakText.isEmpty() ? 0 : Integer.parseInt(streakText);
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this,
-                    "Streak Count must be integer.",
-                    "error",
-                    JOptionPane.ERROR_MESSAGE);
+        if (habitName.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Habit name cannot be empty.",
+                    "Input Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         try {
-            priority = priorityText.isEmpty() ? 0 : Integer.parseInt(priorityText);
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this,
-                    "Priority must be integer.",
-                    "error",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+            int streakCount = streakText.isEmpty() ? 0 : Integer.parseInt(streakText);
+            int priority = Integer.parseInt(priorityText);
 
-        try {
-            // Call controller (frequency passed as LocalDateTime string)
-            controller.execute(
-                    username,
-                    habitName,
-                    startDateTimeText,
-                    frequencyText,
-                    habitGroup,
-                    streakCount,
-                    priority);
-        } catch (IllegalArgumentException ex) {
-            // e.g., thrown by controller when date format is incorrect
+            controller.execute(username, habitName, startDateTimeText,
+                    frequencyText, habitGroup, streakCount, priority);
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
-                    ex.getMessage(),
-                    "invalid input.",
-                    JOptionPane.ERROR_MESSAGE);
+                    "Invalid input: " + ex.getMessage(),
+                    "Input Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void onCancel() {
-        // If you have ViewManager, you can switch back to LoggedIn or other views here.
-        // Clear form simply here.
-        habitNameField.setText("");
-        startDateTimeField.setText("");
-        frequencyField.setText("");
-        habitGroupField.setText("");
-        streakCountField.setText("");
-        priorityField.setText("");
-        messageLabel.setText(" ");
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // unused
     }
 
     @Override
@@ -230,31 +166,20 @@ public class CreateHabitView extends JPanel implements ActionListener, PropertyC
         if (!"state".equals(evt.getPropertyName())) {
             return;
         }
-
-        CreateHabitState state = (CreateHabitState) evt.getNewValue();
-
-        habitNameField.setText(state.getHabitName());
-        startDateTimeField.setText(state.getStartDateTimeText());
-        frequencyField.setText(state.getFrequencyText());
-        habitGroupField.setText(state.getHabitGroup());
-        streakCountField.setText(
-                state.getStreakCount() == 0 ? "" : String.valueOf(state.getStreakCount()));
-        priorityField.setText(
-                state.getPriority() == 0 ? "" : String.valueOf(state.getPriority()));
-
+        CreateHabitState state = viewModel.getState();
         if (state.getErrorMessage() != null) {
-            messageLabel.setForeground(Color.RED);
             messageLabel.setText(state.getErrorMessage());
         } else if (state.getSuccessMessage() != null) {
-            messageLabel.setForeground(new Color(0, 128, 0)); // Dark green
             messageLabel.setText(state.getSuccessMessage());
-            // Clear text fields on success
             habitNameField.setText("");
             startDateTimeField.setText("");
             frequencyField.setText("");
             habitGroupField.setText("");
             streakCountField.setText("");
             priorityField.setText("");
+
+            viewManagerModel.setState("view tasks and habits");
+            viewManagerModel.firePropertyChanged();
         } else {
             messageLabel.setText(" ");
         }
@@ -262,5 +187,9 @@ public class CreateHabitView extends JPanel implements ActionListener, PropertyC
 
     public String getViewName() {
         return viewModel.getViewName();
+    }
+
+    public void setCreateHabitController(CreateHabitController controller) {
+        this.controller = controller;
     }
 }

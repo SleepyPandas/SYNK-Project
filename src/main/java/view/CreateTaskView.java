@@ -1,241 +1,193 @@
 package view;
 
+import interface_adapter.ViewManagerModel;
+import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.create_task.CreateTaskController;
 import interface_adapter.create_task.CreateTaskState;
 import interface_adapter.create_task.CreateTaskViewModel;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
+/**
+ * View for creating a new Task.
+ * All business attributes are entered by the user, while the username
+ * is taken from the LoggedInViewModel.
+ */
 public class CreateTaskView extends JPanel implements ActionListener, PropertyChangeListener {
 
     private final String viewName = "create task";
 
-    private final CreateTaskViewModel createTaskViewModel;
+    private final CreateTaskViewModel viewModel;
+    private final ViewManagerModel viewManagerModel;
+    private final LoggedInViewModel loggedInViewModel;
 
-    private final JTextField usernameInputField = new JTextField(15);
-    private final JTextField taskNameInputField = new JTextField(15);
-    private final JTextField descriptionInputField = new JTextField(15);
-    private final JTextField deadlineInputField = new JTextField(15);
-    private final JTextField taskGroupInputField = new JTextField(15);
-    private final JTextField priorityInputField = new JTextField(15);
+    private CreateTaskController createTaskController;
 
-    private CreateTaskController createTaskController = null;
+    private final JTextField taskNameField = new JTextField(15);
+    private final JTextField descriptionField = new JTextField(15);
+    private final JTextField startTimeField = new JTextField(15);
+    private final JTextField deadlineField = new JTextField(15);
+    private final JTextField taskGroupField = new JTextField(15);
+    private final JTextField priorityField = new JTextField(15);
 
-    private final JButton createButton;
-    private final JButton cancelButton;
+    private final JButton createButton = new JButton("Create");
+    private final JButton cancelButton = new JButton("Cancel");
 
-    public CreateTaskView(CreateTaskViewModel createTaskViewModel) {
-        this.createTaskViewModel = createTaskViewModel;
-        createTaskViewModel.addPropertyChangeListener(this);
+    public CreateTaskView(CreateTaskViewModel viewModel,
+                          ViewManagerModel viewManagerModel,
+                          LoggedInViewModel loggedInViewModel) {
+        this.viewModel = viewModel;
+        this.viewManagerModel = viewManagerModel;
+        this.loggedInViewModel = loggedInViewModel;
 
-        JLabel title = new JLabel(CreateTaskViewModel.TITLE_LABEL);
-        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        this.viewModel.addPropertyChangeListener(this);
 
-        LabelTextPanel usernamePanel = new LabelTextPanel(
-                new JLabel(CreateTaskViewModel.USERNAME_LABEL), usernameInputField);
+        setLayout(new BorderLayout());
 
-        LabelTextPanel taskNamePanel = new LabelTextPanel(
-                new JLabel(CreateTaskViewModel.TASK_NAME_LABEL), taskNameInputField);
+        JLabel title = new JLabel(CreateTaskViewModel.TITLE_LABEL, SwingConstants.CENTER);
+        title.setFont(title.getFont().deriveFont(Font.BOLD, 18f));
+        add(title, BorderLayout.NORTH);
 
-        LabelTextPanel descriptionPanel = new LabelTextPanel(
-                new JLabel(CreateTaskViewModel.DESCRIPTION_LABEL), descriptionInputField);
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        LabelTextPanel deadlinePanel = new LabelTextPanel(
-                new JLabel(CreateTaskViewModel.DEADLINE_LABEL), deadlineInputField);
+        int row = 0;
 
-        LabelTextPanel taskGroupPanel = new LabelTextPanel(
-                new JLabel(CreateTaskViewModel.TASK_GROUP_LABEL), taskGroupInputField);
+        // Task name
+        gbc.gridx = 0; gbc.gridy = row;
+        formPanel.add(new JLabel(CreateTaskViewModel.TASK_NAME_LABEL + ":"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(taskNameField, gbc);
+        row++;
 
-        LabelTextPanel priorityPanel = new LabelTextPanel(
-                new JLabel(CreateTaskViewModel.PRIORITY_LABEL), priorityInputField);
+        // Description
+        gbc.gridx = 0; gbc.gridy = row;
+        formPanel.add(new JLabel(CreateTaskViewModel.DESCRIPTION_LABEL + ":"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(descriptionField, gbc);
+        row++;
 
-        createButton = new JButton(CreateTaskViewModel.CREATE_BUTTON_LABEL);
-        cancelButton = new JButton(CreateTaskViewModel.CANCEL_BUTTON_LABEL);
+        // Start time
+        gbc.gridx = 0; gbc.gridy = row;
+        formPanel.add(new JLabel("Start Time (yyyy-MM-ddTHH:mm):"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(startTimeField, gbc);
+        row++;
+
+        // Deadline
+        gbc.gridx = 0; gbc.gridy = row;
+        formPanel.add(new JLabel(CreateTaskViewModel.DEADLINE_LABEL + " (yyyy-MM-ddTHH:mm):"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(deadlineField, gbc);
+        row++;
+
+        // Task group
+        gbc.gridx = 0; gbc.gridy = row;
+        formPanel.add(new JLabel(CreateTaskViewModel.TASK_GROUP_LABEL + ":"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(taskGroupField, gbc);
+        row++;
+
+        // Priority
+        gbc.gridx = 0; gbc.gridy = row;
+        formPanel.add(new JLabel(CreateTaskViewModel.PRIORITY_LABEL + " (integer):"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(priorityField, gbc);
+        row++;
+
+        add(formPanel, BorderLayout.CENTER);
 
         JPanel buttons = new JPanel();
         buttons.add(createButton);
         buttons.add(cancelButton);
+        add(buttons, BorderLayout.SOUTH);
 
+        // Listeners
         createButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                CreateTaskState state = createTaskViewModel.getState();
-
-                LocalDateTime deadline = null;
-                try {
-                    if (state.getDeadline() != null) {
-                        deadline = state.getDeadline();
-                    } else if (!deadlineInputField.getText().trim().isEmpty()) {
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-                        deadline = LocalDateTime.parse(deadlineInputField.getText().trim(), formatter);
-                    }
-                } catch (DateTimeParseException ex) {
-                    JOptionPane.showMessageDialog(CreateTaskView.this,
-                            "Invalid deadline format. Use: yyyy-MM-dd HH:mm");
-                    return;
-                }
-
-                int priority = 0;
-                try {
-                    priority = Integer.parseInt(priorityInputField.getText().trim());
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(CreateTaskView.this,
-                            "Priority must be a number");
-                    return;
-                }
-
-                createTaskController.execute(
-                        state.getUsername(),
-                        state.getTaskName(),
-                        state.getDescription(),
-                        deadline,
-                        state.getTaskGroup(),
-                        false,
-                        priority
-                );
+                handleCreate();
             }
         });
 
-        cancelButton.addActionListener(this);
-
-        addUsernameListener();
-        addTaskNameListener();
-        addDescriptionListener();
-        addDeadlineListener();
-        addTaskGroupListener();
-        addPriorityListener();
-
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        this.add(title);
-        this.add(usernamePanel);
-        this.add(taskNamePanel);
-        this.add(descriptionPanel);
-        this.add(deadlinePanel);
-        this.add(taskGroupPanel);
-        this.add(priorityPanel);
-        this.add(buttons);
-    }
-
-    private void addUsernameListener() {
-        usernameInputField.getDocument().addDocumentListener(new DocumentListener() {
-            private void update() {
-                CreateTaskState state = createTaskViewModel.getState();
-                state.setUsername(usernameInputField.getText());
-                createTaskViewModel.setState(state);
-            }
-            public void insertUpdate(DocumentEvent e) { update(); }
-            public void removeUpdate(DocumentEvent e) { update(); }
-            public void changedUpdate(DocumentEvent e) { update(); }
+        cancelButton.addActionListener(e -> {
+            viewManagerModel.setState("view tasks and habits");
+            viewManagerModel.firePropertyChanged();
         });
     }
 
-    private void addTaskNameListener() {
-        taskNameInputField.getDocument().addDocumentListener(new DocumentListener() {
-            private void update() {
-                CreateTaskState state = createTaskViewModel.getState();
-                state.setTaskName(taskNameInputField.getText());
-                createTaskViewModel.setState(state);
-            }
-            public void insertUpdate(DocumentEvent e) { update(); }
-            public void removeUpdate(DocumentEvent e) { update(); }
-            public void changedUpdate(DocumentEvent e) { update(); }
-        });
-    }
+    private void handleCreate() {
+        if (createTaskController == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Create Task controller not initialized.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-    private void addDescriptionListener() {
-        descriptionInputField.getDocument().addDocumentListener(new DocumentListener() {
-            private void update() {
-                CreateTaskState state = createTaskViewModel.getState();
-                state.setDescription(descriptionInputField.getText());
-                createTaskViewModel.setState(state);
-            }
-            public void insertUpdate(DocumentEvent e) { update(); }
-            public void removeUpdate(DocumentEvent e) { update(); }
-            public void changedUpdate(DocumentEvent e) { update(); }
-        });
-    }
+        String username = loggedInViewModel.getState().getUsername();
+        String taskName = taskNameField.getText().trim();
+        String description = descriptionField.getText().trim();
+        String startTimeText = startTimeField.getText().trim();
+        String deadlineText = deadlineField.getText().trim();
+        String group = taskGroupField.getText().trim();
+        String priorityText = priorityField.getText().trim();
 
-    private void addDeadlineListener() {
-        deadlineInputField.getDocument().addDocumentListener(new DocumentListener() {
-            private void update() {
-                CreateTaskState state = createTaskViewModel.getState();
-                try {
-                    if (!deadlineInputField.getText().trim().isEmpty()) {
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-                        LocalDateTime deadline = LocalDateTime.parse(deadlineInputField.getText().trim(), formatter);
-                        state.setDeadline(deadline);
-                    } else {
-                        state.setDeadline(null);
-                    }
-                } catch (DateTimeParseException e) {
-                    // Invalid format, don't update state
-                }
-                createTaskViewModel.setState(state);
-            }
-            public void insertUpdate(DocumentEvent e) { update(); }
-            public void removeUpdate(DocumentEvent e) { update(); }
-            public void changedUpdate(DocumentEvent e) { update(); }
-        });
-    }
+        if (taskName.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Task name cannot be empty.",
+                    "Input Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-    private void addTaskGroupListener() {
-        taskGroupInputField.getDocument().addDocumentListener(new DocumentListener() {
-            private void update() {
-                CreateTaskState state = createTaskViewModel.getState();
-                state.setTaskGroup(taskGroupInputField.getText());
-                createTaskViewModel.setState(state);
-            }
-            public void insertUpdate(DocumentEvent e) { update(); }
-            public void removeUpdate(DocumentEvent e) { update(); }
-            public void changedUpdate(DocumentEvent e) { update(); }
-        });
-    }
+        try {
+            LocalDateTime startTime = LocalDateTime.parse(startTimeText);
+            LocalDateTime deadline = LocalDateTime.parse(deadlineText);
+            int priority = Integer.parseInt(priorityText);
 
-    private void addPriorityListener() {
-        priorityInputField.getDocument().addDocumentListener(new DocumentListener() {
-            private void update() {
-                CreateTaskState state = createTaskViewModel.getState();
-                try {
-                    if (!priorityInputField.getText().trim().isEmpty()) {
-                        int priority = Integer.parseInt(priorityInputField.getText().trim());
-                        state.setPriority(priority);
-                    } else {
-                        state.setPriority(0);
-                    }
-                } catch (NumberFormatException e) {
-                    // Invalid number, don't update state
-                }
-                createTaskViewModel.setState(state);
-            }
-            public void insertUpdate(DocumentEvent e) { update(); }
-            public void removeUpdate(DocumentEvent e) { update(); }
-            public void changedUpdate(DocumentEvent e) { update(); }
-        });
+            createTaskController.execute(username, taskName, description,
+                    startTime, deadline, group, false, priority);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Invalid input: " + ex.getMessage(),
+                    "Input Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        JOptionPane.showMessageDialog(this, "Cancel not implemented yet.");
+        // unused
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        CreateTaskState state = (CreateTaskState) evt.getNewValue();
-
+        if (!"state".equals(evt.getPropertyName())) {
+            return;
+        }
+        CreateTaskState state = viewModel.getState();
         if (state.getErrorMessage() != null) {
-            JOptionPane.showMessageDialog(this, state.getErrorMessage());
+            JOptionPane.showMessageDialog(this, state.getErrorMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
         } else if (state.getSuccessMessage() != null) {
-            JOptionPane.showMessageDialog(this, state.getSuccessMessage());
+            JOptionPane.showMessageDialog(this, state.getSuccessMessage(),
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+            // 清空输入
+            taskNameField.setText("");
+            descriptionField.setText("");
+            startTimeField.setText("");
+            deadlineField.setText("");
+            taskGroupField.setText("");
+            priorityField.setText("");
+
+            viewManagerModel.setState("view tasks and habits");
+            viewManagerModel.firePropertyChanged();
         }
     }
 

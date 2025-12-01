@@ -87,7 +87,6 @@ public class CreateHabitState {
         this.status = status;
     }
 
-
     public String getErrorMessage() {
         return errorMessage;
     }

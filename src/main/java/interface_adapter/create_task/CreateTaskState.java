@@ -6,6 +6,7 @@ public class CreateTaskState {
     private String username = "";
     private String taskName = "";
     private String description = "";
+    private LocalDateTime startTime = null;
     private LocalDateTime deadline = null;
     private String taskGroup = "";
     private int priority = 0;
@@ -16,6 +17,7 @@ public class CreateTaskState {
         this.username = copy.username;
         this.taskName = copy.taskName;
         this.description = copy.description;
+        this.startTime = copy.startTime;
         this.deadline = copy.deadline;
         this.taskGroup = copy.taskGroup;
         this.priority = copy.priority;
@@ -48,6 +50,14 @@ public class CreateTaskState {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
     public LocalDateTime getDeadline() {

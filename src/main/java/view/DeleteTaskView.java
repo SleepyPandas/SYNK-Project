@@ -1,139 +1,148 @@
 package view;
 
+import interface_adapter.ViewManagerModel;
+import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.delete_task.DeleteTaskController;
 import interface_adapter.delete_task.DeleteTaskState;
 import interface_adapter.delete_task.DeleteTaskViewModel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
- * Interface for DeleteTask:
- * - Displays delete confirmation message (with username + taskName)
- * - Provides Delete / Cancel buttons
- * - Listens to ViewModel state changes, updates success / failure messages
+ * View for deleting a task.
+ * User only needs to enter the task name; username is taken from
+ * the LoggedInViewModel.
  */
-public class DeleteTaskView extends JPanel {
+public class DeleteTaskView extends JPanel implements ActionListener, PropertyChangeListener {
 
-    private final DeleteTaskController controller;
     private final DeleteTaskViewModel viewModel;
+    private final ViewManagerModel viewManagerModel;
+    private final LoggedInViewModel loggedInViewModel;
 
-    // Components
-    private final JLabel titleLabel;
-    private final JLabel confirmLabel;
-    private final JLabel successLabel;
-    private final JLabel errorLabel;
-    private final JButton deleteButton;
-    private final JButton cancelButton;
+    private DeleteTaskController controller;
 
-    public DeleteTaskView(DeleteTaskController controller,
-            DeleteTaskViewModel viewModel,
-            String username,
-            String taskName) {
+    private final JLabel messageLabel = new JLabel(" ", SwingConstants.CENTER);
+    private final JTextField taskNameField = new JTextField(15);
+    private final JButton deleteButton = new JButton("Delete");
+    private final JButton cancelButton = new JButton("Cancel");
 
-        this.controller = controller;
+    public DeleteTaskView(DeleteTaskViewModel viewModel,
+                          ViewManagerModel viewManagerModel,
+                          LoggedInViewModel loggedInViewModel) {
         this.viewModel = viewModel;
+        this.viewManagerModel = viewManagerModel;
+        this.loggedInViewModel = loggedInViewModel;
 
-        // Write username / taskName to state first
-        DeleteTaskState state = viewModel.getState();
-        state.setUsername(username);
-        state.setTaskName(taskName);
-        state.setSuccessMessage(null);
-        state.setErrorMessage(null);
-        viewModel.setState(state);
+        setLayout(new BorderLayout());
 
-        // Initialize components
-        titleLabel = new JLabel(DeleteTaskViewModel.TITLE_LABEL, SwingConstants.CENTER);
-        confirmLabel = new JLabel("", SwingConstants.CENTER);
-        successLabel = new JLabel("", SwingConstants.CENTER);
-        errorLabel = new JLabel("", SwingConstants.CENTER);
-
-        deleteButton = new JButton(DeleteTaskViewModel.DELETE_BUTTON_LABEL);
-        cancelButton = new JButton(DeleteTaskViewModel.CANCEL_BUTTON_LABEL);
-
-        // Simple style settings (adjust as needed)
+        JLabel titleLabel = new JLabel("Delete Task", SwingConstants.CENTER);
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 18f));
-        successLabel.setForeground(new Color(0, 128, 0)); // Green
-        errorLabel.setForeground(Color.RED);
-
-        setLayout(new BorderLayout(10, 10));
-
-        // Top title
         add(titleLabel, BorderLayout.NORTH);
 
-        // Middle: Confirmation text + message
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new GridLayout(3, 1, 5, 5));
-        centerPanel.add(confirmLabel);
-        centerPanel.add(successLabel);
-        centerPanel.add(errorLabel);
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        gbc.gridx = 0; gbc.gridy = 0;
+        centerPanel.add(new JLabel("Task Name:"), gbc);
+
+        gbc.gridx = 1;
+        centerPanel.add(taskNameField, gbc);
+
         add(centerPanel, BorderLayout.CENTER);
 
-        // Bottom button row
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5));
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(cancelButton);
-        add(buttonPanel, BorderLayout.SOUTH);
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.add(deleteButton);
+        buttonsPanel.add(cancelButton);
 
-        // Initialize interface text once
-        updateFromState(viewModel.getState());
+        JPanel southPanel = new JPanel(new BorderLayout());
+        southPanel.add(buttonsPanel, BorderLayout.NORTH);
+        southPanel.add(messageLabel, BorderLayout.SOUTH);
 
-        // Bind button events
-        addListeners();
+        add(southPanel, BorderLayout.SOUTH);
 
-        // Listen for ViewModel changes (e.g., Presenter updated state)
-        viewModel.addPropertyChangeListener(evt -> {
-            // Update UI from ViewModel state on every change
-            DeleteTaskState newState = viewModel.getState();
-            updateFromState(newState);
-        });
-    }
+        this.viewModel.addPropertyChangeListener(this);
 
-    /**
-     * Update interface display based on current state
-     */
-    private void updateFromState(DeleteTaskState state) {
-        String username = state.getUsername();
-        String taskName = state.getTaskName();
-
-        // Basic confirmation text follows ViewModel constants
-        // CONFIRM_MESSAGE = "Are you sure you want to delete task '%s'?"
-        String baseConfirm = String.format(DeleteTaskViewModel.CONFIRM_MESSAGE,
-                taskName == null ? "" : taskName);
-
-        // If username exists, append a sentence
-        if (username != null && !username.isEmpty()) {
-            confirmLabel.setText(baseConfirm + " for user '" + username + "'?");
-        } else {
-            confirmLabel.setText(baseConfirm);
-        }
-
-        // Success / Failure message
-        successLabel.setText(state.getSuccessMessage() == null ? "" : state.getSuccessMessage());
-        errorLabel.setText(state.getErrorMessage() == null ? "" : state.getErrorMessage());
-    }
-
-    /**
-     * Bind button events
-     */
-    private void addListeners() {
-        // Delete: Call controller.execute(username, taskName)
-        deleteButton.addActionListener(e -> {
-            DeleteTaskState state = viewModel.getState();
-            String username = state.getUsername();
-            String taskName = state.getTaskName();
-            controller.execute(username, taskName);
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleDelete();
+            }
         });
 
-        // Cancel: Simple handling (clear message), navigation delegated to upper
-        // ViewManager
         cancelButton.addActionListener(e -> {
             DeleteTaskState state = viewModel.getState();
             state.setSuccessMessage(null);
             state.setErrorMessage(null);
             viewModel.setState(state);
             viewModel.firePropertyChanged();
+
+            viewManagerModel.setState("view tasks and habits");
+            viewManagerModel.firePropertyChanged();
         });
+    }
+
+    private void handleDelete() {
+        if (controller == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Delete Task controller not initialized.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String username = loggedInViewModel.getState().getUsername();
+        String taskName = taskNameField.getText().trim();
+
+        if (taskName.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Task name cannot be empty.",
+                    "Input Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        DeleteTaskState state = viewModel.getState();
+        state.setUsername(username);
+        state.setTaskName(taskName);
+        viewModel.setState(state);
+
+        controller.execute(username, taskName);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // unused
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (!"state".equals(evt.getPropertyName())) {
+            return;
+        }
+        DeleteTaskState state = viewModel.getState();
+        if (state.getErrorMessage() != null) {
+            messageLabel.setText(state.getErrorMessage());
+        } else if (state.getSuccessMessage() != null) {
+            messageLabel.setText(state.getSuccessMessage());
+            taskNameField.setText("");
+
+            viewManagerModel.setState("view tasks and habits");
+            viewManagerModel.firePropertyChanged();
+        } else {
+            messageLabel.setText(" ");
+        }
+    }
+
+    public String getViewName() {
+        return viewModel.getViewName();
+    }
+
+    public void setDeleteTaskController(DeleteTaskController controller) {
+        this.controller = controller;
     }
 }

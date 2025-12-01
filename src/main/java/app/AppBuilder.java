@@ -124,6 +124,11 @@ public class AppBuilder {
     private DeleteTaskViewModel deleteTaskViewModel;
     private CreateHabitViewModel createHabitViewModel;
     private DeleteHabitViewModel deleteHabitViewModel;
+    private CreateTaskView createTaskView;
+    private DeleteTaskView deleteTaskView;
+    private CreateHabitView createHabitView;
+    private DeleteHabitView deleteHabitView;
+
 
     public AppBuilder() throws IOException, GeneralSecurityException { // Constructor now accounts for calendar gateway
                                                                        // setup
@@ -177,6 +182,42 @@ public class AppBuilder {
         cardPanel.add(statsView, statsView.getViewName());
         return this;
     }
+    public AppBuilder addCreateTaskView() {
+        if (createTaskViewModel == null) {
+            createTaskViewModel = new CreateTaskViewModel("create task");
+        }
+        createTaskView = new CreateTaskView(createTaskViewModel, viewManagerModel, loggedInViewModel);
+        cardPanel.add(createTaskView, createTaskView.getViewName());
+        return this;
+    }
+
+    public AppBuilder addCreateHabitView() {
+        if (createHabitViewModel == null) {
+            createHabitViewModel = new CreateHabitViewModel("create habit");
+        }
+        createHabitView = new CreateHabitView(createHabitViewModel, viewManagerModel, loggedInViewModel);
+        cardPanel.add(createHabitView, createHabitView.getViewName());
+        return this;
+    }
+
+    public AppBuilder addDeleteTaskView() {
+        if (deleteTaskViewModel == null) {
+            deleteTaskViewModel = new DeleteTaskViewModel("delete task");
+        }
+        deleteTaskView = new DeleteTaskView(deleteTaskViewModel, viewManagerModel, loggedInViewModel);
+        cardPanel.add(deleteTaskView, deleteTaskView.getViewName());
+        return this;
+    }
+
+    public AppBuilder addDeleteHabitView() {
+        if (deleteHabitViewModel == null) {
+            deleteHabitViewModel = new DeleteHabitViewModel("delete habit");
+        }
+        deleteHabitView = new DeleteHabitView(deleteHabitViewModel, viewManagerModel, loggedInViewModel);
+        cardPanel.add(deleteHabitView, deleteHabitView.getViewName());
+        return this;
+    }
+
 
     public AppBuilder addSignupUseCase() {
         final SignupOutputBoundary signupOutputBoundary = new SignupPresenter(viewManagerModel,
@@ -267,14 +308,14 @@ public class AppBuilder {
 
     public AppBuilder addCreateTaskUseCase() {
         if (createTaskViewModel == null) {
-            createTaskViewModel = new CreateTaskViewModel();
+            createTaskViewModel = new CreateTaskViewModel("create task");
         }
         final CreateTaskOutputBoundary createTaskOutputBoundary = new CreateTaskPresenter(createTaskViewModel,
                 loggedInViewModel, viewManagerModel);
         final CreateTaskInputBoundary createTaskInteractor = new CreateTaskInteractor(taskDataAccessObject,
                 createTaskOutputBoundary);
         final CreateTaskController createTaskController = new CreateTaskController(createTaskInteractor);
-        viewtasksAndHabitsView.setCreateTaskController(createTaskController);
+        createTaskView.setCreateTaskController(createTaskController);
         return this;
     }
 
@@ -287,7 +328,7 @@ public class AppBuilder {
         final DeleteTaskInputBoundary deleteTaskInteractor = new DeleteTaskInteractor(deleteTaskOutputBoundary,
                 taskDataAccessObject);
         final DeleteTaskController deleteTaskController = new DeleteTaskController(deleteTaskInteractor);
-        viewtasksAndHabitsView.setDeleteTaskController(deleteTaskController);
+        deleteTaskView.setDeleteTaskController(deleteTaskController);
         return this;
     }
 
@@ -300,7 +341,7 @@ public class AppBuilder {
         final CreateHabitInputBoundary createHabitInteractor = new CreateHabitInteractor(habitDataAccessObject,
                 createHabitOutputBoundary);
         final CreateHabitController createHabitController = new CreateHabitController(createHabitInteractor);
-        viewtasksAndHabitsView.setCreateHabitController(createHabitController);
+        createHabitView.setCreateHabitController(createHabitController);
         return this;
     }
 
@@ -313,7 +354,7 @@ public class AppBuilder {
         final DeleteHabitInputBoundary deleteHabitInteractor = new DeleteHabitInteractor(deleteHabitOutputBoundary,
                 habitDataAccessObject);
         final DeleteHabitController deleteHabitController = new DeleteHabitController(deleteHabitInteractor);
-        viewtasksAndHabitsView.setDeleteHabitController(deleteHabitController);
+        deleteHabitView.setDeleteHabitController(deleteHabitController);
         return this;
     }
 

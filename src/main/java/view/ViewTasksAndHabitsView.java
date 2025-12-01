@@ -23,13 +23,6 @@ public class ViewTasksAndHabitsView extends JPanel implements ActionListener, Pr
     private final String viewName = "view tasks and habits";
     private ViewManagerModel viewManagerModel;
     private LoggedInViewModel loggedInViewModel;
-
-    // Controllers for CRUD operations
-    private interface_adapter.create_habit.CreateHabitController createHabitController;
-    private interface_adapter.delete_habit.DeleteHabitController deleteHabitController;
-    private interface_adapter.create_task.CreateTaskController createTaskController;
-    private interface_adapter.delete_task.DeleteTaskController deleteTaskController;
-
     private DefaultTableModel taskModel;
     private DefaultTableModel habitModel;
 
@@ -128,226 +121,31 @@ public class ViewTasksAndHabitsView extends JPanel implements ActionListener, Pr
             }
         });
 
-        // Create Task button handler
-        this.createTaskButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (evt.getSource().equals(createTaskButton)) {
-                    handleCreateTask();
-                }
-            }
+        createTaskButton.addActionListener(e -> {
+            viewManagerModel.setState("create task");
+            viewManagerModel.firePropertyChanged();
         });
 
-        // Delete Task button handler
-        this.deleteTaskButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (evt.getSource().equals(deleteTaskButton)) {
-                    handleDeleteTask();
-                }
-            }
+        deleteTaskButton.addActionListener(e -> {
+            viewManagerModel.setState("delete task");
+            viewManagerModel.firePropertyChanged();
         });
 
-        // Create Habit button handler
-        this.createHabitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (evt.getSource().equals(createHabitButton)) {
-                    handleCreateHabit();
-                }
-            }
+        createHabitButton.addActionListener(e -> {
+            viewManagerModel.setState("create habit");
+            viewManagerModel.firePropertyChanged();
         });
 
-        // Delete Habit button handler
-        this.deleteHabitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (evt.getSource().equals(deleteHabitButton)) {
-                    handleDeleteHabit();
-                }
-            }
+        deleteHabitButton.addActionListener(e -> {
+            viewManagerModel.setState("delete habit");
+            viewManagerModel.firePropertyChanged();
         });
+
 
         if (this.viewTasksAndHabitsController != null && this.loggedInViewModel != null) {
             this.viewTasksAndHabitsController.getFormattedTasksAndHabits(this.loggedInViewModel);
         }
 
-    }
-
-    /**
-     * Handle Create Task button click - shows dialog to input task details
-     */
-    private void handleCreateTask() {
-        if (createTaskController == null) {
-            JOptionPane.showMessageDialog(this,
-                    "Create Task controller not initialized.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        String username = loggedInViewModel.getState().getUsername();
-
-        JTextField taskNameField = new JTextField();
-        JTextField descriptionField = new JTextField();
-        JTextField deadlineField = new JTextField();
-        JTextField groupField = new JTextField();
-        JTextField priorityField = new JTextField();
-
-        Object[] message = {
-                "Task Name:", taskNameField,
-                "Description:", descriptionField,
-                "Deadline (yyyy-MM-ddTHH:mm):", deadlineField,
-                "Group:", groupField,
-                "Priority (integer):", priorityField
-        };
-
-        int option = JOptionPane.showConfirmDialog(this, message, "Create Task", JOptionPane.OK_CANCEL_OPTION);
-        if (option == JOptionPane.OK_OPTION) {
-            try {
-                String taskName = taskNameField.getText().trim();
-                String description = descriptionField.getText().trim();
-                LocalDateTime deadline = LocalDateTime.parse(deadlineField.getText().trim());
-                String group = groupField.getText().trim();
-                int priority = Integer.parseInt(priorityField.getText().trim());
-
-                createTaskController.execute(username, taskName, description, deadline, group, false, priority);
-
-                // Refresh the view after creating
-                if (viewTasksAndHabitsController != null) {
-                    viewTasksAndHabitsController.getFormattedTasksAndHabits(loggedInViewModel);
-                }
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this,
-                        "Error creating task: " + e.getMessage(),
-                        "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
-
-    /**
-     * Handle Delete Task button click - shows dialog to input task name
-     */
-    private void handleDeleteTask() {
-        if (deleteTaskController == null) {
-            JOptionPane.showMessageDialog(this,
-                    "Delete Task controller not initialized.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        String username = loggedInViewModel.getState().getUsername();
-        String taskName = JOptionPane.showInputDialog(this, "Enter task name to delete:");
-
-        if (taskName != null && !taskName.trim().isEmpty()) {
-            int confirm = JOptionPane.showConfirmDialog(this,
-                    "Are you sure you want to delete task '" + taskName + "'?",
-                    "Confirm Delete", JOptionPane.YES_NO_OPTION);
-
-            if (confirm == JOptionPane.YES_OPTION) {
-                try {
-                    deleteTaskController.execute(username, taskName.trim());
-
-                    // Refresh the view after deleting
-                    if (viewTasksAndHabitsController != null) {
-                        viewTasksAndHabitsController.getFormattedTasksAndHabits(loggedInViewModel);
-                    }
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(this,
-                            "Error deleting task: " + e.getMessage(),
-                            "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        }
-    }
-
-    /**
-     * Handle Create Habit button click - shows dialog to input habit details
-     */
-    private void handleCreateHabit() {
-        if (createHabitController == null) {
-            JOptionPane.showMessageDialog(this,
-                    "Create Habit controller not initialized.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        String username = loggedInViewModel.getState().getUsername();
-
-        JTextField habitNameField = new JTextField();
-        JTextField startDateTimeField = new JTextField();
-        JTextField frequencyField = new JTextField();
-        JTextField habitGroupField = new JTextField();
-        JTextField streakCountField = new JTextField("0");
-        JTextField priorityField = new JTextField();
-
-        Object[] message = {
-                "Habit Name:", habitNameField,
-                "Start Date & Time (yyyy-MM-ddTHH:mm):", startDateTimeField,
-                "Frequency (days):", frequencyField,
-                "Habit Group:", habitGroupField,
-                "Streak Count:", streakCountField,
-                "Priority (integer):", priorityField
-        };
-
-        int option = JOptionPane.showConfirmDialog(this, message, "Create Habit", JOptionPane.OK_CANCEL_OPTION);
-        if (option == JOptionPane.OK_OPTION) {
-            try {
-                String habitName = habitNameField.getText().trim();
-                String startDateTimeText = startDateTimeField.getText().trim();
-                String frequencyText = frequencyField.getText().trim();
-                String habitGroup = habitGroupField.getText().trim();
-                int streakCount = Integer.parseInt(streakCountField.getText().trim());
-                int priority = Integer.parseInt(priorityField.getText().trim());
-
-                createHabitController.execute(username, habitName, startDateTimeText,
-                        frequencyText, habitGroup, streakCount, priority);
-
-                // Refresh the view after creating
-                if (viewTasksAndHabitsController != null) {
-                    viewTasksAndHabitsController.getFormattedTasksAndHabits(loggedInViewModel);
-                }
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this,
-                        "Error creating habit: " + e.getMessage(),
-                        "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
-
-    /**
-     * Handle Delete Habit button click - shows dialog to input habit name
-     */
-    private void handleDeleteHabit() {
-        if (deleteHabitController == null) {
-            JOptionPane.showMessageDialog(this,
-                    "Delete Habit controller not initialized.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        String username = loggedInViewModel.getState().getUsername();
-        String habitName = JOptionPane.showInputDialog(this, "Enter habit name to delete:");
-
-        if (habitName != null && !habitName.trim().isEmpty()) {
-            int confirm = JOptionPane.showConfirmDialog(this,
-                    "Are you sure you want to delete habit '" + habitName + "'?",
-                    "Confirm Delete", JOptionPane.YES_NO_OPTION);
-
-            if (confirm == JOptionPane.YES_OPTION) {
-                try {
-                    deleteHabitController.execute(username, habitName.trim());
-
-                    // Refresh the view after deleting
-                    if (viewTasksAndHabitsController != null) {
-                        viewTasksAndHabitsController.getFormattedTasksAndHabits(loggedInViewModel);
-                    }
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(this,
-                            "Error deleting habit: " + e.getMessage(),
-                            "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        }
     }
 
     /**
@@ -388,25 +186,6 @@ public class ViewTasksAndHabitsView extends JPanel implements ActionListener, Pr
         if (this.loggedInViewModel != null) {
             this.viewTasksAndHabitsController.getFormattedTasksAndHabits(this.loggedInViewModel);
         }
-    }
-
-    /**
-     * Setters for CRUD controllers - for dependency injection
-     */
-    public void setCreateHabitController(interface_adapter.create_habit.CreateHabitController createHabitController) {
-        this.createHabitController = createHabitController;
-    }
-
-    public void setDeleteHabitController(interface_adapter.delete_habit.DeleteHabitController deleteHabitController) {
-        this.deleteHabitController = deleteHabitController;
-    }
-
-    public void setCreateTaskController(interface_adapter.create_task.CreateTaskController createTaskController) {
-        this.createTaskController = createTaskController;
-    }
-
-    public void setDeleteTaskController(interface_adapter.delete_task.DeleteTaskController deleteTaskController) {
-        this.deleteTaskController = deleteTaskController;
     }
 
     public String getViewName() {
