@@ -53,7 +53,6 @@ public class GoogleCalendarDataAccessObject implements CalendarGateway {
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
     private static final String DEFAULT_USER_ID = "user";
     private static final String DEFAULT_TIME_ZONE = "America/Toronto";
-    private static final long DEFAULT_EVENT_DURATION_MILLIS = 3_600_000L;
     private static final int DEFAULT_MAX_EVENTS = 10;
     private static final Duration TOKEN_VALIDITY = Duration.ofDays(30); // Re-authorize after 30 days
     private static final String TOKEN_METADATA_SUFFIX = "-auth.meta";
@@ -421,7 +420,7 @@ public class GoogleCalendarDataAccessObject implements CalendarGateway {
     }
 
     private DateTime toGoogleDateTime(LocalDateTime dateTime) {
-        return new DateTime(dateTime.atZone(ZoneId.of(TIME_ZONE_ID)).toInstant().toEpochMilli());
+        return new DateTime(dateTime.atZone(ZoneId.of(DEFAULT_TIME_ZONE)).toInstant().toEpochMilli());
     }
 }
 
