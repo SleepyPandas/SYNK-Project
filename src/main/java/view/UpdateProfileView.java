@@ -7,6 +7,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -213,7 +214,10 @@ public class UpdateProfileView extends JPanel implements ActionListener, Propert
                 ext = name.substring(dot);
             }
 
-            final String fileName = (currentUid != null ? currentUid : "tmp") + ext;
+            final String fileName;
+
+            fileName = Objects.requireNonNullElse(currentUid, "tmp") + ext;
+
             final File dest = new File(avatarsDir, fileName);
 
             try {
