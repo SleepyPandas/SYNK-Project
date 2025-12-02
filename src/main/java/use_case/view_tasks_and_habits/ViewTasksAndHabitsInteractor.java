@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 import entities.Habit;
 import entities.Task;
-import interface_adapter.logged_in.LoggedInViewModel;
 import use_case.gateways.HabitGateway;
 import use_case.gateways.TaskGateway;
 
@@ -23,8 +22,8 @@ public class ViewTasksAndHabitsInteractor implements ViewTasksAndHabitsInputBoun
     }
 
     /**
-     * Fetches tasks and habits from the task and habit gateways and then formatts them into ArrayLists of strings.
-     * @param loggedInViewModel the view model for the logged in use case/
+     * Fetches tasks and habits from the task and habit gateways and then formats them into ArrayLists of strings.
+     * @param inputData the input data for the view tasks and habits use case
      */
     public void getFormattedTasksAndHabits(ViewTasksAndHabitsInputData inputData) {
         try {
