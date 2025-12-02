@@ -4,23 +4,20 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-import data_access.FileUserDataAccessObject;
-import data_access.HabitDataAccessObject;
-import data_access.TaskDataAccessObject;
 import entities.Habit;
 import entities.Task;
 import interface_adapter.logged_in.LoggedInViewModel;
+import use_case.gateways.HabitGateway;
+import use_case.gateways.TaskGateway;
 
 public class ViewTasksAndHabitsInteractor implements ViewTasksAndHabitsInputBoundary {
-    private FileUserDataAccessObject userDataAccess;
-    private TaskDataAccessObject taskDataAccess;
-    private HabitDataAccessObject habitDataAccess;
+    private TaskGateway taskDataAccess;
+    private HabitGateway habitDataAccess;
     private ViewTasksAndHabitsOutputBoundary presenter;
 
-    public ViewTasksAndHabitsInteractor(TaskDataAccessObject taskDataAccess, HabitDataAccessObject habitDataAccess,
-            FileUserDataAccessObject userDataAccess, ViewTasksAndHabitsOutputBoundary presenter) {
+    public ViewTasksAndHabitsInteractor(TaskGateway taskDataAccess, HabitGateway habitDataAccess,
+                                        ViewTasksAndHabitsOutputBoundary presenter) {
         this.presenter = presenter;
-        this.userDataAccess = userDataAccess;
         this.taskDataAccess = taskDataAccess;
         this.habitDataAccess = habitDataAccess;
     }
