@@ -25,10 +25,10 @@ public class UpdateProfileInteractor implements UpdateProfileBoundary {
         final String newAvatarPath = inputData.getNewAvatarPath();
         final String newPassword = inputData.getNewPassword();
 
-        if (!userDataAccess.existsByUid(uid)) {
-            presenter.prepareFailView("User does not exist.");
-            return;
-        }
+//        if (!userDataAccess.existsByUid(uid)) {
+//            presenter.prepareFailView("User does not exist.");
+//            return;
+//        }
 
         final User user = userDataAccess.getByUid(uid);
 
