@@ -1,7 +1,5 @@
 package use_case.view_tasks_and_habits;
 
-import interface_adapter.logged_in.LoggedInViewModel;
-
 /**
  * Input Boundary for actions which are related to create a task.
  */
