@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.UUID; // New import for unique temporary filenames
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -115,12 +116,10 @@ public class UpdateProfileView extends JPanel implements ActionListener, Propert
         chooseAvatarButton.setFocusPainted(false);
         chooseAvatarButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-        // Setting preferred size to 50x50 (48px image + 1px padding + 1px border on all sides)
-        avatarPreviewLabel.setPreferredSize(new Dimension(50, 50));
-        // Creating a compound border: 1px padding, 1px line border (total 2px buffer around the image)
+        avatarPreviewLabel.setPreferredSize(new Dimension(54, 54));
         avatarPreviewLabel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1)
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2)
         ));
 
         chooseAvatarButton.addActionListener(evt -> {
@@ -181,13 +180,13 @@ public class UpdateProfileView extends JPanel implements ActionListener, Propert
         contentPanel.add(chooseAvatarButton, gbc);
 
         gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.NONE; // <--- ADDED: Prevent stretching horizontally
+        gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.EAST;
         contentPanel.add(avatarPreviewLabel, gbc);
 
         gbc.gridx = 0;
         gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL; // <--- RESTORED: For subsequent fields
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         gbc.gridy = 3;
         contentPanel.add(usernameInfo, gbc);
@@ -208,7 +207,7 @@ public class UpdateProfileView extends JPanel implements ActionListener, Propert
 
         gbc.gridy = 7;
         gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.NONE; // <--- ADDED: Prevent stretching for buttons panel
+        gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.CENTER;
         contentPanel.add(buttons, gbc);
 
@@ -297,7 +296,10 @@ public class UpdateProfileView extends JPanel implements ActionListener, Propert
                 extension = name.substring(dotIndex);
             }
 
-            final String fileName = Objects.requireNonNullElse(currentUid, "tmp") + extension;
+            final String fallbackUid = UUID.randomUUID().toString();
+            final String uidForFileName = Objects.requireNonNullElse(currentUid, fallbackUid);
+
+            final String fileName = uidForFileName + extension;
             final File destinationFile = new File(avatarsDir, fileName);
             String newPath = null;
 
