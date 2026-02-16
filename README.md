@@ -63,7 +63,7 @@ This project serves as a practical implementation of **Clean Architecture** (Rob
 ---
 # App Overview 
 
-## 📸 Interface Overview
+## Interface Overview
 
 | **Authentication & Navigation** | **Task & Habit Management** |
 |:---:|:---:|
