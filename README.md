@@ -51,7 +51,7 @@ This project serves as a practical implementation of **Clean Architecture** (Rob
     *   *Note: Ensure this file is listed in your `.gitignore` to prevent leaking sensitive keys.*
 
 
-## 👨‍💻 Skills & Competencies Demonstrated
+## Skills & Competencies Demonstrated
 
 This project highlights proficiency in:
 
