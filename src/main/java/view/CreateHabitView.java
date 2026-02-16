@@ -75,7 +75,6 @@ public class CreateHabitView extends VBox implements PropertyChangeListener {
             viewManagerModel.firePropertyChanged();
         });
 
-
         HBox startTimeRow = new HBox(8, startHourSpinner, new Label(":"), startMinuteSpinner);
         startTimeRow.setAlignment(Pos.CENTER_LEFT);
 
@@ -86,9 +85,9 @@ public class CreateHabitView extends VBox implements PropertyChangeListener {
 
         this.getChildren().addAll(title,
                 createField("Habit Name", habitNameField),
-                createFieldLabel("Start Date"), startDatePicker,
-                createFieldLabel("Start Time"), startTimeRow,
-                createFieldLabel("Frequency (days)"), frequencySpinner,
+                createFieldWrapped("Start Date", startDatePicker),
+                createFieldWrapped("Start Time", startTimeRow),
+                createFieldWrapped("Frequency (days)", frequencySpinner),
                 createField("Habit Group", habitGroupField),
                 createField("Streak Count", streakCountField),
                 createField("Priority (number)", priorityField),
@@ -107,6 +106,14 @@ public class CreateHabitView extends VBox implements PropertyChangeListener {
         Label label = new Label(text);
         label.getStyleClass().add("form-field-label");
         return label;
+    }
+
+    private VBox createFieldWrapped(String labelText, javafx.scene.Node node) {
+        Label label = new Label(labelText);
+        label.getStyleClass().add("form-field-label");
+        VBox box = new VBox(4, label, node);
+        box.setMaxWidth(400);
+        return box;
     }
 
     private void handleCreate() {

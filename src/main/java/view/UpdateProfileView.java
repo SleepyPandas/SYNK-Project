@@ -104,7 +104,7 @@ public class UpdateProfileView extends VBox implements PropertyChangeListener {
         });
 
         HBox avatarRow = new HBox(12, chooseAvatarButton, avatarPreview);
-        avatarRow.setAlignment(Pos.CENTER_LEFT);
+        avatarRow.setAlignment(Pos.CENTER);
 
         HBox buttons = new HBox(12, saveButton, cancelButton);
         buttons.setAlignment(Pos.CENTER);

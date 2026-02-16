@@ -92,10 +92,10 @@ public class CreateTaskView extends VBox implements PropertyChangeListener {
         this.getChildren().addAll(title,
                 createField("Task Name", taskNameField),
                 createField("Description", descriptionField),
-                createFieldLabel("Start Date"), startDatePicker,
-                createFieldLabel("Start Time"), startTimeRow,
-                createFieldLabel("Deadline"), deadlineDatePicker,
-                createFieldLabel("Deadline Time"), deadlineTimeRow,
+                createFieldWrapped("Start Date", startDatePicker),
+                createFieldWrapped("Start Time", startTimeRow),
+                createFieldWrapped("Deadline", deadlineDatePicker),
+                createFieldWrapped("Deadline Time", deadlineTimeRow),
                 createField("Task Group", taskGroupField),
                 createField("Priority (number)", priorityField),
                 messageLabel, buttons);
@@ -114,6 +114,15 @@ public class CreateTaskView extends VBox implements PropertyChangeListener {
         label.getStyleClass().add("form-field-label");
         return label;
     }
+
+    private VBox createFieldWrapped(String labelText, javafx.scene.Node node) {
+        Label label = new Label(labelText);
+        label.getStyleClass().add("form-field-label");
+        VBox box = new VBox(4, label, node);
+        box.setMaxWidth(400);
+        return box;
+    }
+
 
     private void handleCreate() {
         if (createTaskController == null) {

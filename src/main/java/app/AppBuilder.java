@@ -279,6 +279,11 @@ public class AppBuilder {
                 userDataAccessObject, loginOutputBoundary);
         LoginController loginController = new LoginController(loginInteractor);
         loginView.setLoginController(loginController);
+        // Wire "Don't have an account? Sign up" navigation
+        loginView.getToSignupButton().setOnAction(evt -> {
+            viewManagerModel.setState("sign up");
+            viewManagerModel.firePropertyChanged();
+        });
         return this;
     }
 
