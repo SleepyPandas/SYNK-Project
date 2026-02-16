@@ -108,8 +108,13 @@ public class LoggedInView extends VBox implements PropertyChangeListener {
                 syncStatusLabel, bottomSpacer);
 
         // ── Event handlers ──
-        logOut.setOnAction(evt ->
-                System.out.println("Click Log Out"));
+        logOut.setOnAction(evt -> {
+            if (viewManagerModel != null) {
+                // Clear state if needed, then go to login
+                viewManagerModel.setState("log in");
+                viewManagerModel.firePropertyChanged();
+            }
+        });
 
         viewLeaderboard.setOnAction(evt -> {
             if (viewManagerModel != null) {

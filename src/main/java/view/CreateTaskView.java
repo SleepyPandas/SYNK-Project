@@ -77,11 +77,13 @@ public class CreateTaskView extends VBox implements PropertyChangeListener {
             viewManagerModel.firePropertyChanged();
         });
 
-        HBox startTimeRow = new HBox(8, new Label("Hour:"), startHourSpinner, new Label("Min:"), startMinuteSpinner);
+
+        HBox startTimeRow = new HBox(8, startHourSpinner, new Label(":"), startMinuteSpinner);
         startTimeRow.setAlignment(Pos.CENTER_LEFT);
 
-        HBox deadlineTimeRow = new HBox(8, new Label("Hour:"), deadlineHourSpinner, new Label("Min:"), deadlineMinuteSpinner);
+        HBox deadlineTimeRow = new HBox(8, deadlineHourSpinner, new Label(":"), deadlineMinuteSpinner);
         deadlineTimeRow.setAlignment(Pos.CENTER_LEFT);
+
 
         HBox buttons = new HBox(12, createButton, cancelButton);
         buttons.setAlignment(Pos.CENTER);
@@ -90,8 +92,10 @@ public class CreateTaskView extends VBox implements PropertyChangeListener {
         this.getChildren().addAll(title,
                 createField("Task Name", taskNameField),
                 createField("Description", descriptionField),
-                createFieldLabel("Start Date"), startDatePicker, startTimeRow,
-                createFieldLabel("Deadline"), deadlineDatePicker, deadlineTimeRow,
+                createFieldLabel("Start Date"), startDatePicker,
+                createFieldLabel("Start Time"), startTimeRow,
+                createFieldLabel("Deadline"), deadlineDatePicker,
+                createFieldLabel("Deadline Time"), deadlineTimeRow,
                 createField("Task Group", taskGroupField),
                 createField("Priority (number)", priorityField),
                 messageLabel, buttons);

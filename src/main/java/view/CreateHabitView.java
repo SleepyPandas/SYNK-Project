@@ -75,8 +75,10 @@ public class CreateHabitView extends VBox implements PropertyChangeListener {
             viewManagerModel.firePropertyChanged();
         });
 
-        HBox startTimeRow = new HBox(8, new Label("Hour:"), startHourSpinner, new Label("Min:"), startMinuteSpinner);
+
+        HBox startTimeRow = new HBox(8, startHourSpinner, new Label(":"), startMinuteSpinner);
         startTimeRow.setAlignment(Pos.CENTER_LEFT);
+
 
         HBox buttons = new HBox(12, createButton, cancelButton);
         buttons.setAlignment(Pos.CENTER);
@@ -84,7 +86,8 @@ public class CreateHabitView extends VBox implements PropertyChangeListener {
 
         this.getChildren().addAll(title,
                 createField("Habit Name", habitNameField),
-                createFieldLabel("Start Date"), startDatePicker, startTimeRow,
+                createFieldLabel("Start Date"), startDatePicker,
+                createFieldLabel("Start Time"), startTimeRow,
                 createFieldLabel("Frequency (days)"), frequencySpinner,
                 createField("Habit Group", habitGroupField),
                 createField("Streak Count", streakCountField),
